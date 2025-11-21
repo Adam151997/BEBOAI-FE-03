@@ -165,8 +165,8 @@ export default function OpportunitiesList() {
                   <TableRow key={opportunity.id}>
                     <TableCell className="font-medium">{opportunity.name}</TableCell>
                     <TableCell>
-                      <Badge variant={getStageColor(opportunity.stage)}>
-                        {opportunity.stage}
+                      <Badge variant={getStageColor(opportunity.stage || "")}>
+                        {opportunity.stage || "N/A"}
                       </Badge>
                     </TableCell>
                     <TableCell>

@@ -169,13 +169,13 @@ export default function TasksList() {
                   <TableRow key={task.id}>
                     <TableCell className="font-medium">{task.title}</TableCell>
                     <TableCell>
-                      <Badge variant={getStatusColor(task.status)}>
-                        {task.status.replace("_", " ")}
+                      <Badge variant={getStatusColor(task.status || "")}>
+                        {task.status?.replace("_", " ") || "N/A"}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={getPriorityColor(task.priority)}>
-                        {task.priority}
+                      <Badge variant={getPriorityColor(task.priority || "")}>
+                        {task.priority || "N/A"}
                       </Badge>
                     </TableCell>
                     <TableCell>

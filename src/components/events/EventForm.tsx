@@ -17,10 +17,12 @@ interface EventFormProps {
 export default function EventForm({ event, onSuccess, onCancel }: EventFormProps) {
   const [formData, setFormData] = useState({
     name: event?.name || "",
-    event_type: event?.event_type || "meeting",
+    event_type: event?.event_type || "Non-Recurring",
     status: event?.status || "planned",
     start_date: event?.start_date || "",
+    start_time: event?.start_time || "",
     end_date: event?.end_date || "",
+    end_time: event?.end_time || "",
     description: event?.description || "",
     is_recurring: event?.is_recurring || false,
   });
@@ -88,17 +90,18 @@ export default function EventForm({ event, onSuccess, onCancel }: EventFormProps
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="event_type">Type</Label>
+          <Label htmlFor="event_type">
+            Event Type <span className="text-destructive">*</span>
+          </Label>
           <Select
             id="event_type"
             name="event_type"
             value={formData.event_type}
             onChange={handleChange}
+            required
           >
-            <option value="meeting">Meeting</option>
-            <option value="call">Call</option>
-            <option value="task">Task</option>
-            <option value="deadline">Deadline</option>
+            <option value="Non-Recurring">Non-Recurring</option>
+            <option value="Recurring">Recurring</option>
           </Select>
         </div>
 
@@ -126,7 +129,7 @@ export default function EventForm({ event, onSuccess, onCancel }: EventFormProps
           <Input
             id="start_date"
             name="start_date"
-            type="datetime-local"
+            type="date"
             value={formData.start_date}
             onChange={handleChange}
             required
@@ -134,13 +137,46 @@ export default function EventForm({ event, onSuccess, onCancel }: EventFormProps
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="end_date">End Date</Label>
+          <Label htmlFor="start_time">
+            Start Time <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            id="start_time"
+            name="start_time"
+            type="time"
+            value={formData.start_time}
+            onChange={handleChange}
+            required
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="end_date">
+            End Date <span className="text-destructive">*</span>
+          </Label>
           <Input
             id="end_date"
             name="end_date"
-            type="datetime-local"
+            type="date"
             value={formData.end_date}
             onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="end_time">
+            End Time <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            id="end_time"
+            name="end_time"
+            type="time"
+            value={formData.end_time}
+            onChange={handleChange}
+            required
           />
         </div>
       </div>
@@ -154,20 +190,6 @@ export default function EventForm({ event, onSuccess, onCancel }: EventFormProps
           onChange={handleChange}
           rows={3}
         />
-      </div>
-
-      <div className="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          id="is_recurring"
-          name="is_recurring"
-          checked={formData.is_recurring}
-          onChange={handleChange}
-          className="h-4 w-4 rounded border-input"
-        />
-        <Label htmlFor="is_recurring" className="cursor-pointer">
-          Recurring Event
-        </Label>
       </div>
 
       <div className="flex justify-end gap-2 pt-4">

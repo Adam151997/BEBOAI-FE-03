@@ -17,8 +17,8 @@ interface TaskFormProps {
 export default function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
   const [formData, setFormData] = useState({
     title: task?.title || "",
-    status: task?.status || "new",
-    priority: task?.priority || "medium",
+    status: task?.status || "New",
+    priority: task?.priority || "Medium",
     due_date: task?.due_date || "",
     description: task?.description || "",
   });
@@ -89,9 +89,9 @@ export default function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
             value={formData.status}
             onChange={handleChange}
           >
-            <option value="new">New</option>
-            <option value="in_progress">In Progress</option>
-            <option value="completed">Completed</option>
+            <option value="New">New</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
           </Select>
         </div>
 
@@ -103,9 +103,9 @@ export default function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
             value={formData.priority}
             onChange={handleChange}
           >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
           </Select>
         </div>
       </div>

@@ -32,11 +32,11 @@ export default function TaskDetails({ task }: TaskDetailsProps) {
       <div>
         <h3 className="text-lg font-semibold mb-2">{task.title}</h3>
         <div className="flex gap-2">
-          <Badge variant={getStatusColor(task.status)}>
-            {task.status.replace("_", " ")}
+          <Badge variant={getStatusColor(task.status || "")}>
+            {task.status?.replace("_", " ") || "N/A"}
           </Badge>
-          <Badge variant={getPriorityColor(task.priority)}>
-            {task.priority} priority
+          <Badge variant={getPriorityColor(task.priority || "")}>
+            {task.priority || "N/A"} priority
           </Badge>
         </div>
       </div>

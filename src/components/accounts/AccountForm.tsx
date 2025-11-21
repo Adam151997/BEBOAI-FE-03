@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select } from "@/components/ui/select";
 
 interface AccountFormProps {
   account?: Account;
@@ -20,7 +21,9 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
     phone: account?.phone || "",
     industry: account?.industry || "",
     website: account?.website || "",
+    status: account?.status || "",
     billing_address_line: account?.billing_address_line || "",
+    billing_street: account?.billing_street || "",
     billing_city: account?.billing_city || "",
     billing_state: account?.billing_state || "",
     billing_postcode: account?.billing_postcode || "",
@@ -63,7 +66,7 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -138,56 +141,116 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="billing_address_line">Billing Address</Label>
+        <Label htmlFor="status">Status</Label>
+        <Select
+          id="status"
+          name="status"
+          value={formData.status}
+          onChange={handleChange}
+        >
+          <option value="">Select Status</option>
+          <option value="open">Open</option>
+          <option value="close">Close</option>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="billing_address_line">
+          Billing Address Line <span className="text-destructive">*</span>
+        </Label>
         <Input
           id="billing_address_line"
           name="billing_address_line"
           value={formData.billing_address_line}
           onChange={handleChange}
+          required
         />
+        {errors.billing_address_line && (
+          <p className="text-sm text-destructive">{errors.billing_address_line}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="billing_street">
+          Billing Street <span className="text-destructive">*</span>
+        </Label>
+        <Input
+          id="billing_street"
+          name="billing_street"
+          value={formData.billing_street}
+          onChange={handleChange}
+          required
+        />
+        {errors.billing_street && (
+          <p className="text-sm text-destructive">{errors.billing_street}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="billing_city">City</Label>
+          <Label htmlFor="billing_city">
+            Billing City <span className="text-destructive">*</span>
+          </Label>
           <Input
             id="billing_city"
             name="billing_city"
             value={formData.billing_city}
             onChange={handleChange}
+            required
           />
+          {errors.billing_city && (
+            <p className="text-sm text-destructive">{errors.billing_city}</p>
+          )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="billing_state">State</Label>
+          <Label htmlFor="billing_state">
+            Billing State <span className="text-destructive">*</span>
+          </Label>
           <Input
             id="billing_state"
             name="billing_state"
             value={formData.billing_state}
             onChange={handleChange}
+            required
           />
+          {errors.billing_state && (
+            <p className="text-sm text-destructive">{errors.billing_state}</p>
+          )}
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="billing_postcode">Postcode</Label>
+          <Label htmlFor="billing_postcode">
+            Billing Postcode <span className="text-destructive">*</span>
+          </Label>
           <Input
             id="billing_postcode"
             name="billing_postcode"
             value={formData.billing_postcode}
             onChange={handleChange}
+            required
           />
+          {errors.billing_postcode && (
+            <p className="text-sm text-destructive">{errors.billing_postcode}</p>
+          )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="billing_country">Country</Label>
+          <Label htmlFor="billing_country">
+            Billing Country <span className="text-destructive">*</span>
+          </Label>
           <Input
             id="billing_country"
             name="billing_country"
             value={formData.billing_country}
             onChange={handleChange}
+            required
           />
+          {errors.billing_country && (
+            <p className="text-sm text-destructive">{errors.billing_country}</p>
+          )}
         </div>
       </div>
 
