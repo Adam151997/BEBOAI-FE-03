@@ -86,7 +86,10 @@ export default function EventsList() {
     setIsDetailsOpen(true);
   };
 
-  const totalPages = data ? Math.ceil(data.count / limit) : 0;
+  // Normalize data to prevent runtime errors
+  const results: Event[] = Array.isArray(data?.results) ? data.results : [];
+  const totalCount = typeof data?.count === "number" ? data.count : 0;
+  const totalPages = totalCount > 0 && limit > 0 ? Math.ceil(totalCount / limit) : 0;
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, "default" | "secondary" | "success" | "destructive" | "outline"> = {
@@ -147,7 +150,7 @@ export default function EventsList() {
           <div className="p-8 text-center">
             <p className="text-destructive">Error loading events</p>
           </div>
-        ) : data?.results.length === 0 ? (
+        ) : results.length === 0 ? (
           <div className="p-8 text-center">
             <p className="text-muted-foreground">No events found</p>
           </div>
@@ -165,7 +168,7 @@ export default function EventsList() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data?.results.map((event) => (
+                {results.map((event) => (
                   <TableRow key={event.id}>
                     <TableCell className="font-medium">{event.name}</TableCell>
                     <TableCell>
@@ -220,7 +223,7 @@ export default function EventsList() {
               <div className="flex items-center justify-between border-t p-4">
                 <p className="text-sm text-muted-foreground">
                   Showing {(page - 1) * limit + 1} to{" "}
-                  {Math.min(page * limit, data?.count || 0)} of {data?.count} results
+                  {Math.min(page * limit, totalCount)} of {totalCount} results
                 </p>
                 <div className="flex gap-2">
                   <Button
