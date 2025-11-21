@@ -10,6 +10,10 @@ import AccountsList from '@/pages/accounts/AccountsList'
 import ContactsList from '@/pages/contacts/ContactsList'
 import OpportunitiesList from '@/pages/opportunities/OpportunitiesList'
 import TasksList from '@/pages/tasks/TasksList'
+import EventsList from '@/pages/events/EventsList'
+import CasesList from '@/pages/cases/CasesList'
+import TeamsList from '@/pages/teams/TeamsList'
+import DocumentsList from '@/pages/documents/DocumentsList'
 
 function App() {
   const initializeAuth = useAuthStore((state) => state.initializeAuth)
@@ -37,10 +41,10 @@ function App() {
         <Route path="contacts" element={<ContactsList />} />
         <Route path="opportunities" element={<OpportunitiesList />} />
         <Route path="tasks" element={<TasksList />} />
-        <Route path="events" element={<div className="text-2xl">Events - Coming Soon</div>} />
-        <Route path="cases" element={<div className="text-2xl">Cases - Coming Soon</div>} />
-        <Route path="teams" element={<div className="text-2xl">Teams - Coming Soon</div>} />
-        <Route path="documents" element={<div className="text-2xl">Documents - Coming Soon</div>} />
+        <Route path="events" element={<EventsList />} />
+        <Route path="cases" element={<CasesList />} />
+        <Route path="teams" element={<TeamsList />} />
+        <Route path="documents" element={<DocumentsList />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

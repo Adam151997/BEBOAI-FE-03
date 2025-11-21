@@ -1,0 +1,290 @@
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { casesService } from "@/services/cases.service";
+import type { Case } from "@/types";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Plus, Search, Edit, Trash2, Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import CaseForm from "@/components/cases/CaseForm";
+import CaseDetails from "@/components/cases/CaseDetails";
+
+export default function CasesList() {
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [limit] = useState(20);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [selectedCase, setSelectedCase] = useState<Case | null>(null);
+
+  const queryClient = useQueryClient();
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["cases", page, limit, search],
+    queryFn: () =>
+      casesService.getAll({
+        limit,
+        offset: (page - 1) * limit,
+        search,
+        ordering: "-created_at",
+      }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => casesService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cases"] });
+    },
+  });
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this case?")) {
+      await deleteMutation.mutateAsync(id);
+    }
+  };
+
+  const handleEdit = (caseItem: Case) => {
+    setSelectedCase(caseItem);
+    setIsEditOpen(true);
+  };
+
+  const handleView = (caseItem: Case) => {
+    setSelectedCase(caseItem);
+    setIsDetailsOpen(true);
+  };
+
+  const totalPages = data ? Math.ceil(data.count / limit) : 0;
+
+  const getPriorityColor = (priority: string) => {
+    const colors: Record<string, "default" | "secondary" | "destructive"> = {
+      low: "secondary",
+      medium: "default",
+      high: "destructive",
+    };
+    return colors[priority] || "secondary";
+  };
+
+  const getTypeColor = (type: string) => {
+    const colors: Record<string, "default" | "secondary" | "destructive"> = {
+      problem: "destructive",
+      feature_request: "default",
+      question: "secondary",
+      bug: "destructive",
+    };
+    return colors[type] || "default";
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Cases</h1>
+          <p className="text-muted-foreground">Manage support cases and tickets</p>
+        </div>
+        <Button onClick={() => setIsCreateOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          New Case
+        </Button>
+      </div>
+
+      <Card className="p-4">
+        <div className="flex items-center gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search cases..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="pl-10"
+            />
+          </div>
+        </div>
+      </Card>
+
+      <Card>
+        {isLoading ? (
+          <div className="p-8 text-center">
+            <p className="text-muted-foreground">Loading cases...</p>
+          </div>
+        ) : error ? (
+          <div className="p-8 text-center">
+            <p className="text-destructive">Error loading cases</p>
+          </div>
+        ) : data?.results.length === 0 ? (
+          <div className="p-8 text-center">
+            <p className="text-muted-foreground">No cases found</p>
+          </div>
+        ) : (
+          <>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Priority</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Closed On</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data?.results.map((caseItem) => (
+                  <TableRow key={caseItem.id}>
+                    <TableCell className="font-medium">{caseItem.name}</TableCell>
+                    <TableCell>
+                      {caseItem.case_type && (
+                        <Badge variant={getTypeColor(caseItem.case_type)}>
+                          {caseItem.case_type.replace("_", " ")}
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {caseItem.priority && (
+                        <Badge variant={getPriorityColor(caseItem.priority)}>
+                          {caseItem.priority}
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>{caseItem.status || "-"}</TableCell>
+                    <TableCell>
+                      {caseItem.closed_on
+                        ? new Date(caseItem.closed_on).toLocaleDateString()
+                        : "-"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleView(caseItem)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEdit(caseItem)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDelete(caseItem.id)}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between border-t p-4">
+                <p className="text-sm text-muted-foreground">
+                  Showing {(page - 1) * limit + 1} to{" "}
+                  {Math.min(page * limit, data?.count || 0)} of {data?.count} results
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </Card>
+
+      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+        <DialogContent onClose={() => setIsCreateOpen(false)}>
+          <DialogHeader>
+            <DialogTitle>Create New Case</DialogTitle>
+          </DialogHeader>
+          <CaseForm
+            onSuccess={() => {
+              setIsCreateOpen(false);
+              queryClient.invalidateQueries({ queryKey: ["cases"] });
+            }}
+            onCancel={() => setIsCreateOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent onClose={() => setIsEditOpen(false)}>
+          <DialogHeader>
+            <DialogTitle>Edit Case</DialogTitle>
+          </DialogHeader>
+          {selectedCase && (
+            <CaseForm
+              case={selectedCase}
+              onSuccess={() => {
+                setIsEditOpen(false);
+                setSelectedCase(null);
+                queryClient.invalidateQueries({ queryKey: ["cases"] });
+              }}
+              onCancel={() => {
+                setIsEditOpen(false);
+                setSelectedCase(null);
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+        <DialogContent onClose={() => setIsDetailsOpen(false)}>
+          <DialogHeader>
+            <DialogTitle>Case Details</DialogTitle>
+          </DialogHeader>
+          {selectedCase && (
+            <CaseDetails
+              case={selectedCase}
+              onClose={() => {
+                setIsDetailsOpen(false);
+                setSelectedCase(null);
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
