@@ -138,7 +138,7 @@ export default function Dashboard() {
                     <div>
                       <p className="text-sm font-medium">{opp.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {opp.stage.replace("-", " ")}
+                        {opp.stage?.replace("-", " ") || "N/A"}
                       </p>
                     </div>
                     {opp.amount && (

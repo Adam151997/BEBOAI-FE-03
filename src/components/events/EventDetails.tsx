@@ -37,8 +37,8 @@ export default function EventDetails({ event }: EventDetailsProps) {
           <Badge variant={getTypeColor(event.event_type)}>
             {event.event_type}
           </Badge>
-          <Badge variant={getStatusColor(event.status)}>
-            {event.status.replace("_", " ")}
+          <Badge variant={getStatusColor(event.status || "")}>
+            {event.status?.replace("_", " ") || "N/A"}
           </Badge>
           {event.is_recurring && (
             <Badge variant="outline">

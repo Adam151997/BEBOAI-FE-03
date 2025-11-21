@@ -157,8 +157,8 @@ export default function EventsList() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={getStatusColor(event.status)}>
-                        {event.status.replace("_", " ")}
+                      <Badge variant={getStatusColor(event.status || "")}>
+                        {event.status?.replace("_", " ") || "N/A"}
                       </Badge>
                     </TableCell>
                     <TableCell>

@@ -17,8 +17,10 @@ interface OpportunityFormProps {
 export default function OpportunityForm({ opportunity, onSuccess, onCancel }: OpportunityFormProps) {
   const [formData, setFormData] = useState({
     name: opportunity?.name || "",
-    stage: opportunity?.stage || "prospecting",
+    account: opportunity?.account?.toString() || "",
+    stage: opportunity?.stage || "",
     amount: opportunity?.amount?.toString() || "",
+    currency: opportunity?.currency || "USD",
     probability: opportunity?.probability?.toString() || "",
     close_date: opportunity?.close_date || "",
     lead_source: opportunity?.lead_source || "",
@@ -48,10 +50,11 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
     e.preventDefault();
     setErrors({});
 
-    const data = {
+    const data: any = {
       ...formData,
       amount: formData.amount ? parseFloat(formData.amount) : undefined,
       probability: formData.probability ? parseInt(formData.probability) : undefined,
+      account: formData.account ? parseInt(formData.account) : undefined,
     };
 
     if (opportunity) {
@@ -76,7 +79,7 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="name">
-          Name <span className="text-destructive">*</span>
+          Opportunity Name <span className="text-destructive">*</span>
         </Label>
         <Input
           id="name"
@@ -89,6 +92,22 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
       </div>
 
       <div className="space-y-2">
+        <Label htmlFor="account">
+          Account ID <span className="text-destructive">*</span>
+        </Label>
+        <Input
+          id="account"
+          name="account"
+          type="number"
+          value={formData.account}
+          onChange={handleChange}
+          required
+          placeholder="Enter Account ID"
+        />
+        {errors.account && <p className="text-sm text-destructive">{errors.account}</p>}
+      </div>
+
+      <div className="space-y-2">
         <Label htmlFor="stage">Stage</Label>
         <Select
           id="stage"
@@ -96,13 +115,16 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
           value={formData.stage}
           onChange={handleChange}
         >
-          <option value="prospecting">Prospecting</option>
-          <option value="qualification">Qualification</option>
-          <option value="needs-analysis">Needs Analysis</option>
-          <option value="proposal">Proposal</option>
-          <option value="negotiation">Negotiation</option>
-          <option value="closed-won">Closed Won</option>
-          <option value="closed-lost">Closed Lost</option>
+          <option value="">Select Stage</option>
+          <option value="QUALIFICATION">Qualification</option>
+          <option value="NEEDS ANALYSIS">Needs Analysis</option>
+          <option value="VALUE PROPOSITION">Value Proposition</option>
+          <option value="ID. DECISION MAKERS">ID. Decision Makers</option>
+          <option value="PERCEPTION ANALYSIS">Perception Analysis</option>
+          <option value="PROPOSAL/PRICE QUOTE">Proposal/Price Quote</option>
+          <option value="NEGOTIATION/REVIEW">Negotiation/Review</option>
+          <option value="CLOSED WON">Closed Won</option>
+          <option value="CLOSED LOST">Closed Lost</option>
         </Select>
       </div>
 
@@ -116,9 +138,30 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
             step="0.01"
             value={formData.amount}
             onChange={handleChange}
+            placeholder="0.00"
           />
         </div>
 
+        <div className="space-y-2">
+          <Label htmlFor="currency">Currency</Label>
+          <Select
+            id="currency"
+            name="currency"
+            value={formData.currency}
+            onChange={handleChange}
+          >
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="INR">INR</option>
+            <option value="AUD">AUD</option>
+            <option value="CAD">CAD</option>
+            <option value="JPY">JPY</option>
+          </Select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="probability">Probability (%)</Label>
           <Input
@@ -129,11 +172,10 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
             max="100"
             value={formData.probability}
             onChange={handleChange}
+            placeholder="0-100"
           />
         </div>
-      </div>
 
-      <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="close_date">Close Date</Label>
           <Input
@@ -144,16 +186,27 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
             onChange={handleChange}
           />
         </div>
+      </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="lead_source">Lead Source</Label>
-          <Input
-            id="lead_source"
-            name="lead_source"
-            value={formData.lead_source}
-            onChange={handleChange}
-          />
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="lead_source">Lead Source</Label>
+        <Select
+          id="lead_source"
+          name="lead_source"
+          value={formData.lead_source}
+          onChange={handleChange}
+        >
+          <option value="">Select Lead Source</option>
+          <option value="None">None</option>
+          <option value="Call">Call</option>
+          <option value="Email">Email</option>
+          <option value="Existing Customer">Existing Customer</option>
+          <option value="Partner">Partner</option>
+          <option value="Public Relations">Public Relations</option>
+          <option value="Campaign">Campaign</option>
+          <option value="Website">Website</option>
+          <option value="Other">Other</option>
+        </Select>
       </div>
 
       <div className="space-y-2">

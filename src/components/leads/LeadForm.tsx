@@ -82,39 +82,21 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="title">Title</Label>
-          <Select
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-          >
-            <option value="">Select Title</option>
-            <option value="Mr">Mr</option>
-            <option value="Mrs">Mrs</option>
-            <option value="Ms">Ms</option>
-            <option value="Dr">Dr</option>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="status">Status</Label>
-          <Select
-            id="status"
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-          >
-            <option value="">Select Status</option>
-            <option value="new">New</option>
-            <option value="contacted">Contacted</option>
-            <option value="qualified">Qualified</option>
-            <option value="converted">Converted</option>
-            <option value="lost">Lost</option>
-          </Select>
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="title">
+          Title (Job Title) <span className="text-destructive">*</span>
+        </Label>
+        <Input
+          id="title"
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
+          placeholder="e.g., Sales Manager, VP Marketing"
+          required
+        />
+        {errors.title && (
+          <p className="text-sm text-destructive">{errors.title}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -182,6 +164,44 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
+          <Label htmlFor="status">Status</Label>
+          <Select
+            id="status"
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+          >
+            <option value="">Select Status</option>
+            <option value="assigned">Assigned</option>
+            <option value="contacted">Contacted</option>
+            <option value="converted">Converted</option>
+            <option value="closed">Closed</option>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="source">Source</Label>
+          <Select
+            id="source"
+            name="source"
+            value={formData.source}
+            onChange={handleChange}
+          >
+            <option value="">Select Source</option>
+            <option value="call">Call</option>
+            <option value="email">Email</option>
+            <option value="existing customer">Existing Customer</option>
+            <option value="partner">Partner</option>
+            <option value="public relations">Public Relations</option>
+            <option value="campaign">Campaign</option>
+            <option value="website">Website</option>
+            <option value="other">Other</option>
+          </Select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
           <Label htmlFor="company">Company</Label>
           <Input
             id="company"
@@ -201,24 +221,6 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
             onChange={handleChange}
           />
         </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="source">Source</Label>
-        <Select
-          id="source"
-          name="source"
-          value={formData.source}
-          onChange={handleChange}
-        >
-          <option value="">Select Source</option>
-          <option value="website">Website</option>
-          <option value="referral">Referral</option>
-          <option value="social-media">Social Media</option>
-          <option value="email-campaign">Email Campaign</option>
-          <option value="cold-call">Cold Call</option>
-          <option value="event">Event</option>
-        </Select>
       </div>
 
       <div className="space-y-2">

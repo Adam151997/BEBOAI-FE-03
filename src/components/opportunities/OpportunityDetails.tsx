@@ -26,7 +26,7 @@ export default function OpportunityDetails({ opportunity }: OpportunityDetailsPr
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold mb-2">{opportunity.name}</h3>
-        <Badge variant={getStageColor(opportunity.stage)}>{opportunity.stage}</Badge>
+        <Badge variant={getStageColor(opportunity.stage || "")}>{opportunity.stage || "N/A"}</Badge>
       </div>
 
       <div className="grid grid-cols-2 gap-4">

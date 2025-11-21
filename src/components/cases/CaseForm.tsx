@@ -17,9 +17,9 @@ interface CaseFormProps {
 export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFormProps) {
   const [formData, setFormData] = useState({
     name: caseItem?.name || "",
-    status: caseItem?.status || "",
-    priority: caseItem?.priority || "medium",
-    case_type: caseItem?.case_type || "question",
+    status: caseItem?.status || "New",
+    priority: caseItem?.priority || "Medium",
+    case_type: caseItem?.case_type || "",
     description: caseItem?.description || "",
   });
 
@@ -89,10 +89,13 @@ export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFo
             value={formData.case_type}
             onChange={handleChange}
           >
-            <option value="problem">Problem</option>
-            <option value="feature_request">Feature Request</option>
-            <option value="question">Question</option>
-            <option value="bug">Bug</option>
+            <option value="">Select Type</option>
+            <option value="Problem">Problem</option>
+            <option value="Feature Request">Feature Request</option>
+            <option value="Data Corrupted">Data Corrupted</option>
+            <option value="Functionality Request">Functionality Request</option>
+            <option value="Integration">Integration</option>
+            <option value="Others">Others</option>
           </Select>
         </div>
 
@@ -104,22 +107,27 @@ export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFo
             value={formData.priority}
             onChange={handleChange}
           >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
           </Select>
         </div>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="status">Status</Label>
-        <Input
+        <Select
           id="status"
           name="status"
           value={formData.status}
           onChange={handleChange}
-          placeholder="e.g., Open, In Progress, Resolved, Closed"
-        />
+        >
+          <option value="New">New</option>
+          <option value="Working">Working</option>
+          <option value="Closed">Closed</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Duplicate">Duplicate</option>
+        </Select>
       </div>
 
       <div className="space-y-2">
