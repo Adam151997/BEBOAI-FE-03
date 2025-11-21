@@ -28,6 +28,8 @@ class ErrorBoundary extends Component<Props, State> {
 
   handleReset = () => {
     this.setState({ hasError: false, error: null });
+    // Using window.location.href intentionally to force full page reload
+    // This ensures complete state reset after error boundary catches an error
     window.location.href = "/dashboard";
   };
 
