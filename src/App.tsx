@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/auth.store'
 import ProtectedRoute from '@/components/ProtectedRoute'
+import ErrorBoundary from '@/components/ErrorBoundary'
 import MainLayout from '@/layouts/MainLayout'
 import Login from '@/pages/Login'
 import Dashboard from '@/pages/Dashboard'
@@ -23,32 +24,34 @@ function App() {
   }, [initializeAuth])
 
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
+    <ErrorBoundary>
+      <Routes>
+        <Route path="/login" element={<Login />} />
 
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <MainLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<Navigate to="/dashboard" replace />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="leads" element={<LeadsList />} />
-        <Route path="accounts" element={<AccountsList />} />
-        <Route path="contacts" element={<ContactsList />} />
-        <Route path="opportunities" element={<OpportunitiesList />} />
-        <Route path="tasks" element={<TasksList />} />
-        <Route path="events" element={<EventsList />} />
-        <Route path="cases" element={<CasesList />} />
-        <Route path="teams" element={<TeamsList />} />
-        <Route path="documents" element={<DocumentsList />} />
-      </Route>
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <MainLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="leads" element={<LeadsList />} />
+          <Route path="accounts" element={<AccountsList />} />
+          <Route path="contacts" element={<ContactsList />} />
+          <Route path="opportunities" element={<OpportunitiesList />} />
+          <Route path="tasks" element={<TasksList />} />
+          <Route path="events" element={<EventsList />} />
+          <Route path="cases" element={<CasesList />} />
+          <Route path="teams" element={<TeamsList />} />
+          <Route path="documents" element={<DocumentsList />} />
+        </Route>
 
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
-    </Routes>
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
+    </ErrorBoundary>
   )
 }
 

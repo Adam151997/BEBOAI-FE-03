@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 import { accountsService } from "@/services/accounts.service";
 import type { Account } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ import AccountForm from "@/components/accounts/AccountForm";
 import AccountDetails from "@/components/accounts/AccountDetails";
 
 export default function AccountsList() {
+  const location = useLocation();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [limit] = useState(20);
@@ -35,8 +37,23 @@ export default function AccountsList() {
 
   const queryClient = useQueryClient();
 
+  // Reset page when route changes
+  useEffect(() => {
+    setPage(1);
+  }, [location.pathname]);
+
+  // Cleanup dialogs on unmount
+  useEffect(() => {
+    return () => {
+      setIsCreateOpen(false);
+      setIsEditOpen(false);
+      setIsDetailsOpen(false);
+      setSelectedAccount(null);
+    };
+  }, []);
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ["accounts", page, limit, search],
+    queryKey: ["accounts", location.pathname, page, limit, search],
     queryFn: () =>
       accountsService.getAll({
         limit,
