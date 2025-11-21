@@ -9,6 +9,7 @@ import LeadsList from '@/pages/leads/LeadsList'
 import AccountsList from '@/pages/accounts/AccountsList'
 import ContactsList from '@/pages/contacts/ContactsList'
 import OpportunitiesList from '@/pages/opportunities/OpportunitiesList'
+import TasksList from '@/pages/tasks/TasksList'
 
 function App() {
   const initializeAuth = useAuthStore((state) => state.initializeAuth)
@@ -35,7 +36,7 @@ function App() {
         <Route path="accounts" element={<AccountsList />} />
         <Route path="contacts" element={<ContactsList />} />
         <Route path="opportunities" element={<OpportunitiesList />} />
-        <Route path="tasks" element={<div className="text-2xl">Tasks - Coming Soon</div>} />
+        <Route path="tasks" element={<TasksList />} />
         <Route path="events" element={<div className="text-2xl">Events - Coming Soon</div>} />
         <Route path="cases" element={<div className="text-2xl">Cases - Coming Soon</div>} />
         <Route path="teams" element={<div className="text-2xl">Teams - Coming Soon</div>} />
