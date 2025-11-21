@@ -1,4 +1,4 @@
-import { Lead } from "@/types";
+import type { Lead } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { formatDateTime } from "@/lib/utils";
 import { Mail, Phone, Building2, Globe, MapPin, Calendar } from "lucide-react";

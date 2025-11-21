@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { User, Organization } from "@/types";
+import type { User, Organization } from "@/types";
 import { authService } from "@/services/auth.service";
 
 interface AuthState {

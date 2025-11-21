@@ -1,5 +1,5 @@
 import { CrudService } from "./crud.service";
-import { Opportunity } from "@/types";
+import type { Opportunity } from "@/types";
 
 class OpportunitiesService extends CrudService<Opportunity> {
   constructor() {

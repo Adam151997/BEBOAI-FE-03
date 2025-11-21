@@ -1,5 +1,5 @@
 import { CrudService } from "./crud.service";
-import { Event } from "@/types";
+import type { Event } from "@/types";
 
 class EventsService extends CrudService<Event> {
   constructor() {

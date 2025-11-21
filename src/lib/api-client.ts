@@ -1,4 +1,4 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 
 const API_BASE_URL = "https://beboai-03-production.up.railway.app/api";
 

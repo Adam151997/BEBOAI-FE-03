@@ -1,5 +1,5 @@
 import { CrudService } from "./crud.service";
-import { Contact } from "@/types";
+import type { Contact } from "@/types";
 
 class ContactsService extends CrudService<Contact> {
   constructor() {

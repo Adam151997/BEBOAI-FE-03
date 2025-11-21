@@ -1,5 +1,5 @@
 import { CrudService } from "./crud.service";
-import { Case } from "@/types";
+import type { Case } from "@/types";
 
 class CasesService extends CrudService<Case> {
   constructor() {

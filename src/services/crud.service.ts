@@ -1,5 +1,5 @@
 import apiClient from "@/lib/api-client";
-import { PaginatedResponse } from "@/types";
+import type { PaginatedResponse } from "@/types";
 
 export interface QueryParams {
   limit?: number;
@@ -11,7 +11,11 @@ export interface QueryParams {
 }
 
 export class CrudService<T> {
-  constructor(private endpoint: string) {}
+  private endpoint: string;
+
+  constructor(endpoint: string) {
+    this.endpoint = endpoint;
+  }
 
   async getAll(params?: QueryParams): Promise<PaginatedResponse<T>> {
     const response = await apiClient.get<PaginatedResponse<T>>(this.endpoint, {

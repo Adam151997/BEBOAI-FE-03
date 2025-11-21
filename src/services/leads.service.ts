@@ -1,5 +1,5 @@
 import { CrudService } from "./crud.service";
-import { Lead } from "@/types";
+import type { Lead } from "@/types";
 import apiClient from "@/lib/api-client";
 
 class LeadsService extends CrudService<Lead> {
