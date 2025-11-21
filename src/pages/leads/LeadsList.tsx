@@ -86,7 +86,10 @@ export default function LeadsList() {
     setIsDetailsOpen(true);
   };
 
-  const totalPages = data ? Math.ceil(data.count / limit) : 0;
+  // Normalize data to prevent runtime errors
+  const results: Lead[] = Array.isArray(data?.results) ? data.results : [];
+  const totalCount = typeof data?.count === "number" ? data.count : 0;
+  const totalPages = totalCount > 0 && limit > 0 ? Math.ceil(totalCount / limit) : 0;
 
   return (
     <div className="space-y-6">
@@ -127,7 +130,7 @@ export default function LeadsList() {
           <div className="p-8 text-center">
             <p className="text-destructive">Error loading leads</p>
           </div>
-        ) : data?.results.length === 0 ? (
+        ) : results.length === 0 ? (
           <div className="p-8 text-center">
             <p className="text-muted-foreground">No leads found</p>
           </div>
@@ -146,7 +149,7 @@ export default function LeadsList() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data?.results.map((lead) => (
+                {results.map((lead) => (
                   <TableRow key={lead.id}>
                     <TableCell className="font-medium">
                       {lead.first_name} {lead.last_name}
@@ -202,7 +205,7 @@ export default function LeadsList() {
               <div className="flex items-center justify-between border-t p-4">
                 <p className="text-sm text-muted-foreground">
                   Showing {(page - 1) * limit + 1} to{" "}
-                  {Math.min(page * limit, data?.count || 0)} of {data?.count} results
+                  {Math.min(page * limit, totalCount)} of {totalCount} results
                 </p>
                 <div className="flex gap-2">
                   <Button

@@ -86,7 +86,10 @@ export default function OpportunitiesList() {
     setIsDetailsOpen(true);
   };
 
-  const totalPages = data ? Math.ceil(data.count / limit) : 0;
+  // Normalize data to prevent runtime errors
+  const results: Opportunity[] = Array.isArray(data?.results) ? data.results : [];
+  const totalCount = typeof data?.count === "number" ? data.count : 0;
+  const totalPages = totalCount > 0 && limit > 0 ? Math.ceil(totalCount / limit) : 0;
 
   const getStageColor = (stage: string) => {
     const colors: Record<string, "default" | "secondary" | "destructive" | "outline" | "success"> = {
@@ -140,7 +143,7 @@ export default function OpportunitiesList() {
           <div className="p-8 text-center">
             <p className="text-destructive">Error loading opportunities</p>
           </div>
-        ) : data?.results.length === 0 ? (
+        ) : results.length === 0 ? (
           <div className="p-8 text-center">
             <p className="text-muted-foreground">No opportunities found</p>
           </div>
@@ -158,7 +161,7 @@ export default function OpportunitiesList() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data?.results.map((opportunity) => (
+                {results.map((opportunity) => (
                   <TableRow key={opportunity.id}>
                     <TableCell className="font-medium">{opportunity.name}</TableCell>
                     <TableCell>
@@ -218,7 +221,7 @@ export default function OpportunitiesList() {
               <div className="flex items-center justify-between border-t p-4">
                 <p className="text-sm text-muted-foreground">
                   Showing {(page - 1) * limit + 1} to{" "}
-                  {Math.min(page * limit, data?.count || 0)} of {data?.count} results
+                  {Math.min(page * limit, totalCount)} of {totalCount} results
                 </p>
                 <div className="flex gap-2">
                   <Button

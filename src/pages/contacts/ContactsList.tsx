@@ -85,7 +85,10 @@ export default function ContactsList() {
     setIsDetailsOpen(true);
   };
 
-  const totalPages = data ? Math.ceil(data.count / limit) : 0;
+  // Normalize data to prevent runtime errors
+  const results: Contact[] = Array.isArray(data?.results) ? data.results : [];
+  const totalCount = typeof data?.count === "number" ? data.count : 0;
+  const totalPages = totalCount > 0 && limit > 0 ? Math.ceil(totalCount / limit) : 0;
 
   return (
     <div className="space-y-6">
@@ -126,7 +129,7 @@ export default function ContactsList() {
           <div className="p-8 text-center">
             <p className="text-destructive">Error loading contacts</p>
           </div>
-        ) : data?.results.length === 0 ? (
+        ) : results.length === 0 ? (
           <div className="p-8 text-center">
             <p className="text-muted-foreground">No contacts found</p>
           </div>
@@ -144,7 +147,7 @@ export default function ContactsList() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data?.results.map((contact) => (
+                {results.map((contact) => (
                   <TableRow key={contact.id}>
                     <TableCell className="font-medium">
                       {contact.first_name} {contact.last_name}
@@ -187,7 +190,7 @@ export default function ContactsList() {
               <div className="flex items-center justify-between border-t p-4">
                 <p className="text-sm text-muted-foreground">
                   Showing {(page - 1) * limit + 1} to{" "}
-                  {Math.min(page * limit, data?.count || 0)} of {data?.count} results
+                  {Math.min(page * limit, totalCount)} of {totalCount} results
                 </p>
                 <div className="flex gap-2">
                   <Button
