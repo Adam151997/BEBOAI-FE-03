@@ -192,6 +192,18 @@ export interface Attachment {
   created_at?: string;
 }
 
+// Dashboard Types
+export interface DashboardResponse {
+  accounts_count: number;
+  contacts_count: number;
+  leads_count: number;
+  opportunities_count: number;
+  accounts: Account[];
+  contacts: Contact[];
+  leads: Lead[];
+  opportunities: Opportunity[];
+}
+
 // API Response Types
 export interface PaginatedResponse<T> {
   count: number;
