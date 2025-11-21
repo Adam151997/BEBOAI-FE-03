@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 import { leadsService } from "@/services/leads.service";
 import type { Lead } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ import LeadForm from "@/components/leads/LeadForm";
 import LeadDetails from "@/components/leads/LeadDetails";
 
 export default function LeadsList() {
+  const location = useLocation();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [limit] = useState(20);
@@ -35,8 +37,23 @@ export default function LeadsList() {
 
   const queryClient = useQueryClient();
 
+  // Reset page when route changes
+  useEffect(() => {
+    setPage(1);
+  }, [location.pathname]);
+
+  // Cleanup dialogs on unmount
+  useEffect(() => {
+    return () => {
+      setIsCreateOpen(false);
+      setIsEditOpen(false);
+      setIsDetailsOpen(false);
+      setSelectedLead(null);
+    };
+  }, []);
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ["leads", page, limit, search],
+    queryKey: ["leads", location.pathname, page, limit, search],
     queryFn: () =>
       leadsService.getAll({
         limit,

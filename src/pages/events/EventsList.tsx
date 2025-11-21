@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 import { eventsService } from "@/services/events.service";
 import type { Event } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ import EventForm from "@/components/events/EventForm";
 import EventDetails from "@/components/events/EventDetails";
 
 export default function EventsList() {
+  const location = useLocation();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [limit] = useState(20);
@@ -35,8 +37,23 @@ export default function EventsList() {
 
   const queryClient = useQueryClient();
 
+  // Reset page when route changes
+  useEffect(() => {
+    setPage(1);
+  }, [location.pathname]);
+
+  // Cleanup dialogs on unmount
+  useEffect(() => {
+    return () => {
+      setIsCreateOpen(false);
+      setIsEditOpen(false);
+      setIsDetailsOpen(false);
+      setSelectedEvent(null);
+    };
+  }, []);
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ["events", page, limit, search],
+    queryKey: ["events", location.pathname, page, limit, search],
     queryFn: () =>
       eventsService.getAll({
         limit,

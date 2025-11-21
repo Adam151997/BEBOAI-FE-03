@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 import { teamsService } from "@/services/teams.service";
 import type { Team } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ import TeamForm from "@/components/teams/TeamForm";
 import TeamDetails from "@/components/teams/TeamDetails";
 
 export default function TeamsList() {
+  const location = useLocation();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [limit] = useState(20);
@@ -34,8 +36,23 @@ export default function TeamsList() {
 
   const queryClient = useQueryClient();
 
+  // Reset page when route changes
+  useEffect(() => {
+    setPage(1);
+  }, [location.pathname]);
+
+  // Cleanup dialogs on unmount
+  useEffect(() => {
+    return () => {
+      setIsCreateOpen(false);
+      setIsEditOpen(false);
+      setIsDetailsOpen(false);
+      setSelectedTeam(null);
+    };
+  }, []);
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ["teams", page, limit, search],
+    queryKey: ["teams", location.pathname, page, limit, search],
     queryFn: () =>
       teamsService.getAll({
         limit,

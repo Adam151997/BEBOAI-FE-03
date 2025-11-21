@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 import { opportunitiesService } from "@/services/opportunities.service";
 import type { Opportunity } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ import OpportunityForm from "@/components/opportunities/OpportunityForm";
 import OpportunityDetails from "@/components/opportunities/OpportunityDetails";
 
 export default function OpportunitiesList() {
+  const location = useLocation();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [limit] = useState(20);
@@ -35,8 +37,23 @@ export default function OpportunitiesList() {
 
   const queryClient = useQueryClient();
 
+  // Reset page when route changes
+  useEffect(() => {
+    setPage(1);
+  }, [location.pathname]);
+
+  // Cleanup dialogs on unmount
+  useEffect(() => {
+    return () => {
+      setIsCreateOpen(false);
+      setIsEditOpen(false);
+      setIsDetailsOpen(false);
+      setSelectedOpportunity(null);
+    };
+  }, []);
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ["opportunities", page, limit, search],
+    queryKey: ["opportunities", location.pathname, page, limit, search],
     queryFn: () =>
       opportunitiesService.getAll({
         limit,

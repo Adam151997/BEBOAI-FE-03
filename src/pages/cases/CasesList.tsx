@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 import { casesService } from "@/services/cases.service";
 import type { Case } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ import CaseForm from "@/components/cases/CaseForm";
 import CaseDetails from "@/components/cases/CaseDetails";
 
 export default function CasesList() {
+  const location = useLocation();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [limit] = useState(20);
@@ -35,8 +37,23 @@ export default function CasesList() {
 
   const queryClient = useQueryClient();
 
+  // Reset page when route changes
+  useEffect(() => {
+    setPage(1);
+  }, [location.pathname]);
+
+  // Cleanup dialogs on unmount
+  useEffect(() => {
+    return () => {
+      setIsCreateOpen(false);
+      setIsEditOpen(false);
+      setIsDetailsOpen(false);
+      setSelectedCase(null);
+    };
+  }, []);
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ["cases", page, limit, search],
+    queryKey: ["cases", location.pathname, page, limit, search],
     queryFn: () =>
       casesService.getAll({
         limit,
