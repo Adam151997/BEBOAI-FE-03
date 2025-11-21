@@ -1,5 +1,4 @@
 import type { Contact } from "@/types";
-import { Badge } from "@/components/ui/badge";
 import { formatDateTime } from "@/lib/utils";
 import { Mail, Phone, MapPin, Calendar } from "lucide-react";
 

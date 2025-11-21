@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tantml:react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { tasksService } from "@/services/tasks.service";
 import type { Task } from "@/types";
 import { Button } from "@/components/ui/button";

@@ -1,7 +1,7 @@
 import type { Account } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { formatDateTime } from "@/lib/utils";
-import { Mail, Phone, Building2, Globe, MapPin, Calendar } from "lucide-react";
+import { Mail, Phone, Globe, MapPin, Calendar } from "lucide-react";
 
 interface AccountDetailsProps {
   account: Account;
