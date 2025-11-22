@@ -91,3 +91,27 @@ export function DialogDescription({
     />
   );
 }
+
+export function DialogTrigger({
+  children,
+  asChild,
+  onClick,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean }) {
+  if (asChild && React.isValidElement(children)) {
+    const child = children as React.ReactElement<React.ButtonHTMLAttributes<HTMLElement>>;
+    return React.cloneElement(child, {
+      ...child.props,
+      onClick: (e: React.MouseEvent<HTMLElement>) => {
+        onClick?.(e as unknown as React.MouseEvent<HTMLButtonElement>);
+        child.props.onClick?.(e);
+      },
+    } as React.HTMLAttributes<HTMLElement>);
+  }
+  
+  return (
+    <button onClick={onClick} {...props}>
+      {children}
+    </button>
+  );
+}

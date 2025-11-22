@@ -3,6 +3,7 @@ import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/auth.store";
 import { useThemeStore } from "@/store/theme.store";
 import { Button } from "@/components/ui/button";
+import GlobalSearch from "@/components/GlobalSearch";
 import {
   LayoutDashboard,
   Users,
@@ -19,10 +20,13 @@ import {
   Sun,
   Moon,
   LogOut,
+  Settings,
+  User as UserIcon,
 } from "lucide-react";
 
 export default function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
@@ -63,6 +67,10 @@ export default function MainLayout() {
             <h1 className="text-xl font-bold">BEBOAI CRM</h1>
           </div>
 
+          <div className="flex items-center gap-4 flex-1 max-w-xl mx-8">
+            <GlobalSearch />
+          </div>
+
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" onClick={toggleTheme}>
               {theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches) ? (
@@ -71,6 +79,52 @@ export default function MainLayout() {
                 <Moon className="h-5 w-5" />
               )}
             </Button>
+            
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSettingsOpen(!settingsOpen)}
+              >
+                <Settings className="h-5 w-5" />
+              </Button>
+              
+              {settingsOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setSettingsOpen(false)}
+                  />
+                  <div className="absolute right-0 mt-2 w-48 rounded-md border bg-popover shadow-lg z-50">
+                    <div className="p-2 space-y-1">
+                      <button
+                        onClick={() => {
+                          navigate("/profile");
+                          setSettingsOpen(false);
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-accent transition-colors"
+                      >
+                        <UserIcon className="h-4 w-4" />
+                        Profile
+                      </button>
+                      {(user?.is_organization_admin || user?.role === "ADMIN") && (
+                        <button
+                          onClick={() => {
+                            navigate("/users");
+                            setSettingsOpen(false);
+                          }}
+                          className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-accent transition-colors"
+                        >
+                          <Users className="h-4 w-4" />
+                          Users
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
             <div className="flex items-center gap-2 px-3">
               <span className="text-sm font-medium">{user?.email}</span>
             </div>

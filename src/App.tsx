@@ -5,7 +5,10 @@ import ProtectedRoute from '@/components/ProtectedRoute'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import MainLayout from '@/layouts/MainLayout'
 import Login from '@/pages/Login'
+import Signup from '@/pages/Signup'
 import Dashboard from '@/pages/Dashboard'
+import Profile from '@/pages/Profile'
+import Users from '@/pages/Users'
 import LeadsList from '@/pages/leads/LeadsList'
 import AccountsList from '@/pages/accounts/AccountsList'
 import ContactsList from '@/pages/contacts/ContactsList'
@@ -27,6 +30,7 @@ function App() {
     <ErrorBoundary>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
 
         <Route
           path="/"
@@ -38,6 +42,8 @@ function App() {
         >
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="users" element={<Users />} />
           <Route path="leads" element={<LeadsList />} />
           <Route path="accounts" element={<AccountsList />} />
           <Route path="contacts" element={<ContactsList />} />

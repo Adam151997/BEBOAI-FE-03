@@ -55,4 +55,46 @@ export const authService = {
   isAuthenticated: (): boolean => {
     return !!localStorage.getItem("access_token");
   },
+
+  register: async (
+    org_name: string,
+    email: string,
+    password: string,
+    first_name: string,
+    last_name: string
+  ): Promise<LoginResponse> => {
+    const response = await apiClient.post<LoginResponse>("/auth/register/", {
+      org_name,
+      email,
+      password,
+      first_name,
+      last_name,
+    });
+
+    // Store tokens (backend uses access and refresh fields)
+    localStorage.setItem("access_token", response.data.access);
+    localStorage.setItem("refresh_token", response.data.refresh);
+
+    // Get org from nested user_details.org (new backend structure)
+    const org = response.data.user_details.org || response.data.org;
+    if (org) {
+      localStorage.setItem("org_key", org.id);
+      localStorage.setItem("org", JSON.stringify(org));
+    }
+
+    // Store user details
+    localStorage.setItem("user", JSON.stringify(response.data.user_details));
+
+    // Store profile_id for easy access (critical for assigned_to arrays)
+    const profileId = response.data.user_details.profile_id || response.data.user_details.id;
+    localStorage.setItem("profile_id", profileId);
+
+    console.log("✅ Registration successful - stored:", {
+      profile_id: profileId,
+      org_id: org?.id,
+      role: response.data.user_details.role
+    });
+
+    return response.data;
+  },
 };
