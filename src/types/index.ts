@@ -72,6 +72,7 @@ export interface Account {
   industry?: string;
   website?: string;
   status?: "open" | "close";
+  contact_name?: string;  // Required by backend
   billing_address_line?: string;
   billing_street?: string;
   billing_city?: string;
@@ -249,6 +250,30 @@ export interface PaginatedResponse<T> {
   next: string | null;
   previous: string | null;
   results: T[];
+}
+
+// Leads List Response (specific backend shape)
+export interface LeadsListResponse {
+  per_page: number;
+  page_number: number;  // Single page number, not array
+  open_leads: {
+    leads_count: number;
+    open_leads: Lead[];
+    offset: number | null;
+  };
+  close_leads: {
+    leads_count: number;
+    close_leads: Lead[];
+    offset: number;
+  };
+  companies: Account[];
+  contacts: Contact[];
+  countries: string[];
+  industries: string[];
+  source: string[];
+  status: string[];
+  tags: string[];
+  users: User[];
 }
 
 export interface ApiError {

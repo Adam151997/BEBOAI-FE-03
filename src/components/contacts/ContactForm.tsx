@@ -43,11 +43,11 @@ export default function ContactForm({ contact, onSuccess, onCancel }: ContactFor
   const createMutation = useMutation({
     mutationFn: (data: Partial<Contact>) => contactsService.create(data),
     onSuccess,
-    onError: (error: any) => {
+    onError: (error: { response?: { data?: { errors?: Record<string, string[]> } } }) => {
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       } else if (error.response?.data) {
-        setErrors(error.response.data);
+        setErrors(error.response.data as Record<string, string[]>);
       }
     },
   });
@@ -56,11 +56,11 @@ export default function ContactForm({ contact, onSuccess, onCancel }: ContactFor
     mutationFn: (data: Partial<Contact>) =>
       contactsService.update(contact!.id, data),
     onSuccess,
-    onError: (error: any) => {
+    onError: (error: { response?: { data?: { errors?: Record<string, string[]> } } }) => {
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       } else if (error.response?.data) {
-        setErrors(error.response.data);
+        setErrors(error.response.data as Record<string, string[]>);
       }
     },
   });
@@ -70,9 +70,9 @@ export default function ContactForm({ contact, onSuccess, onCancel }: ContactFor
     setErrors({});
 
     // Filter out empty strings - only send fields with actual values
-    const cleanData: any = Object.fromEntries(
-      Object.entries(formData).filter(([_, value]) => value !== "")
-    );
+    const cleanData: Partial<Contact> = Object.fromEntries(
+      Object.entries(formData).filter(([, value]) => value !== "")
+    ) as Partial<Contact>;
 
     // Add current user's profile_id to assigned_to array for new records
     const profileId = localStorage.getItem("profile_id");

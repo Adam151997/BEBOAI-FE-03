@@ -24,7 +24,7 @@ export default function TeamForm({ team, onSuccess, onCancel }: TeamFormProps) {
   const createMutation = useMutation({
     mutationFn: (data: Partial<Team>) => teamsService.create(data),
     onSuccess,
-    onError: (error: any) => {
+    onError: (error: { response?: { data?: Record<string, string> } }) => {
       if (error.response?.data) setErrors(error.response.data);
     },
   });
@@ -33,7 +33,7 @@ export default function TeamForm({ team, onSuccess, onCancel }: TeamFormProps) {
     mutationFn: (data: Partial<Team>) =>
       teamsService.update(team!.id, data),
     onSuccess,
-    onError: (error: any) => {
+    onError: (error: { response?: { data?: Record<string, string> } }) => {
       if (error.response?.data) setErrors(error.response.data);
     },
   });
@@ -44,7 +44,7 @@ export default function TeamForm({ team, onSuccess, onCancel }: TeamFormProps) {
 
     // Filter out empty strings - only send fields with actual values
     const cleanData = Object.fromEntries(
-      Object.entries(formData).filter(([_, value]) => value !== "")
+      Object.entries(formData).filter(([, value]) => value !== "")
     );
 
     if (team) {

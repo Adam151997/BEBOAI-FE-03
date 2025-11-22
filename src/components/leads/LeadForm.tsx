@@ -47,7 +47,7 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
   const createMutation = useMutation({
     mutationFn: (data: Partial<Lead>) => leadsService.create(data),
     onSuccess,
-    onError: (error: any) => {
+    onError: (error: { response?: { data?: { errors?: Record<string, string[]> } } }) => {
       console.error("Lead creation error:", error);
       console.error("Error response:", error.response);
       console.error("Error data:", error.response?.data);
@@ -55,7 +55,7 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
         setErrors(error.response.data.errors);
       } else if (error.response?.data) {
         // Backend may return errors at root level
-        setErrors(error.response.data);
+        setErrors(error.response.data as Record<string, string[]>);
       }
     },
   });
@@ -64,11 +64,11 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
     mutationFn: (data: Partial<Lead>) =>
       leadsService.update(lead!.id, data),
     onSuccess,
-    onError: (error: any) => {
+    onError: (error: { response?: { data?: { errors?: Record<string, string[]> } } }) => {
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       } else if (error.response?.data) {
-        setErrors(error.response.data);
+        setErrors(error.response.data as Record<string, string[]>);
       }
     },
   });
@@ -77,16 +77,37 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
     e.preventDefault();
     setErrors({});
 
-    // Convert probability to number and company to UUID
-    const data: any = {
-      ...formData,
-      probability: formData.probability ? parseFloat(formData.probability) : undefined,
-    };
+    // Convert probability to number
+    const probability = formData.probability ? parseFloat(formData.probability) : undefined;
 
-    // Filter out empty strings - only send fields with actual values
-    const cleanData: any = Object.fromEntries(
-      Object.entries(data).filter(([_, value]) => value !== "" && value !== undefined)
-    );
+    // Build clean data object with proper types
+    const cleanData: Partial<Lead> = {};
+    
+    // Add string fields
+    if (formData.title) cleanData.title = formData.title;
+    if (formData.first_name) cleanData.first_name = formData.first_name;
+    if (formData.last_name) cleanData.last_name = formData.last_name;
+    if (formData.email) cleanData.email = formData.email;
+    if (formData.phone) cleanData.phone = formData.phone;
+    if (formData.website) cleanData.website = formData.website;
+    if (formData.address_line) cleanData.address_line = formData.address_line;
+    if (formData.city) cleanData.city = formData.city;
+    if (formData.state) cleanData.state = formData.state;
+    if (formData.postcode) cleanData.postcode = formData.postcode;
+    if (formData.country) cleanData.country = formData.country;
+    if (formData.description) cleanData.description = formData.description;
+    if (formData.company) cleanData.company = formData.company;
+    if (formData.source) cleanData.source = formData.source;
+    
+    // Add status with proper type
+    if (formData.status) {
+      cleanData.status = formData.status as Lead['status'];
+    }
+    
+    // Add probability
+    if (probability !== undefined) {
+      cleanData.probability = probability;
+    }
 
     // CRITICAL: Add current user's profile_id to assigned_to array
     // This ensures the user can see the lead they created

@@ -27,10 +27,12 @@ export default function DocumentForm({ document, onSuccess, onCancel }: Document
       if (data.title) formDataToSend.append("title", data.title);
       if (data.file) formDataToSend.append("document_file", data.file);
 
-      return documentsService.create(formDataToSend as any);
+      // Note: FormData is cast to Partial<Document> for service compatibility
+      // The backend endpoint accepts multipart/form-data but the service expects typed objects
+      return documentsService.create(formDataToSend as unknown as Partial<Document>);
     },
     onSuccess,
-    onError: (error: any) => {
+    onError: (error: { response?: { data?: Record<string, string> } }) => {
       if (error.response?.data) setErrors(error.response.data);
     },
   });
@@ -41,10 +43,11 @@ export default function DocumentForm({ document, onSuccess, onCancel }: Document
       if (data.title) formDataToSend.append("title", data.title);
       if (data.file) formDataToSend.append("document_file", data.file);
 
-      return documentsService.update(document!.id, formDataToSend as any);
+      // Note: FormData is cast to Partial<Document> for service compatibility
+      return documentsService.update(document!.id, formDataToSend as unknown as Partial<Document>);
     },
     onSuccess,
-    onError: (error: any) => {
+    onError: (error: { response?: { data?: Record<string, string> } }) => {
       if (error.response?.data) setErrors(error.response.data);
     },
   });

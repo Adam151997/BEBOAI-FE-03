@@ -11,7 +11,7 @@ export interface QueryParams {
 }
 
 export class CrudService<T> {
-  private endpoint: string;
+  protected endpoint: string;
 
   constructor(endpoint: string) {
     this.endpoint = endpoint;
