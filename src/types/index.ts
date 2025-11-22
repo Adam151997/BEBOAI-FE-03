@@ -28,8 +28,10 @@ export interface Organization {
 
 export interface LoginResponse {
   username?: string;  // New backend includes this
-  access_token: string;  // Changed from "access"
-  refresh_token: string;  // Changed from "refresh"
+  access: string;  // JWT access token from backend
+  refresh: string;  // JWT refresh token from backend
+  access_token?: string;  // Deprecated - kept for backward compatibility
+  refresh_token?: string;  // Deprecated - kept for backward compatibility
   user_details: User;
   org?: Organization;  // Top-level org is now optional (nested in user_details)
 }
