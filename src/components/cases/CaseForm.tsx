@@ -47,9 +47,15 @@ export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFo
     setErrors({});
 
     // Filter out empty strings - only send fields with actual values
-    const cleanData = Object.fromEntries(
+    const cleanData: any = Object.fromEntries(
       Object.entries(formData).filter(([_, value]) => value !== "")
     );
+
+    // Add current user's profile_id to assigned_to array for new records
+    const profileId = localStorage.getItem("profile_id");
+    if (profileId && !caseItem) {
+      cleanData.assigned_to = [profileId];
+    }
 
     if (caseItem) {
       updateMutation.mutate(cleanData);

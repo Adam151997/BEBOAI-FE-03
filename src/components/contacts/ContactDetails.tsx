@@ -71,8 +71,8 @@ export default function ContactDetails({ contact }: ContactDetailsProps) {
           <h4 className="text-sm font-medium mb-2">Assigned To</h4>
           <div className="space-y-2">
             {contact.assigned_to.map((user) => (
-              <div key={user.id} className="text-sm">
-                {user.email}
+              <div key={typeof user === 'string' ? user : user.id} className="text-sm">
+                {typeof user === 'string' ? user : user.email}
               </div>
             ))}
           </div>

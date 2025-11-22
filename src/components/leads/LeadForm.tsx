@@ -64,18 +64,20 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
     setErrors({});
 
     // Filter out empty strings - only send fields with actual values
-    const cleanData = Object.fromEntries(
+    const cleanData: any = Object.fromEntries(
       Object.entries(formData).filter(([_, value]) => value !== "")
     );
 
-    // Add organization ID from localStorage
-    const orgKey = localStorage.getItem("org_key");
-    if (orgKey) {
-      cleanData.organization = orgKey;
+    // CRITICAL: Add current user's profile_id to assigned_to array
+    // This ensures the user can see the lead they created
+    const profileId = localStorage.getItem("profile_id");
+    if (profileId && !lead) {
+      // Only add for new leads, not updates
+      cleanData.assigned_to = [profileId];
     }
 
     console.log("Submitting lead data:", cleanData);
-    console.log("Organization ID:", orgKey);
+    console.log("Profile ID (assigned_to):", profileId);
 
     if (lead) {
       updateMutation.mutate(cleanData);
