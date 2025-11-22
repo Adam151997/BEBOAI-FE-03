@@ -44,9 +44,9 @@ export interface Lead {
   last_name: string;
   email: string;
   phone?: string;
-  status?: string;
+  status?: "assigned" | "in process" | "converted" | "recycled" | "closed";
   source?: string;
-  company?: string;
+  company?: string;  // UUID reference to Account when sent to backend
   website?: string;
   address_line?: string;
   city?: string;
@@ -54,6 +54,7 @@ export interface Lead {
   postcode?: string;
   country?: string;
   description?: string;
+  probability?: number;  // Required by backend for Lead create/update
   assigned_to?: string[] | User[];  // Can be array of IDs or User objects
   teams?: string[];
   contacts?: string[];
@@ -70,7 +71,7 @@ export interface Account {
   phone?: string;
   industry?: string;
   website?: string;
-  status?: string;
+  status?: "open" | "close";
   billing_address_line?: string;
   billing_street?: string;
   billing_city?: string;
@@ -144,8 +145,8 @@ export interface Opportunity {
 export interface Task {
   id: string;
   title: string;
-  status?: string;
-  priority?: string;
+  status?: "New" | "In Progress" | "Completed";
+  priority?: "Low" | "Medium" | "High";
   due_date?: string;
   description?: string;
   account?: string;
@@ -181,9 +182,9 @@ export interface Event {
 export interface Case {
   id: string;
   name: string;
-  status?: string;
-  priority?: string;
-  case_type?: string;
+  status?: "New" | "Working" | "Closed" | "Rejected" | "Duplicate";
+  priority?: "Low" | "Medium" | "High";
+  case_type?: "Problem" | "Feature Request" | "Data Corrupted" | "Functionality Request" | "Integration" | "Others";
   description?: string;
   account?: string;
   contacts?: string[];
