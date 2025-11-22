@@ -46,10 +46,15 @@ export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFo
     e.preventDefault();
     setErrors({});
 
+    // Filter out empty strings - only send fields with actual values
+    const cleanData = Object.fromEntries(
+      Object.entries(formData).filter(([_, value]) => value !== "")
+    );
+
     if (caseItem) {
-      updateMutation.mutate(formData);
+      updateMutation.mutate(cleanData);
     } else {
-      createMutation.mutate(formData);
+      createMutation.mutate(cleanData);
     }
   };
 

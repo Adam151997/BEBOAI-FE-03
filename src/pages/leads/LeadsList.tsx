@@ -50,6 +50,7 @@ export default function LeadsList() {
     mutationFn: (id: string) => leadsService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 
@@ -223,6 +224,7 @@ export default function LeadsList() {
             onSuccess={() => {
               setIsCreateOpen(false);
               queryClient.invalidateQueries({ queryKey: ["leads"] });
+              queryClient.invalidateQueries({ queryKey: ["dashboard"] });
             }}
             onCancel={() => setIsCreateOpen(false)}
           />
@@ -242,6 +244,7 @@ export default function LeadsList() {
                 setIsEditOpen(false);
                 setSelectedLead(null);
                 queryClient.invalidateQueries({ queryKey: ["leads"] });
+                queryClient.invalidateQueries({ queryKey: ["dashboard"] });
               }}
               onCancel={() => {
                 setIsEditOpen(false);

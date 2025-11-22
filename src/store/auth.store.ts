@@ -6,6 +6,7 @@ interface AuthState {
   user: User | null;
   organization: Organization | null;
   isAuthenticated: boolean;
+  isInitialized: boolean;
   setUser: (user: User | null) => void;
   setOrganization: (org: Organization | null) => void;
   login: (email: string, password: string) => Promise<void>;
@@ -17,6 +18,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   organization: null,
   isAuthenticated: false,
+  isInitialized: false,
 
   setUser: (user) => set({ user, isAuthenticated: !!user }),
 
@@ -28,12 +30,13 @@ export const useAuthStore = create<AuthState>((set) => ({
       user: data.user_details,
       organization: data.org,
       isAuthenticated: true,
+      isInitialized: true,
     });
   },
 
   logout: () => {
     authService.logout();
-    set({ user: null, organization: null, isAuthenticated: false });
+    set({ user: null, organization: null, isAuthenticated: false, isInitialized: true });
   },
 
   initializeAuth: () => {
@@ -45,6 +48,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       user,
       organization: org,
       isAuthenticated: authService.isAuthenticated(),
+      isInitialized: true,
     });
   },
 }));

@@ -57,10 +57,15 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
       account: formData.account ? parseInt(formData.account) : undefined,
     };
 
+    // Filter out empty strings and undefined values - only send fields with actual values
+    const cleanData = Object.fromEntries(
+      Object.entries(data).filter(([_, value]) => value !== "" && value !== undefined)
+    );
+
     if (opportunity) {
-      updateMutation.mutate(data);
+      updateMutation.mutate(cleanData);
     } else {
-      createMutation.mutate(data);
+      createMutation.mutate(cleanData);
     }
   };
 

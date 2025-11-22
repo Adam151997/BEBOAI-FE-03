@@ -50,6 +50,7 @@ export default function TasksList() {
     mutationFn: (id: string) => tasksService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 
@@ -235,6 +236,7 @@ export default function TasksList() {
             onSuccess={() => {
               setIsCreateOpen(false);
               queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
             }}
             onCancel={() => setIsCreateOpen(false)}
           />
@@ -254,6 +256,7 @@ export default function TasksList() {
                 setIsEditOpen(false);
                 setSelectedTask(null);
                 queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
               }}
               onCancel={() => {
                 setIsEditOpen(false);

@@ -50,6 +50,7 @@ export default function EventsList() {
     mutationFn: (id: string) => eventsService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["events"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 
@@ -240,6 +241,7 @@ export default function EventsList() {
             onSuccess={() => {
               setIsCreateOpen(false);
               queryClient.invalidateQueries({ queryKey: ["events"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
             }}
             onCancel={() => setIsCreateOpen(false)}
           />
@@ -258,6 +260,7 @@ export default function EventsList() {
                 setIsEditOpen(false);
                 setSelectedEvent(null);
                 queryClient.invalidateQueries({ queryKey: ["events"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
               }}
               onCancel={() => {
                 setIsEditOpen(false);
