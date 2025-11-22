@@ -62,6 +62,12 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
       Object.entries(data).filter(([_, value]) => value !== "" && value !== undefined)
     );
 
+    // Add current user's profile_id to assigned_to array for new records
+    const profileId = localStorage.getItem("profile_id");
+    if (profileId && !opportunity) {
+      cleanData.assigned_to = [profileId];
+    }
+
     if (opportunity) {
       updateMutation.mutate(cleanData);
     } else {

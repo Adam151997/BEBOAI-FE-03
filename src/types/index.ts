@@ -3,6 +3,10 @@ export interface User {
   id: string;
   email: string;
   role: "ADMIN" | "USER";
+  profile_id?: string;
+  is_organization_admin?: boolean;
+  is_active?: boolean;
+  profile_pic?: string | null;
   phone?: string;
   has_sales_access?: boolean;
   has_marketing_access?: boolean;
@@ -31,7 +35,6 @@ export interface LoginResponse {
 // Lead Types
 export interface Lead {
   id: string;
-  organization?: string;
   title?: string;
   first_name: string;
   last_name: string;
@@ -47,7 +50,9 @@ export interface Lead {
   postcode?: string;
   country?: string;
   description?: string;
-  assigned_to?: User[];
+  assigned_to?: string[] | User[];  // Can be array of IDs or User objects
+  teams?: string[];
+  contacts?: string[];
   tags?: string[];
   created_at?: string;
   updated_at?: string;
@@ -70,7 +75,8 @@ export interface Account {
   billing_country?: string;
   description?: string;
   contacts?: string[];
-  assigned_to?: User[];
+  assigned_to?: string[] | User[];
+  teams?: string[];
   tags?: string[];
   created_at?: string;
   updated_at?: string;
@@ -100,7 +106,8 @@ export interface Contact {
   facebook_url?: string;
   twitter_username?: string;
   account?: string;
-  assigned_to?: User[];
+  assigned_to?: string[] | User[];
+  teams?: string[];
   created_at?: string;
   updated_at?: string;
   // Backwards compatibility
@@ -121,7 +128,9 @@ export interface Opportunity {
   close_date?: string;
   lead_source?: string;
   description?: string;
-  assigned_to?: User[];
+  assigned_to?: string[] | User[];
+  teams?: string[];
+  contacts?: string[];
   tags?: string[];
   created_at?: string;
   updated_at?: string;
@@ -137,7 +146,9 @@ export interface Task {
   description?: string;
   account?: string;
   contact?: string;
-  assigned_to?: User[];
+  assigned_to?: string[] | User[];
+  teams?: string[];
+  contacts?: string[];
   created_at?: string;
   updated_at?: string;
 }
@@ -152,10 +163,12 @@ export interface Event {
   start_time?: string;
   end_date?: string;
   end_time?: string;
+  recurring_days?: string[];
   description?: string;
   is_recurring?: boolean;
-  contacts?: string[];
-  assigned_to?: User[];
+  contacts?: string | string[];  // Can be single ID or array
+  assigned_to?: string[] | User[];
+  teams?: string[];
   created_at?: string;
   updated_at?: string;
 }
@@ -170,7 +183,8 @@ export interface Case {
   description?: string;
   account?: string;
   contacts?: string[];
-  assigned_to?: User[];
+  assigned_to?: string[] | User[];
+  teams?: string[];
   closed_on?: string;
   created_at?: string;
   updated_at?: string;

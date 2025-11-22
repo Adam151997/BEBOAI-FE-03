@@ -15,6 +15,10 @@ export const authService = {
     localStorage.setItem("org", JSON.stringify(response.data.org));
     localStorage.setItem("user", JSON.stringify(response.data.user_details));
 
+    // Store profile_id for easy access (use user.profile_id or fallback to user.id)
+    const profileId = response.data.user_details.profile_id || response.data.user_details.id;
+    localStorage.setItem("profile_id", profileId);
+
     return response.data;
   },
 
