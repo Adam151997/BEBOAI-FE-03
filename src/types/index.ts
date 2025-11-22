@@ -126,9 +126,9 @@ export interface Opportunity {
   id: string;
   name: string;
   account?: string | number;
-  stage?: string;
+  stage?: "QUALIFICATION" | "NEEDS ANALYSIS" | "VALUE PROPOSITION" | "ID. DECISION MAKERS" | "PERCEPTION ANALYSIS" | "PROPOSAL/PRICE QUOTE" | "NEGOTIATION/REVIEW" | "CLOSED WON" | "CLOSED LOST";
   amount?: number;
-  currency?: string;
+  currency?: "USD" | "EUR" | "GBP" | "INR" | "AUD" | "CAD" | "JPY";
   probability?: number;
   close_date?: string;
   lead_source?: string;
@@ -162,8 +162,8 @@ export interface Task {
 export interface Event {
   id: string;
   name: string;
-  event_type: string;
-  status?: string;
+  event_type: "Call" | "Meeting" | "Task" | "Email";
+  status?: "Planned" | "Held" | "Not Held" | "Not Started" | "Started" | "Completed" | "Cancelled" | "Deferred";
   start_date: string;
   start_time?: string;
   end_date?: string;

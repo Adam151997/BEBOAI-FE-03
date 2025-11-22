@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
+import { EVENT_TYPE_CHOICES, EVENT_STATUS_CHOICES } from "@/lib/constants";
 
 interface EventFormProps {
   event?: Event;
@@ -27,13 +28,17 @@ export default function EventForm({ event, onSuccess, onCancel }: EventFormProps
     is_recurring: event?.is_recurring || false,
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
 
   const createMutation = useMutation({
     mutationFn: (data: Partial<Event>) => eventsService.create(data),
     onSuccess,
     onError: (error: any) => {
-      if (error.response?.data) setErrors(error.response.data);
+      if (error.response?.data?.errors) {
+        setErrors(error.response.data.errors);
+      } else if (error.response?.data) {
+        setErrors(error.response.data);
+      }
     },
   });
 
@@ -42,7 +47,11 @@ export default function EventForm({ event, onSuccess, onCancel }: EventFormProps
       eventsService.update(event!.id, data),
     onSuccess,
     onError: (error: any) => {
-      if (error.response?.data) setErrors(error.response.data);
+      if (error.response?.data?.errors) {
+        setErrors(error.response.data.errors);
+      } else if (error.response?.data) {
+        setErrors(error.response.data);
+      }
     },
   });
 
@@ -96,7 +105,9 @@ export default function EventForm({ event, onSuccess, onCancel }: EventFormProps
           onChange={handleChange}
           required
         />
-        {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+        {errors.name && Array.isArray(errors.name) && (
+          <p className="text-sm text-destructive">{errors.name.join(", ")}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -111,9 +122,15 @@ export default function EventForm({ event, onSuccess, onCancel }: EventFormProps
             onChange={handleChange}
             required
           >
-            <option value="Non-Recurring">Non-Recurring</option>
-            <option value="Recurring">Recurring</option>
+            {EVENT_TYPE_CHOICES.map((choice) => (
+              <option key={choice.value} value={choice.value}>
+                {choice.label}
+              </option>
+            ))}
           </Select>
+          {errors.event_type && Array.isArray(errors.event_type) && (
+            <p className="text-sm text-destructive">{errors.event_type.join(", ")}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -124,11 +141,15 @@ export default function EventForm({ event, onSuccess, onCancel }: EventFormProps
             value={formData.status}
             onChange={handleChange}
           >
-            <option value="planned">Planned</option>
-            <option value="held">Held</option>
-            <option value="not_held">Not Held</option>
-            <option value="not_started">Not Started</option>
+            {EVENT_STATUS_CHOICES.map((choice) => (
+              <option key={choice.value} value={choice.value}>
+                {choice.label}
+              </option>
+            ))}
           </Select>
+          {errors.status && Array.isArray(errors.status) && (
+            <p className="text-sm text-destructive">{errors.status.join(", ")}</p>
+          )}
         </div>
       </div>
 
