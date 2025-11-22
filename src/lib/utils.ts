@@ -26,3 +26,11 @@ export function formatDateTime(date: Date | string): string {
     minute: "2-digit",
   });
 }
+
+export function getErrorMessage(err: unknown): string {
+  if (err && typeof err === 'object' && 'response' in err) {
+    const response = (err as { response?: { data?: { message?: string } } }).response;
+    return response?.data?.message || "An error occurred";
+  }
+  return "An error occurred";
+}

@@ -10,6 +10,7 @@ interface AuthState {
   setUser: (user: User | null) => void;
   setOrganization: (org: Organization | null) => void;
   login: (email: string, password: string) => Promise<void>;
+  register: (org_name: string, email: string, password: string, first_name: string, last_name: string) => Promise<void>;
   logout: () => void;
   initializeAuth: () => void;
 }
@@ -26,6 +27,18 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   login: async (email: string, password: string) => {
     const data = await authService.login(email, password);
+    // Org is now nested in user_details.org (new backend structure)
+    const org = data.user_details.org || data.org;
+    set({
+      user: data.user_details,
+      organization: org || null,
+      isAuthenticated: true,
+      isInitialized: true,
+    });
+  },
+
+  register: async (org_name: string, email: string, password: string, first_name: string, last_name: string) => {
+    const data = await authService.register(org_name, email, password, first_name, last_name);
     // Org is now nested in user_details.org (new backend structure)
     const org = data.user_details.org || data.org;
     set({
