@@ -4,6 +4,9 @@ import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { searchService, type GlobalSearchResult } from "@/services/search.service";
 import { cn } from "@/lib/utils";
+import type { Lead, Account, Contact, Opportunity, Task, Event, Case, Document } from "@/types";
+
+type SearchItem = Lead | Account | Contact | Opportunity | Task | Event | Case | Document;
 
 export default function GlobalSearch() {
   const [query, setQuery] = useState("");
@@ -55,11 +58,26 @@ export default function GlobalSearch() {
     setResults(null);
   };
 
-  const getItemTitle = (item: any, module: string): string => {
+  const getItemTitle = (item: SearchItem, module: string): string => {
     if (module === "leads" || module === "contacts") {
-      return `${item.first_name || ""} ${item.last_name || ""}`.trim() || item.email || "Unnamed";
+      const leadOrContact = item as Lead | Contact;
+      return `${leadOrContact.first_name || ""} ${leadOrContact.last_name || ""}`.trim() || 
+             (leadOrContact as Contact).primary_email || 
+             (leadOrContact as Lead).email || 
+             "Unnamed";
     }
-    return item.name || item.title || item.email || "Unnamed";
+    
+    // Handle items with 'name' property
+    if ('name' in item) {
+      return item.name || "Unnamed";
+    }
+    
+    // Handle items with 'title' property
+    if ('title' in item) {
+      return item.title || "Unnamed";
+    }
+    
+    return "Unnamed";
   };
 
   const hasResults = results && (
@@ -73,7 +91,7 @@ export default function GlobalSearch() {
     results.documents.length > 0
   );
 
-  const renderGroup = (title: string, items: any[], module: string) => {
+  const renderGroup = (title: string, items: SearchItem[], module: string) => {
     if (items.length === 0) return null;
 
     return (
@@ -95,9 +113,9 @@ export default function GlobalSearch() {
                 <div className="font-medium truncate">
                   {getItemTitle(item, module)}
                 </div>
-                {item.email && (
+                {((item as Lead).email || (item as Contact).primary_email) && (
                   <div className="text-sm text-muted-foreground truncate">
-                    {item.email}
+                    {(item as Lead).email || (item as Contact).primary_email}
                   </div>
                 )}
               </div>

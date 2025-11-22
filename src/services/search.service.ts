@@ -1,5 +1,5 @@
 import apiClient from "@/lib/api-client";
-import type { Lead, Account, Contact, Opportunity, Task, Case } from "@/types";
+import type { Lead, Account, Contact, Opportunity, Task, Case, Event, Document } from "@/types";
 
 export interface GlobalSearchResult {
   query: string;
@@ -8,9 +8,9 @@ export interface GlobalSearchResult {
   contacts: Contact[];
   opportunities: Opportunity[];
   tasks: Task[];
-  events: any[];
+  events: Event[];
   cases: Case[];
-  documents: any[];
+  documents: Document[];
 }
 
 export const searchService = {
