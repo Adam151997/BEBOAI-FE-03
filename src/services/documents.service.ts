@@ -1,10 +1,38 @@
-import { CrudService } from "./crud.service";
-import type { Document } from "@/types";
+import { CrudService, type QueryParams } from "./crud.service";
+import type { Document, DocumentsListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
 class DocumentsService extends CrudService<Document> {
   constructor() {
     super("/documents/");
+  }
+
+  // Override getAll to handle the custom documents response structure
+  async getAll(params?: QueryParams): Promise<PaginatedResponse<Document>> {
+    const response = await apiClient.get<DocumentsListResponse>(this.endpoint, {
+      params,
+    });
+    
+    const data = response.data;
+    
+    // Try different possible response structures
+    let allDocuments: Document[] = [];
+    
+    // Check for nested structure
+    if (data.active_documents) {
+      allDocuments = data.active_documents?.active_documents || data.active_documents?.documents || [];
+    } else if (data.documents) {
+      // Fallback to simple array response
+      allDocuments = data.documents;
+    }
+    
+    // Transform to standard paginated response format
+    return {
+      count: allDocuments.length,
+      next: null,
+      previous: null,
+      results: allDocuments,
+    };
   }
 
   async upload(file: File, title?: string): Promise<Document> {
