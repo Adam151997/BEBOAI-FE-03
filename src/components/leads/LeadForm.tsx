@@ -80,7 +80,7 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
     // Convert probability to number and company to UUID
     const data: any = {
       ...formData,
-      probability: formData.probability ? parseInt(formData.probability) : undefined,
+      probability: formData.probability ? parseFloat(formData.probability) : undefined,
     };
 
     // Filter out empty strings - only send fields with actual values
@@ -256,8 +256,11 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
             name="company"
             value={formData.company}
             onChange={handleChange}
+            disabled={!accountsData?.results}
           >
-            <option value="">Select Account</option>
+            <option value="">
+              {accountsData?.results ? "Select Account" : "Loading accounts..."}
+            </option>
             {accountsData?.results?.map((account: Account) => (
               <option key={account.id} value={account.id}>
                 {account.name}
@@ -352,6 +355,7 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
           type="number"
           min="0"
           max="100"
+          step="0.1"
           value={formData.probability}
           onChange={handleChange}
           placeholder="0-100"
