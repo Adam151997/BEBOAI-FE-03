@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
-import { ACCOUNT_STATUS_CHOICES } from "@/lib/constants";
+import { ACCOUNT_STATUS_CHOICES, ACCOUNT_INDUSTRY_CHOICES } from "@/lib/constants";
 
 interface AccountFormProps {
   account?: Account;
@@ -18,6 +18,7 @@ interface AccountFormProps {
 export default function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) {
   const [formData, setFormData] = useState({
     name: account?.name || "",
+    contact_name: account?.contact_name || "",
     email: account?.email || "",
     phone: account?.phone || "",
     industry: account?.industry || "",
@@ -37,11 +38,11 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
   const createMutation = useMutation({
     mutationFn: (data: Partial<Account>) => accountsService.create(data),
     onSuccess,
-    onError: (error: any) => {
+    onError: (error: { response?: { data?: { errors?: Record<string, string[]> } } }) => {
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       } else if (error.response?.data) {
-        setErrors(error.response.data);
+        setErrors(error.response.data as Record<string, string[]>);
       }
     },
   });
@@ -50,11 +51,11 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
     mutationFn: (data: Partial<Account>) =>
       accountsService.update(account!.id, data),
     onSuccess,
-    onError: (error: any) => {
+    onError: (error: { response?: { data?: { errors?: Record<string, string[]> } } }) => {
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       } else if (error.response?.data) {
-        setErrors(error.response.data);
+        setErrors(error.response.data as Record<string, string[]>);
       }
     },
   });
@@ -64,9 +65,9 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
     setErrors({});
 
     // Filter out empty strings - only send fields with actual values
-    const cleanData: any = Object.fromEntries(
-      Object.entries(formData).filter(([_, value]) => value !== "")
-    );
+    const cleanData: Partial<Account> = Object.fromEntries(
+      Object.entries(formData).filter(([, value]) => value !== "")
+    ) as Partial<Account>;
 
     // Add current user's profile_id to assigned_to array for new records
     const profileId = localStorage.getItem("profile_id");
@@ -110,6 +111,23 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
         )}
       </div>
 
+      <div className="space-y-2">
+        <Label htmlFor="contact_name">
+          Contact Name <span className="text-destructive">*</span>
+        </Label>
+        <Input
+          id="contact_name"
+          name="contact_name"
+          value={formData.contact_name}
+          onChange={handleChange}
+          placeholder="Primary contact person"
+          required
+        />
+        {errors.contact_name && Array.isArray(errors.contact_name) && (
+          <p className="text-sm text-destructive">{errors.contact_name.join(", ")}</p>
+        )}
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
@@ -142,12 +160,22 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="industry">Industry</Label>
-          <Input
+          <Select
             id="industry"
             name="industry"
             value={formData.industry}
             onChange={handleChange}
-          />
+          >
+            <option value="">Select Industry</option>
+            {ACCOUNT_INDUSTRY_CHOICES.map((choice) => (
+              <option key={choice.value} value={choice.value}>
+                {choice.label}
+              </option>
+            ))}
+          </Select>
+          {errors.industry && Array.isArray(errors.industry) && (
+            <p className="text-sm text-destructive">{errors.industry.join(", ")}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -159,6 +187,9 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
             value={formData.website}
             onChange={handleChange}
           />
+          {errors.website && Array.isArray(errors.website) && (
+            <p className="text-sm text-destructive">{errors.website.join(", ")}</p>
+          )}
         </div>
       </div>
 
@@ -291,6 +322,9 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
           onChange={handleChange}
           rows={3}
         />
+        {errors.description && Array.isArray(errors.description) && (
+          <p className="text-sm text-destructive">{errors.description.join(", ")}</p>
+        )}
       </div>
 
       <div className="flex justify-end gap-2 pt-4">

@@ -97,6 +97,40 @@ export const ACCOUNT_STATUS_CHOICES = [
   { value: "close", label: "Close" },
 ] as const;
 
+// Account Industry Choices - from accounts/swagger_params.py
+export const ACCOUNT_INDUSTRY_CHOICES = [
+  { value: "ADVERTISING", label: "Advertising" },
+  { value: "AGRICULTURE", label: "Agriculture" },
+  { value: "APPAREL & ACCESSORIES", label: "Apparel & Accessories" },
+  { value: "AUTOMOTIVE", label: "Automotive" },
+  { value: "BANKING", label: "Banking" },
+  { value: "BIOTECHNOLOGY", label: "Biotechnology" },
+  { value: "BUILDING MATERIALS & EQUIPMENT", label: "Building Materials & Equipment" },
+  { value: "CHEMICAL", label: "Chemical" },
+  { value: "COMPUTER", label: "Computer" },
+  { value: "EDUCATION", label: "Education" },
+  { value: "ELECTRONICS", label: "Electronics" },
+  { value: "ENERGY", label: "Energy" },
+  { value: "ENTERTAINMENT & LEISURE", label: "Entertainment & Leisure" },
+  { value: "FINANCE", label: "Finance" },
+  { value: "FOOD & BEVERAGE", label: "Food & Beverage" },
+  { value: "GROCERY", label: "Grocery" },
+  { value: "HEALTHCARE", label: "Healthcare" },
+  { value: "INSURANCE", label: "Insurance" },
+  { value: "LEGAL", label: "Legal" },
+  { value: "MANUFACTURING", label: "Manufacturing" },
+  { value: "PUBLISHING", label: "Publishing" },
+  { value: "REAL ESTATE", label: "Real Estate" },
+  { value: "RETAIL", label: "Retail" },
+  { value: "SHIPPING", label: "Shipping" },
+  { value: "TECHNOLOGY", label: "Technology" },
+  { value: "TELECOMMUNICATIONS", label: "Telecommunications" },
+  { value: "TELEVISION", label: "Television" },
+  { value: "TRANSPORTATION", label: "Transportation" },
+  { value: "VENTURE CAPITAL", label: "Venture Capital" },
+  { value: "OTHER", label: "Other" },
+] as const;
+
 // Currency Choices
 export const CURRENCY_CHOICES = [
   { value: "USD", label: "USD" },
