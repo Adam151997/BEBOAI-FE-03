@@ -8,10 +8,10 @@ export const authService = {
       password,
     });
 
-    // Store tokens, org key, and full org object
+    // Store tokens and org data
     localStorage.setItem("access_token", response.data.access);
     localStorage.setItem("refresh_token", response.data.refresh);
-    localStorage.setItem("org_key", response.data.org.api_key);
+    localStorage.setItem("org_key", response.data.org.id);
     localStorage.setItem("org", JSON.stringify(response.data.org));
     localStorage.setItem("user", JSON.stringify(response.data.user_details));
 
