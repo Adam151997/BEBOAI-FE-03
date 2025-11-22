@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import apiClient from "@/lib/api-client";
-import { getErrorMessage } from "@/lib/utils";
+import { profileService } from "@/services/profile.service";
 import type { User } from "@/types";
 
 export default function Profile() {
@@ -36,8 +35,7 @@ export default function Profile() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get<User>("/profile/me/");
-      const profile = response.data;
+      const profile = await profileService.getCurrentProfile();
       
       setFormData({
         first_name: profile.first_name || "",
@@ -66,11 +64,13 @@ export default function Profile() {
     setSaving(true);
 
     try {
-      const response = await apiClient.put<User>("/profile/me/", formData);
-      setUser(response.data);
+      const updatedProfile = await profileService.updateCurrentProfile(formData);
+      
+      // Update user in auth store
+      setUser(updatedProfile as User);
       
       // Update user in localStorage
-      localStorage.setItem("user", JSON.stringify(response.data));
+      localStorage.setItem("user", JSON.stringify(updatedProfile));
       
       setMessage("Profile updated successfully!");
       setTimeout(() => setMessage(""), 3000);
@@ -91,7 +91,7 @@ export default function Profile() {
           });
           setFieldErrors(fieldErrs);
         } else {
-          setError(getErrorMessage(err) || "Failed to update profile");
+          setError("Failed to update profile");
         }
       } else {
         setError("Failed to update profile");
