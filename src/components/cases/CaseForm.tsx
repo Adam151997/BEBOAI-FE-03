@@ -33,11 +33,11 @@ export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFo
   const createMutation = useMutation({
     mutationFn: (data: Partial<Case>) => casesService.create(data),
     onSuccess,
-    onError: (error: any) => {
+    onError: (error: { response?: { data?: { errors?: Record<string, string[]> } } }) => {
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       } else if (error.response?.data) {
-        setErrors(error.response.data);
+        setErrors(error.response.data as Record<string, string[]>);
       }
     },
   });
@@ -46,11 +46,11 @@ export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFo
     mutationFn: (data: Partial<Case>) =>
       casesService.update(caseItem!.id, data),
     onSuccess,
-    onError: (error: any) => {
+    onError: (error: { response?: { data?: { errors?: Record<string, string[]> } } }) => {
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       } else if (error.response?.data) {
-        setErrors(error.response.data);
+        setErrors(error.response.data as Record<string, string[]>);
       }
     },
   });
@@ -60,9 +60,9 @@ export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFo
     setErrors({});
 
     // Filter out empty strings - only send fields with actual values
-    const cleanData: any = Object.fromEntries(
-      Object.entries(formData).filter(([_, value]) => value !== "")
-    );
+    const cleanData: Partial<Case> = Object.fromEntries(
+      Object.entries(formData).filter(([, value]) => value !== "")
+    ) as Partial<Case>;
 
     // Add current user's profile_id to assigned_to array for new records
     const profileId = localStorage.getItem("profile_id");

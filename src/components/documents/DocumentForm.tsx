@@ -27,10 +27,10 @@ export default function DocumentForm({ document, onSuccess, onCancel }: Document
       if (data.title) formDataToSend.append("title", data.title);
       if (data.file) formDataToSend.append("document_file", data.file);
 
-      return documentsService.create(formDataToSend as any);
+      return documentsService.create(formDataToSend as unknown as Partial<Document>);
     },
     onSuccess,
-    onError: (error: any) => {
+    onError: (error: { response?: { data?: Record<string, string> } }) => {
       if (error.response?.data) setErrors(error.response.data);
     },
   });
@@ -41,10 +41,10 @@ export default function DocumentForm({ document, onSuccess, onCancel }: Document
       if (data.title) formDataToSend.append("title", data.title);
       if (data.file) formDataToSend.append("document_file", data.file);
 
-      return documentsService.update(document!.id, formDataToSend as any);
+      return documentsService.update(document!.id, formDataToSend as unknown as Partial<Document>);
     },
     onSuccess,
-    onError: (error: any) => {
+    onError: (error: { response?: { data?: Record<string, string> } }) => {
       if (error.response?.data) setErrors(error.response.data);
     },
   });

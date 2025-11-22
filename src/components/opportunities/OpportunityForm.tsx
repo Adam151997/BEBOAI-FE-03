@@ -37,11 +37,11 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
   const createMutation = useMutation({
     mutationFn: (data: Partial<Opportunity>) => opportunitiesService.create(data),
     onSuccess,
-    onError: (error: any) => {
+    onError: (error: { response?: { data?: { errors?: Record<string, string[]> } } }) => {
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       } else if (error.response?.data) {
-        setErrors(error.response.data);
+        setErrors(error.response.data as Record<string, string[]>);
       }
     },
   });
@@ -50,11 +50,11 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
     mutationFn: (data: Partial<Opportunity>) =>
       opportunitiesService.update(opportunity!.id, data),
     onSuccess,
-    onError: (error: any) => {
+    onError: (error: { response?: { data?: { errors?: Record<string, string[]> } } }) => {
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       } else if (error.response?.data) {
-        setErrors(error.response.data);
+        setErrors(error.response.data as Record<string, string[]>);
       }
     },
   });
@@ -63,17 +63,19 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
     e.preventDefault();
     setErrors({});
 
-    const data: any = {
-      ...formData,
-      amount: formData.amount ? parseFloat(formData.amount) : undefined,
-      probability: formData.probability ? parseInt(formData.probability) : undefined,
-      account: formData.account ? parseInt(formData.account) : undefined,
-    };
-
-    // Filter out empty strings and undefined values - only send fields with actual values
-    const cleanData = Object.fromEntries(
-      Object.entries(data).filter(([_, value]) => value !== "" && value !== undefined)
-    );
+    // Build clean data object with proper types
+    const cleanData: Partial<Opportunity> = {};
+    
+    if (formData.name) cleanData.name = formData.name;
+    if (formData.stage) cleanData.stage = formData.stage as Opportunity['stage'];
+    if (formData.currency) cleanData.currency = formData.currency as Opportunity['currency'];
+    if (formData.close_date) cleanData.close_date = formData.close_date;
+    if (formData.lead_source) cleanData.lead_source = formData.lead_source;
+    if (formData.description) cleanData.description = formData.description;
+    
+    if (formData.amount) cleanData.amount = parseFloat(formData.amount);
+    if (formData.probability) cleanData.probability = parseInt(formData.probability);
+    if (formData.account) cleanData.account = parseInt(formData.account);
 
     // Add current user's profile_id to assigned_to array for new records
     const profileId = localStorage.getItem("profile_id");
