@@ -67,6 +67,7 @@ export default function CasesList() {
     mutationFn: (id: string) => casesService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cases"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 
@@ -261,6 +262,7 @@ export default function CasesList() {
             onSuccess={() => {
               setIsCreateOpen(false);
               queryClient.invalidateQueries({ queryKey: ["cases"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
             }}
             onCancel={() => setIsCreateOpen(false)}
           />
@@ -279,6 +281,7 @@ export default function CasesList() {
                 setIsEditOpen(false);
                 setSelectedCase(null);
                 queryClient.invalidateQueries({ queryKey: ["cases"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
               }}
               onCancel={() => {
                 setIsEditOpen(false);

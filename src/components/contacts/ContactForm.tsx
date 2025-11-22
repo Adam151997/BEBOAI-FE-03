@@ -65,10 +65,15 @@ export default function ContactForm({ contact, onSuccess, onCancel }: ContactFor
     e.preventDefault();
     setErrors({});
 
+    // Filter out empty strings - only send fields with actual values
+    const cleanData = Object.fromEntries(
+      Object.entries(formData).filter(([_, value]) => value !== "")
+    );
+
     if (contact) {
-      updateMutation.mutate(formData);
+      updateMutation.mutate(cleanData);
     } else {
-      createMutation.mutate(formData);
+      createMutation.mutate(cleanData);
     }
   };
 

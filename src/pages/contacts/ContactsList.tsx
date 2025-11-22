@@ -66,6 +66,7 @@ export default function ContactsList() {
     mutationFn: (id: string) => contactsService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contacts"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 
@@ -228,6 +229,7 @@ export default function ContactsList() {
             onSuccess={() => {
               setIsCreateOpen(false);
               queryClient.invalidateQueries({ queryKey: ["contacts"] });
+              queryClient.invalidateQueries({ queryKey: ["dashboard"] });
             }}
             onCancel={() => setIsCreateOpen(false)}
           />
@@ -247,6 +249,7 @@ export default function ContactsList() {
                 setIsEditOpen(false);
                 setSelectedContact(null);
                 queryClient.invalidateQueries({ queryKey: ["contacts"] });
+                queryClient.invalidateQueries({ queryKey: ["dashboard"] });
               }}
               onCancel={() => {
                 setIsEditOpen(false);

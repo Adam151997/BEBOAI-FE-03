@@ -42,10 +42,15 @@ export default function TeamForm({ team, onSuccess, onCancel }: TeamFormProps) {
     e.preventDefault();
     setErrors({});
 
+    // Filter out empty strings - only send fields with actual values
+    const cleanData = Object.fromEntries(
+      Object.entries(formData).filter(([_, value]) => value !== "")
+    );
+
     if (team) {
-      updateMutation.mutate(formData);
+      updateMutation.mutate(cleanData);
     } else {
-      createMutation.mutate(formData);
+      createMutation.mutate(cleanData);
     }
   };
 

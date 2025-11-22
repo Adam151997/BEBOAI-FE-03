@@ -60,10 +60,15 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
     e.preventDefault();
     setErrors({});
 
+    // Filter out empty strings - only send fields with actual values
+    const cleanData = Object.fromEntries(
+      Object.entries(formData).filter(([_, value]) => value !== "")
+    );
+
     if (lead) {
-      updateMutation.mutate(formData);
+      updateMutation.mutate(cleanData);
     } else {
-      createMutation.mutate(formData);
+      createMutation.mutate(cleanData);
     }
   };
 

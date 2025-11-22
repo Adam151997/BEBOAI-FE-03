@@ -67,6 +67,7 @@ export default function OpportunitiesList() {
     mutationFn: (id: string) => opportunitiesService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["opportunities"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 
@@ -259,6 +260,7 @@ export default function OpportunitiesList() {
             onSuccess={() => {
               setIsCreateOpen(false);
               queryClient.invalidateQueries({ queryKey: ["opportunities"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
             }}
             onCancel={() => setIsCreateOpen(false)}
           />
@@ -278,6 +280,7 @@ export default function OpportunitiesList() {
                 setIsEditOpen(false);
                 setSelectedOpportunity(null);
                 queryClient.invalidateQueries({ queryKey: ["opportunities"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
               }}
               onCancel={() => {
                 setIsEditOpen(false);

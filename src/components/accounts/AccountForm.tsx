@@ -58,10 +58,15 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
     e.preventDefault();
     setErrors({});
 
+    // Filter out empty strings - only send fields with actual values
+    const cleanData = Object.fromEntries(
+      Object.entries(formData).filter(([_, value]) => value !== "")
+    );
+
     if (account) {
-      updateMutation.mutate(formData);
+      updateMutation.mutate(cleanData);
     } else {
-      createMutation.mutate(formData);
+      createMutation.mutate(cleanData);
     }
   };
 
