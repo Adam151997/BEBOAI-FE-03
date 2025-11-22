@@ -27,6 +27,7 @@ export default function Profile() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     fetchProfile();
@@ -61,6 +62,7 @@ export default function Profile() {
     e.preventDefault();
     setMessage("");
     setError("");
+    setFieldErrors({});
     setSaving(true);
 
     try {
@@ -74,7 +76,26 @@ export default function Profile() {
       setTimeout(() => setMessage(""), 3000);
     } catch (err: unknown) {
       console.error("Failed to update profile:", err);
-      setError(getErrorMessage(err) || "Failed to update profile");
+      
+      // Handle field-level errors from backend
+      if (err && typeof err === 'object' && 'response' in err) {
+        const response = (err as { response?: { data?: { errors?: Record<string, string[]> } } }).response;
+        const errors = response?.data?.errors;
+        
+        if (errors && typeof errors === 'object') {
+          const fieldErrs: Record<string, string> = {};
+          Object.entries(errors).forEach(([field, messages]) => {
+            if (Array.isArray(messages) && messages.length > 0) {
+              fieldErrs[field] = messages[0];
+            }
+          });
+          setFieldErrors(fieldErrs);
+        } else {
+          setError(getErrorMessage(err) || "Failed to update profile");
+        }
+      } else {
+        setError("Failed to update profile");
+      }
     } finally {
       setSaving(false);
     }
@@ -111,6 +132,9 @@ export default function Profile() {
                   onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
                   disabled={saving}
                 />
+                {fieldErrors.first_name && (
+                  <p className="text-sm text-destructive">{fieldErrors.first_name}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -121,17 +145,20 @@ export default function Profile() {
                   onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
                   disabled={saving}
                 />
+                {fieldErrors.last_name && (
+                  <p className="text-sm text-destructive">{fieldErrors.last_name}</p>
+                )}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Email (read-only)</Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                disabled={saving}
+                disabled
+                className="bg-muted"
               />
             </div>
 
@@ -143,6 +170,9 @@ export default function Profile() {
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 disabled={saving}
               />
+              {fieldErrors.phone && (
+                <p className="text-sm text-destructive">{fieldErrors.phone}</p>
+              )}
             </div>
 
             <div className="space-y-2">
