@@ -39,6 +39,9 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
     mutationFn: (data: Partial<Lead>) => leadsService.create(data),
     onSuccess,
     onError: (error: any) => {
+      console.error("Lead creation error:", error);
+      console.error("Error response:", error.response);
+      console.error("Error data:", error.response?.data);
       if (error.response?.data) {
         setErrors(error.response.data);
       }
@@ -64,6 +67,15 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
     const cleanData = Object.fromEntries(
       Object.entries(formData).filter(([_, value]) => value !== "")
     );
+
+    // Add organization ID from localStorage
+    const orgKey = localStorage.getItem("org_key");
+    if (orgKey) {
+      cleanData.organization = orgKey;
+    }
+
+    console.log("Submitting lead data:", cleanData);
+    console.log("Organization ID:", orgKey);
 
     if (lead) {
       updateMutation.mutate(cleanData);
