@@ -7,6 +7,7 @@ export interface User {
   is_organization_admin?: boolean;
   is_active?: boolean;
   profile_pic?: string | null;
+  org?: Organization;  // Nested org object from backend
   phone?: string;
   has_sales_access?: boolean;
   has_marketing_access?: boolean;
@@ -22,14 +23,15 @@ export interface User {
 export interface Organization {
   id: string;
   name: string;
-  api_key: string;
+  api_key?: string;  // Optional - new backend may not include this
 }
 
 export interface LoginResponse {
-  access: string;
-  refresh: string;
+  username?: string;  // New backend includes this
+  access_token: string;  // Changed from "access"
+  refresh_token: string;  // Changed from "refresh"
   user_details: User;
-  org: Organization;
+  org?: Organization;  // Top-level org is now optional (nested in user_details)
 }
 
 // Lead Types
