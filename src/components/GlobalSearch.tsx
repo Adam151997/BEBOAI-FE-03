@@ -2,12 +2,15 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { searchService, type SearchResult } from "@/services/search.service";
+import { searchService, type GlobalSearchResult } from "@/services/search.service";
 import { cn } from "@/lib/utils";
+import type { Lead, Account, Contact, Opportunity, Task, Event, Case, Document } from "@/types";
+
+type SearchItem = Lead | Account | Contact | Opportunity | Task | Event | Case | Document;
 
 export default function GlobalSearch() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [results, setResults] = useState<GlobalSearchResult | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -30,16 +33,17 @@ export default function GlobalSearch() {
         setLoading(true);
         try {
           const response = await searchService.search(query);
-          setResults(response.results || []);
+          setResults(response);
           setIsOpen(true);
-        } catch (error) {
-          console.error("Search error:", error);
-          setResults([]);
+        } catch (err) {
+          console.error("Search error:", err);
+          setResults(null);
+          // Don't crash on error, just clear results
         } finally {
           setLoading(false);
         }
       } else {
-        setResults([]);
+        setResults(null);
         setIsOpen(false);
       }
     }, 300);
@@ -47,21 +51,83 @@ export default function GlobalSearch() {
     return () => clearTimeout(delaySearch);
   }, [query]);
 
-  const handleResultClick = (result: SearchResult) => {
-    const module = result.module.toLowerCase();
-    navigate(`/${module}`);
+  const handleResultClick = (module: string, id: string) => {
+    navigate(`/${module.toLowerCase()}/${id}`);
     setQuery("");
     setIsOpen(false);
-    setResults([]);
+    setResults(null);
   };
 
-  const getResultTitle = (result: SearchResult): string => {
-    if (result.name) return result.name;
-    if (result.title) return result.title;
-    if (result.first_name || result.last_name) {
-      return `${result.first_name || ""} ${result.last_name || ""}`.trim();
+  const getItemTitle = (item: SearchItem, module: string): string => {
+    if (module === "leads" || module === "contacts") {
+      const leadOrContact = item as Lead | Contact;
+      return `${leadOrContact.first_name || ""} ${leadOrContact.last_name || ""}`.trim() || 
+             (leadOrContact as Contact).primary_email || 
+             (leadOrContact as Lead).email || 
+             "Unnamed";
     }
-    return result.email || "Unnamed";
+    
+    // Handle items with 'name' property
+    if ('name' in item) {
+      return item.name || "Unnamed";
+    }
+    
+    // Handle items with 'title' property
+    if ('title' in item) {
+      return item.title || "Unnamed";
+    }
+    
+    return "Unnamed";
+  };
+
+  const hasResults = results && (
+    results.leads.length > 0 ||
+    results.accounts.length > 0 ||
+    results.contacts.length > 0 ||
+    results.opportunities.length > 0 ||
+    results.tasks.length > 0 ||
+    results.events.length > 0 ||
+    results.cases.length > 0 ||
+    results.documents.length > 0
+  );
+
+  const renderGroup = (title: string, items: SearchItem[], module: string) => {
+    if (items.length === 0) return null;
+
+    return (
+      <div key={module} className="py-2">
+        <div className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase">
+          {title} ({items.length})
+        </div>
+        {items.map((item) => {
+          const email = 'email' in item ? item.email : 'primary_email' in item ? item.primary_email : undefined;
+          
+          return (
+            <button
+              key={item.id}
+              onClick={() => handleResultClick(module, item.id)}
+              className={cn(
+                "w-full px-4 py-3 text-left hover:bg-accent transition-colors",
+                "border-b last:border-b-0"
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium truncate">
+                    {getItemTitle(item, module)}
+                  </div>
+                  {email && (
+                    <div className="text-sm text-muted-foreground truncate">
+                      {email}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    );
   };
 
   return (
@@ -80,7 +146,7 @@ export default function GlobalSearch() {
             onClick={() => {
               setQuery("");
               setIsOpen(false);
-              setResults([]);
+              setResults(null);
             }}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
           >
@@ -90,41 +156,21 @@ export default function GlobalSearch() {
       </div>
 
       {isOpen && (
-        <div className="absolute top-full mt-2 w-full rounded-md border bg-popover shadow-lg z-50">
+        <div className="absolute top-full mt-2 w-full rounded-md border bg-popover shadow-lg z-50 max-h-[500px] overflow-hidden">
           {loading ? (
             <div className="p-4 text-center text-sm text-muted-foreground">
               Searching...
             </div>
-          ) : results.length > 0 ? (
-            <div className="max-h-96 overflow-y-auto">
-              {results.map((result, index) => (
-                <button
-                  key={`${result.module}-${result.id}-${index}`}
-                  onClick={() => handleResultClick(result)}
-                  className={cn(
-                    "w-full px-4 py-3 text-left hover:bg-accent transition-colors",
-                    "border-b last:border-b-0"
-                  )}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate">
-                        {getResultTitle(result)}
-                      </div>
-                      {result.email && (
-                        <div className="text-sm text-muted-foreground truncate">
-                          {result.email}
-                        </div>
-                      )}
-                    </div>
-                    <div className="ml-2 shrink-0">
-                      <span className="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-primary/10 text-primary">
-                        {result.module}
-                      </span>
-                    </div>
-                  </div>
-                </button>
-              ))}
+          ) : hasResults ? (
+            <div className="overflow-y-auto max-h-[500px]">
+              {renderGroup("Leads", results.leads, "leads")}
+              {renderGroup("Accounts", results.accounts, "accounts")}
+              {renderGroup("Contacts", results.contacts, "contacts")}
+              {renderGroup("Opportunities", results.opportunities, "opportunities")}
+              {renderGroup("Tasks", results.tasks, "tasks")}
+              {renderGroup("Events", results.events, "events")}
+              {renderGroup("Cases", results.cases, "cases")}
+              {renderGroup("Documents", results.documents, "documents")}
             </div>
           ) : (
             <div className="p-4 text-center text-sm text-muted-foreground">

@@ -1,24 +1,21 @@
 import apiClient from "@/lib/api-client";
+import type { Lead, Account, Contact, Opportunity, Task, Case, Event, Document } from "@/types";
 
-export interface SearchResult {
-  module: string;
-  id: string;
-  name?: string;
-  title?: string;
-  first_name?: string;
-  last_name?: string;
-  email?: string;
-  [key: string]: unknown;
-}
-
-export interface SearchResponse {
-  results: SearchResult[];
-  count: number;
+export interface GlobalSearchResult {
+  query: string;
+  leads: Lead[];
+  accounts: Account[];
+  contacts: Contact[];
+  opportunities: Opportunity[];
+  tasks: Task[];
+  events: Event[];
+  cases: Case[];
+  documents: Document[];
 }
 
 export const searchService = {
-  search: async (query: string): Promise<SearchResponse> => {
-    const response = await apiClient.get<SearchResponse>("/search/", {
+  search: async (query: string): Promise<GlobalSearchResult> => {
+    const response = await apiClient.get<GlobalSearchResult>("/search/", {
       params: { q: query },
     });
     return response.data;

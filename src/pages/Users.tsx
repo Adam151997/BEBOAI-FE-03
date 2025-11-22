@@ -18,6 +18,7 @@ export default function Users() {
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState({
     email: "",
@@ -48,6 +49,7 @@ export default function Users() {
     e.preventDefault();
     setError("");
     setMessage("");
+    setFieldErrors({});
     setCreating(true);
 
     try {
@@ -65,13 +67,24 @@ export default function Users() {
       setTimeout(() => setMessage(""), 3000);
     } catch (err: unknown) {
       console.error("Failed to create user:", err);
+      
+      // Handle field-level errors from backend
       if (err && typeof err === 'object' && 'response' in err) {
-        const response = (err as { response?: { data?: { message?: string; email?: string[] } } }).response;
+        const response = (err as { response?: { data?: { errors?: Record<string, string[]>; email?: string[] } } }).response;
         const errorData = response?.data;
-        if (errorData?.email) {
-          setError(errorData.email[0] || "Email error");
+        
+        if (errorData?.errors && typeof errorData.errors === 'object') {
+          const fieldErrs: Record<string, string> = {};
+          Object.entries(errorData.errors).forEach(([field, messages]) => {
+            if (Array.isArray(messages) && messages.length > 0) {
+              fieldErrs[field] = messages[0];
+            }
+          });
+          setFieldErrors(fieldErrs);
+        } else if (errorData?.email) {
+          setFieldErrors({ email: errorData.email[0] || "Email error" });
         } else {
-          setError(errorData?.message || "Failed to create user");
+          setError("Failed to create user");
         }
       } else {
         setError("Failed to create user");
@@ -136,6 +149,9 @@ export default function Users() {
                     required
                     disabled={creating}
                   />
+                  {fieldErrors.first_name && (
+                    <p className="text-sm text-destructive">{fieldErrors.first_name}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -147,6 +163,9 @@ export default function Users() {
                     required
                     disabled={creating}
                   />
+                  {fieldErrors.last_name && (
+                    <p className="text-sm text-destructive">{fieldErrors.last_name}</p>
+                  )}
                 </div>
               </div>
 
@@ -160,6 +179,9 @@ export default function Users() {
                   required
                   disabled={creating}
                 />
+                {fieldErrors.email && (
+                  <p className="text-sm text-destructive">{fieldErrors.email}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -172,6 +194,9 @@ export default function Users() {
                   required
                   disabled={creating}
                 />
+                {fieldErrors.password && (
+                  <p className="text-sm text-destructive">{fieldErrors.password}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -186,6 +211,9 @@ export default function Users() {
                   <option value="USER">User</option>
                   <option value="ADMIN">Admin</option>
                 </select>
+                {fieldErrors.role && (
+                  <p className="text-sm text-destructive">{fieldErrors.role}</p>
+                )}
               </div>
 
               {error && (

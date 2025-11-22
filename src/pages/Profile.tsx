@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import apiClient from "@/lib/api-client";
-import { getErrorMessage } from "@/lib/utils";
+import { profileService } from "@/services/profile.service";
 import type { User } from "@/types";
 
 export default function Profile() {
@@ -27,6 +26,7 @@ export default function Profile() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     fetchProfile();
@@ -35,8 +35,7 @@ export default function Profile() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get<User>("/profile/me/");
-      const profile = response.data;
+      const profile = await profileService.getCurrentProfile();
       
       setFormData({
         first_name: profile.first_name || "",
@@ -61,20 +60,42 @@ export default function Profile() {
     e.preventDefault();
     setMessage("");
     setError("");
+    setFieldErrors({});
     setSaving(true);
 
     try {
-      const response = await apiClient.put<User>("/profile/me/", formData);
-      setUser(response.data);
+      const updatedProfile = await profileService.updateCurrentProfile(formData);
+      
+      // Update user in auth store
+      setUser(updatedProfile as User);
       
       // Update user in localStorage
-      localStorage.setItem("user", JSON.stringify(response.data));
+      localStorage.setItem("user", JSON.stringify(updatedProfile));
       
       setMessage("Profile updated successfully!");
       setTimeout(() => setMessage(""), 3000);
     } catch (err: unknown) {
       console.error("Failed to update profile:", err);
-      setError(getErrorMessage(err) || "Failed to update profile");
+      
+      // Handle field-level errors from backend
+      if (err && typeof err === 'object' && 'response' in err) {
+        const response = (err as { response?: { data?: { errors?: Record<string, string[]> } } }).response;
+        const errors = response?.data?.errors;
+        
+        if (errors && typeof errors === 'object') {
+          const fieldErrs: Record<string, string> = {};
+          Object.entries(errors).forEach(([field, messages]) => {
+            if (Array.isArray(messages) && messages.length > 0) {
+              fieldErrs[field] = messages[0];
+            }
+          });
+          setFieldErrors(fieldErrs);
+        } else {
+          setError("Failed to update profile");
+        }
+      } else {
+        setError("Failed to update profile");
+      }
     } finally {
       setSaving(false);
     }
@@ -111,6 +132,9 @@ export default function Profile() {
                   onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
                   disabled={saving}
                 />
+                {fieldErrors.first_name && (
+                  <p className="text-sm text-destructive">{fieldErrors.first_name}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -121,17 +145,20 @@ export default function Profile() {
                   onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
                   disabled={saving}
                 />
+                {fieldErrors.last_name && (
+                  <p className="text-sm text-destructive">{fieldErrors.last_name}</p>
+                )}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Email (read-only)</Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                disabled={saving}
+                disabled
+                className="bg-muted"
               />
             </div>
 
@@ -143,6 +170,9 @@ export default function Profile() {
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 disabled={saving}
               />
+              {fieldErrors.phone && (
+                <p className="text-sm text-destructive">{fieldErrors.phone}</p>
+              )}
             </div>
 
             <div className="space-y-2">
