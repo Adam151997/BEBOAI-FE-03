@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { getErrorMessage } from "@/lib/utils";
 
 export default function Signup() {
   const [orgName, setOrgName] = useState("");
@@ -27,12 +28,7 @@ export default function Signup() {
       await register(orgName, email, password, firstName, lastName);
       navigate("/dashboard");
     } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err) {
-        const response = (err as { response?: { data?: { message?: string } } }).response;
-        setError(response?.data?.message || "Registration failed");
-      } else {
-        setError("Registration failed");
-      }
+      setError(getErrorMessage(err) || "Registration failed");
     } finally {
       setLoading(false);
     }

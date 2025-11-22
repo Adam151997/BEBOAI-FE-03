@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { getErrorMessage } from "@/lib/utils";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -24,12 +25,7 @@ export default function Login() {
       await login(email, password);
       navigate("/dashboard");
     } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err) {
-        const response = (err as { response?: { data?: { message?: string } } }).response;
-        setError(response?.data?.message || "Invalid email or password");
-      } else {
-        setError("Invalid email or password");
-      }
+      setError(getErrorMessage(err) || "Invalid email or password");
     } finally {
       setLoading(false);
     }

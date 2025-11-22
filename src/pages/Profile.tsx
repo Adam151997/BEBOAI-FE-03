@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import apiClient from "@/lib/api-client";
+import { getErrorMessage } from "@/lib/utils";
 import type { User } from "@/types";
 
 export default function Profile() {
@@ -73,12 +74,7 @@ export default function Profile() {
       setTimeout(() => setMessage(""), 3000);
     } catch (err: unknown) {
       console.error("Failed to update profile:", err);
-      if (err && typeof err === 'object' && 'response' in err) {
-        const response = (err as { response?: { data?: { message?: string } } }).response;
-        setError(response?.data?.message || "Failed to update profile");
-      } else {
-        setError("Failed to update profile");
-      }
+      setError(getErrorMessage(err) || "Failed to update profile");
     } finally {
       setSaving(false);
     }
