@@ -7,6 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
+import {
+  CASE_STATUS_CHOICES,
+  CASE_PRIORITY_CHOICES,
+  CASE_TYPE_CHOICES,
+} from "@/lib/constants";
 
 interface CaseFormProps {
   case?: Case;
@@ -23,13 +28,17 @@ export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFo
     description: caseItem?.description || "",
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
 
   const createMutation = useMutation({
     mutationFn: (data: Partial<Case>) => casesService.create(data),
     onSuccess,
     onError: (error: any) => {
-      if (error.response?.data) setErrors(error.response.data);
+      if (error.response?.data?.errors) {
+        setErrors(error.response.data.errors);
+      } else if (error.response?.data) {
+        setErrors(error.response.data);
+      }
     },
   });
 
@@ -38,7 +47,11 @@ export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFo
       casesService.update(caseItem!.id, data),
     onSuccess,
     onError: (error: any) => {
-      if (error.response?.data) setErrors(error.response.data);
+      if (error.response?.data?.errors) {
+        setErrors(error.response.data.errors);
+      } else if (error.response?.data) {
+        setErrors(error.response.data);
+      }
     },
   });
 
@@ -88,7 +101,9 @@ export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFo
           onChange={handleChange}
           required
         />
-        {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+        {errors.name && Array.isArray(errors.name) && (
+          <p className="text-sm text-destructive">{errors.name.join(", ")}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -101,13 +116,15 @@ export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFo
             onChange={handleChange}
           >
             <option value="">Select Type</option>
-            <option value="Problem">Problem</option>
-            <option value="Feature Request">Feature Request</option>
-            <option value="Data Corrupted">Data Corrupted</option>
-            <option value="Functionality Request">Functionality Request</option>
-            <option value="Integration">Integration</option>
-            <option value="Others">Others</option>
+            {CASE_TYPE_CHOICES.map((choice) => (
+              <option key={choice.value} value={choice.value}>
+                {choice.label}
+              </option>
+            ))}
           </Select>
+          {errors.case_type && Array.isArray(errors.case_type) && (
+            <p className="text-sm text-destructive">{errors.case_type.join(", ")}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -118,10 +135,15 @@ export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFo
             value={formData.priority}
             onChange={handleChange}
           >
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
+            {CASE_PRIORITY_CHOICES.map((choice) => (
+              <option key={choice.value} value={choice.value}>
+                {choice.label}
+              </option>
+            ))}
           </Select>
+          {errors.priority && Array.isArray(errors.priority) && (
+            <p className="text-sm text-destructive">{errors.priority.join(", ")}</p>
+          )}
         </div>
       </div>
 
@@ -133,12 +155,15 @@ export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFo
           value={formData.status}
           onChange={handleChange}
         >
-          <option value="New">New</option>
-          <option value="Working">Working</option>
-          <option value="Closed">Closed</option>
-          <option value="Rejected">Rejected</option>
-          <option value="Duplicate">Duplicate</option>
+          {CASE_STATUS_CHOICES.map((choice) => (
+            <option key={choice.value} value={choice.value}>
+              {choice.label}
+            </option>
+          ))}
         </Select>
+        {errors.status && Array.isArray(errors.status) && (
+          <p className="text-sm text-destructive">{errors.status.join(", ")}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -150,6 +175,9 @@ export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFo
           onChange={handleChange}
           rows={4}
         />
+        {errors.description && Array.isArray(errors.description) && (
+          <p className="text-sm text-destructive">{errors.description.join(", ")}</p>
+        )}
       </div>
 
       <div className="flex justify-end gap-2 pt-4">

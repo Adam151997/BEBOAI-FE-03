@@ -38,13 +38,15 @@ export default function ContactForm({ contact, onSuccess, onCancel }: ContactFor
     twitter_username: contact?.twitter_username || "",
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
 
   const createMutation = useMutation({
     mutationFn: (data: Partial<Contact>) => contactsService.create(data),
     onSuccess,
     onError: (error: any) => {
-      if (error.response?.data) {
+      if (error.response?.data?.errors) {
+        setErrors(error.response.data.errors);
+      } else if (error.response?.data) {
         setErrors(error.response.data);
       }
     },
@@ -55,7 +57,9 @@ export default function ContactForm({ contact, onSuccess, onCancel }: ContactFor
       contactsService.update(contact!.id, data),
     onSuccess,
     onError: (error: any) => {
-      if (error.response?.data) {
+      if (error.response?.data?.errors) {
+        setErrors(error.response.data.errors);
+      } else if (error.response?.data) {
         setErrors(error.response.data);
       }
     },
@@ -124,8 +128,8 @@ export default function ContactForm({ contact, onSuccess, onCancel }: ContactFor
             onChange={handleChange}
             required
           />
-          {errors.first_name && (
-            <p className="text-sm text-destructive">{errors.first_name}</p>
+          {errors.first_name && Array.isArray(errors.first_name) && (
+            <p className="text-sm text-destructive">{errors.first_name.join(", ")}</p>
           )}
         </div>
 

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
+import { ACCOUNT_STATUS_CHOICES } from "@/lib/constants";
 
 interface AccountFormProps {
   account?: Account;
@@ -31,13 +32,15 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
     description: account?.description || "",
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
 
   const createMutation = useMutation({
     mutationFn: (data: Partial<Account>) => accountsService.create(data),
     onSuccess,
     onError: (error: any) => {
-      if (error.response?.data) {
+      if (error.response?.data?.errors) {
+        setErrors(error.response.data.errors);
+      } else if (error.response?.data) {
         setErrors(error.response.data);
       }
     },
@@ -48,7 +51,9 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
       accountsService.update(account!.id, data),
     onSuccess,
     onError: (error: any) => {
-      if (error.response?.data) {
+      if (error.response?.data?.errors) {
+        setErrors(error.response.data.errors);
+      } else if (error.response?.data) {
         setErrors(error.response.data);
       }
     },
@@ -100,8 +105,8 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
           onChange={handleChange}
           required
         />
-        {errors.name && (
-          <p className="text-sm text-destructive">{errors.name}</p>
+        {errors.name && Array.isArray(errors.name) && (
+          <p className="text-sm text-destructive">{errors.name.join(", ")}</p>
         )}
       </div>
 
@@ -115,6 +120,9 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
             value={formData.email}
             onChange={handleChange}
           />
+          {errors.email && Array.isArray(errors.email) && (
+            <p className="text-sm text-destructive">{errors.email.join(", ")}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -125,6 +133,9 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
             value={formData.phone}
             onChange={handleChange}
           />
+          {errors.phone && Array.isArray(errors.phone) && (
+            <p className="text-sm text-destructive">{errors.phone.join(", ")}</p>
+          )}
         </div>
       </div>
 
@@ -160,9 +171,15 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
           onChange={handleChange}
         >
           <option value="">Select Status</option>
-          <option value="open">Open</option>
-          <option value="close">Close</option>
+          {ACCOUNT_STATUS_CHOICES.map((choice) => (
+            <option key={choice.value} value={choice.value}>
+              {choice.label}
+            </option>
+          ))}
         </Select>
+        {errors.status && Array.isArray(errors.status) && (
+          <p className="text-sm text-destructive">{errors.status.join(", ")}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -176,8 +193,8 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
           onChange={handleChange}
           required
         />
-        {errors.billing_address_line && (
-          <p className="text-sm text-destructive">{errors.billing_address_line}</p>
+        {errors.billing_address_line && Array.isArray(errors.billing_address_line) && (
+          <p className="text-sm text-destructive">{errors.billing_address_line.join(", ")}</p>
         )}
       </div>
 
@@ -192,8 +209,8 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
           onChange={handleChange}
           required
         />
-        {errors.billing_street && (
-          <p className="text-sm text-destructive">{errors.billing_street}</p>
+        {errors.billing_street && Array.isArray(errors.billing_street) && (
+          <p className="text-sm text-destructive">{errors.billing_street.join(", ")}</p>
         )}
       </div>
 
@@ -209,8 +226,8 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
             onChange={handleChange}
             required
           />
-          {errors.billing_city && (
-            <p className="text-sm text-destructive">{errors.billing_city}</p>
+          {errors.billing_city && Array.isArray(errors.billing_city) && (
+            <p className="text-sm text-destructive">{errors.billing_city.join(", ")}</p>
           )}
         </div>
 
@@ -225,8 +242,8 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
             onChange={handleChange}
             required
           />
-          {errors.billing_state && (
-            <p className="text-sm text-destructive">{errors.billing_state}</p>
+          {errors.billing_state && Array.isArray(errors.billing_state) && (
+            <p className="text-sm text-destructive">{errors.billing_state.join(", ")}</p>
           )}
         </div>
       </div>
@@ -243,8 +260,8 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
             onChange={handleChange}
             required
           />
-          {errors.billing_postcode && (
-            <p className="text-sm text-destructive">{errors.billing_postcode}</p>
+          {errors.billing_postcode && Array.isArray(errors.billing_postcode) && (
+            <p className="text-sm text-destructive">{errors.billing_postcode.join(", ")}</p>
           )}
         </div>
 
@@ -259,8 +276,8 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
             onChange={handleChange}
             required
           />
-          {errors.billing_country && (
-            <p className="text-sm text-destructive">{errors.billing_country}</p>
+          {errors.billing_country && Array.isArray(errors.billing_country) && (
+            <p className="text-sm text-destructive">{errors.billing_country.join(", ")}</p>
           )}
         </div>
       </div>

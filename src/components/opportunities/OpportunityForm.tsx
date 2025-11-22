@@ -7,6 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
+import {
+  OPPORTUNITY_STAGE_CHOICES,
+  OPPORTUNITY_LEAD_SOURCE_CHOICES,
+  CURRENCY_CHOICES,
+} from "@/lib/constants";
 
 interface OpportunityFormProps {
   opportunity?: Opportunity;
@@ -27,13 +32,17 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
     description: opportunity?.description || "",
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
 
   const createMutation = useMutation({
     mutationFn: (data: Partial<Opportunity>) => opportunitiesService.create(data),
     onSuccess,
     onError: (error: any) => {
-      if (error.response?.data) setErrors(error.response.data);
+      if (error.response?.data?.errors) {
+        setErrors(error.response.data.errors);
+      } else if (error.response?.data) {
+        setErrors(error.response.data);
+      }
     },
   });
 
@@ -42,7 +51,11 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
       opportunitiesService.update(opportunity!.id, data),
     onSuccess,
     onError: (error: any) => {
-      if (error.response?.data) setErrors(error.response.data);
+      if (error.response?.data?.errors) {
+        setErrors(error.response.data.errors);
+      } else if (error.response?.data) {
+        setErrors(error.response.data);
+      }
     },
   });
 
@@ -99,7 +112,9 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
           onChange={handleChange}
           required
         />
-        {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+        {errors.name && Array.isArray(errors.name) && (
+          <p className="text-sm text-destructive">{errors.name.join(", ")}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -115,7 +130,9 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
           required
           placeholder="Enter Account ID"
         />
-        {errors.account && <p className="text-sm text-destructive">{errors.account}</p>}
+        {errors.account && Array.isArray(errors.account) && (
+          <p className="text-sm text-destructive">{errors.account.join(", ")}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -127,16 +144,15 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
           onChange={handleChange}
         >
           <option value="">Select Stage</option>
-          <option value="QUALIFICATION">Qualification</option>
-          <option value="NEEDS ANALYSIS">Needs Analysis</option>
-          <option value="VALUE PROPOSITION">Value Proposition</option>
-          <option value="ID. DECISION MAKERS">ID. Decision Makers</option>
-          <option value="PERCEPTION ANALYSIS">Perception Analysis</option>
-          <option value="PROPOSAL/PRICE QUOTE">Proposal/Price Quote</option>
-          <option value="NEGOTIATION/REVIEW">Negotiation/Review</option>
-          <option value="CLOSED WON">Closed Won</option>
-          <option value="CLOSED LOST">Closed Lost</option>
+          {OPPORTUNITY_STAGE_CHOICES.map((choice) => (
+            <option key={choice.value} value={choice.value}>
+              {choice.label}
+            </option>
+          ))}
         </Select>
+        {errors.stage && Array.isArray(errors.stage) && (
+          <p className="text-sm text-destructive">{errors.stage.join(", ")}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -151,6 +167,9 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
             onChange={handleChange}
             placeholder="0.00"
           />
+          {errors.amount && Array.isArray(errors.amount) && (
+            <p className="text-sm text-destructive">{errors.amount.join(", ")}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -161,14 +180,15 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
             value={formData.currency}
             onChange={handleChange}
           >
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="GBP">GBP</option>
-            <option value="INR">INR</option>
-            <option value="AUD">AUD</option>
-            <option value="CAD">CAD</option>
-            <option value="JPY">JPY</option>
+            {CURRENCY_CHOICES.map((choice) => (
+              <option key={choice.value} value={choice.value}>
+                {choice.label}
+              </option>
+            ))}
           </Select>
+          {errors.currency && Array.isArray(errors.currency) && (
+            <p className="text-sm text-destructive">{errors.currency.join(", ")}</p>
+          )}
         </div>
       </div>
 
@@ -185,6 +205,9 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
             onChange={handleChange}
             placeholder="0-100"
           />
+          {errors.probability && Array.isArray(errors.probability) && (
+            <p className="text-sm text-destructive">{errors.probability.join(", ")}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -196,6 +219,9 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
             value={formData.close_date}
             onChange={handleChange}
           />
+          {errors.close_date && Array.isArray(errors.close_date) && (
+            <p className="text-sm text-destructive">{errors.close_date.join(", ")}</p>
+          )}
         </div>
       </div>
 
@@ -208,16 +234,15 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
           onChange={handleChange}
         >
           <option value="">Select Lead Source</option>
-          <option value="None">None</option>
-          <option value="Call">Call</option>
-          <option value="Email">Email</option>
-          <option value="Existing Customer">Existing Customer</option>
-          <option value="Partner">Partner</option>
-          <option value="Public Relations">Public Relations</option>
-          <option value="Campaign">Campaign</option>
-          <option value="Website">Website</option>
-          <option value="Other">Other</option>
+          {OPPORTUNITY_LEAD_SOURCE_CHOICES.map((choice) => (
+            <option key={choice.value} value={choice.value}>
+              {choice.label}
+            </option>
+          ))}
         </Select>
+        {errors.lead_source && Array.isArray(errors.lead_source) && (
+          <p className="text-sm text-destructive">{errors.lead_source.join(", ")}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -229,6 +254,9 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
           onChange={handleChange}
           rows={3}
         />
+        {errors.description && Array.isArray(errors.description) && (
+          <p className="text-sm text-destructive">{errors.description.join(", ")}</p>
+        )}
       </div>
 
       <div className="flex justify-end gap-2 pt-4">

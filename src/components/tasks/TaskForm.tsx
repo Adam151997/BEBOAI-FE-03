@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
+import { TASK_STATUS_CHOICES, TASK_PRIORITY_CHOICES } from "@/lib/constants";
 
 interface TaskFormProps {
   task?: Task;
@@ -23,13 +24,17 @@ export default function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
     description: task?.description || "",
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
 
   const createMutation = useMutation({
     mutationFn: (data: Partial<Task>) => tasksService.create(data),
     onSuccess,
     onError: (error: any) => {
-      if (error.response?.data) setErrors(error.response.data);
+      if (error.response?.data?.errors) {
+        setErrors(error.response.data.errors);
+      } else if (error.response?.data) {
+        setErrors(error.response.data);
+      }
     },
   });
 
@@ -38,7 +43,11 @@ export default function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
       tasksService.update(task!.id, data),
     onSuccess,
     onError: (error: any) => {
-      if (error.response?.data) setErrors(error.response.data);
+      if (error.response?.data?.errors) {
+        setErrors(error.response.data.errors);
+      } else if (error.response?.data) {
+        setErrors(error.response.data);
+      }
     },
   });
 
@@ -88,7 +97,9 @@ export default function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
           onChange={handleChange}
           required
         />
-        {errors.title && <p className="text-sm text-destructive">{errors.title}</p>}
+        {errors.title && Array.isArray(errors.title) && (
+          <p className="text-sm text-destructive">{errors.title.join(", ")}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -100,10 +111,15 @@ export default function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
             value={formData.status}
             onChange={handleChange}
           >
-            <option value="New">New</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
+            {TASK_STATUS_CHOICES.map((choice) => (
+              <option key={choice.value} value={choice.value}>
+                {choice.label}
+              </option>
+            ))}
           </Select>
+          {errors.status && Array.isArray(errors.status) && (
+            <p className="text-sm text-destructive">{errors.status.join(", ")}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -114,10 +130,15 @@ export default function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
             value={formData.priority}
             onChange={handleChange}
           >
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
+            {TASK_PRIORITY_CHOICES.map((choice) => (
+              <option key={choice.value} value={choice.value}>
+                {choice.label}
+              </option>
+            ))}
           </Select>
+          {errors.priority && Array.isArray(errors.priority) && (
+            <p className="text-sm text-destructive">{errors.priority.join(", ")}</p>
+          )}
         </div>
       </div>
 
@@ -130,6 +151,9 @@ export default function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
           value={formData.due_date}
           onChange={handleChange}
         />
+        {errors.due_date && Array.isArray(errors.due_date) && (
+          <p className="text-sm text-destructive">{errors.due_date.join(", ")}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -141,6 +165,9 @@ export default function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
           onChange={handleChange}
           rows={4}
         />
+        {errors.description && Array.isArray(errors.description) && (
+          <p className="text-sm text-destructive">{errors.description.join(", ")}</p>
+        )}
       </div>
 
       <div className="flex justify-end gap-2 pt-4">

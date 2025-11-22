@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { leadsService } from "@/services/leads.service";
-import type { Lead } from "@/types";
+import { accountsService } from "@/services/accounts.service";
+import type { Lead, Account } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
+import { LEAD_STATUS_CHOICES, LEAD_SOURCE_CHOICES } from "@/lib/constants";
 
 interface LeadFormProps {
   lead?: Lead;
@@ -31,9 +33,16 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
     postcode: lead?.postcode || "",
     country: lead?.country || "",
     description: lead?.description || "",
+    probability: lead?.probability?.toString() || "",
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
+
+  // Fetch accounts for the company dropdown
+  const { data: accountsData } = useQuery({
+    queryKey: ["accounts"],
+    queryFn: () => accountsService.getAll(),
+  });
 
   const createMutation = useMutation({
     mutationFn: (data: Partial<Lead>) => leadsService.create(data),
@@ -42,7 +51,10 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
       console.error("Lead creation error:", error);
       console.error("Error response:", error.response);
       console.error("Error data:", error.response?.data);
-      if (error.response?.data) {
+      if (error.response?.data?.errors) {
+        setErrors(error.response.data.errors);
+      } else if (error.response?.data) {
+        // Backend may return errors at root level
         setErrors(error.response.data);
       }
     },
@@ -53,7 +65,9 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
       leadsService.update(lead!.id, data),
     onSuccess,
     onError: (error: any) => {
-      if (error.response?.data) {
+      if (error.response?.data?.errors) {
+        setErrors(error.response.data.errors);
+      } else if (error.response?.data) {
         setErrors(error.response.data);
       }
     },
@@ -63,9 +77,15 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
     e.preventDefault();
     setErrors({});
 
+    // Convert probability to number and company to UUID
+    const data: any = {
+      ...formData,
+      probability: formData.probability ? parseFloat(formData.probability) : undefined,
+    };
+
     // Filter out empty strings - only send fields with actual values
     const cleanData: any = Object.fromEntries(
-      Object.entries(formData).filter(([_, value]) => value !== "")
+      Object.entries(data).filter(([_, value]) => value !== "" && value !== undefined)
     );
 
     // CRITICAL: Add current user's profile_id to assigned_to array
@@ -113,8 +133,8 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
           placeholder="e.g., Sales Manager, VP Marketing"
           required
         />
-        {errors.title && (
-          <p className="text-sm text-destructive">{errors.title}</p>
+        {errors.title && Array.isArray(errors.title) && (
+          <p className="text-sm text-destructive">{errors.title.join(", ")}</p>
         )}
       </div>
 
@@ -130,8 +150,8 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
             onChange={handleChange}
             required
           />
-          {errors.first_name && (
-            <p className="text-sm text-destructive">{errors.first_name}</p>
+          {errors.first_name && Array.isArray(errors.first_name) && (
+            <p className="text-sm text-destructive">{errors.first_name.join(", ")}</p>
           )}
         </div>
 
@@ -146,8 +166,8 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
             onChange={handleChange}
             required
           />
-          {errors.last_name && (
-            <p className="text-sm text-destructive">{errors.last_name}</p>
+          {errors.last_name && Array.isArray(errors.last_name) && (
+            <p className="text-sm text-destructive">{errors.last_name.join(", ")}</p>
           )}
         </div>
       </div>
@@ -165,8 +185,8 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
             onChange={handleChange}
             required
           />
-          {errors.email && (
-            <p className="text-sm text-destructive">{errors.email}</p>
+          {errors.email && Array.isArray(errors.email) && (
+            <p className="text-sm text-destructive">{errors.email.join(", ")}</p>
           )}
         </div>
 
@@ -175,9 +195,14 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
           <Input
             id="phone"
             name="phone"
+            type="tel"
             value={formData.phone}
             onChange={handleChange}
+            placeholder="+1234567890"
           />
+          {errors.phone && Array.isArray(errors.phone) && (
+            <p className="text-sm text-destructive">{errors.phone.join(", ")}</p>
+          )}
         </div>
       </div>
 
@@ -191,11 +216,15 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
             onChange={handleChange}
           >
             <option value="">Select Status</option>
-            <option value="assigned">Assigned</option>
-            <option value="contacted">Contacted</option>
-            <option value="converted">Converted</option>
-            <option value="closed">Closed</option>
+            {LEAD_STATUS_CHOICES.map((choice) => (
+              <option key={choice.value} value={choice.value}>
+                {choice.label}
+              </option>
+            ))}
           </Select>
+          {errors.status && Array.isArray(errors.status) && (
+            <p className="text-sm text-destructive">{errors.status.join(", ")}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -207,27 +236,43 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
             onChange={handleChange}
           >
             <option value="">Select Source</option>
-            <option value="call">Call</option>
-            <option value="email">Email</option>
-            <option value="existing customer">Existing Customer</option>
-            <option value="partner">Partner</option>
-            <option value="public relations">Public Relations</option>
-            <option value="campaign">Campaign</option>
-            <option value="website">Website</option>
-            <option value="other">Other</option>
+            {LEAD_SOURCE_CHOICES.map((choice) => (
+              <option key={choice.value} value={choice.value}>
+                {choice.label}
+              </option>
+            ))}
           </Select>
+          {errors.source && Array.isArray(errors.source) && (
+            <p className="text-sm text-destructive">{errors.source.join(", ")}</p>
+          )}
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="company">Company</Label>
-          <Input
+          <Label htmlFor="company">Company (Account)</Label>
+          <Select
             id="company"
             name="company"
             value={formData.company}
             onChange={handleChange}
-          />
+            disabled={!accountsData?.results}
+          >
+            <option value="">
+              {accountsData?.results ? "Select Account" : "Loading accounts..."}
+            </option>
+            {accountsData?.results?.map((account: Account) => (
+              <option key={account.id} value={account.id}>
+                {account.name}
+              </option>
+            ))}
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            Select an existing account or leave blank
+          </p>
+          {errors.company && Array.isArray(errors.company) && (
+            <p className="text-sm text-destructive">{errors.company.join(", ")}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -238,7 +283,11 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
             type="url"
             value={formData.website}
             onChange={handleChange}
+            placeholder="https://example.com"
           />
+          {errors.website && Array.isArray(errors.website) && (
+            <p className="text-sm text-destructive">{errors.website.join(", ")}</p>
+          )}
         </div>
       </div>
 
@@ -297,6 +346,30 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
       </div>
 
       <div className="space-y-2">
+        <Label htmlFor="probability">
+          Probability (%) <span className="text-destructive">*</span>
+        </Label>
+        <Input
+          id="probability"
+          name="probability"
+          type="number"
+          min="0"
+          max="100"
+          step="0.1"
+          value={formData.probability}
+          onChange={handleChange}
+          placeholder="0-100"
+          required
+        />
+        <p className="text-xs text-muted-foreground">
+          Enter a value between 0 and 100 representing the likelihood of conversion
+        </p>
+        {errors.probability && Array.isArray(errors.probability) && (
+          <p className="text-sm text-destructive">{errors.probability.join(", ")}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
         <Label htmlFor="description">Description</Label>
         <Textarea
           id="description"
@@ -305,6 +378,9 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
           onChange={handleChange}
           rows={3}
         />
+        {errors.description && Array.isArray(errors.description) && (
+          <p className="text-sm text-destructive">{errors.description.join(", ")}</p>
+        )}
       </div>
 
       <div className="flex justify-end gap-2 pt-4">
