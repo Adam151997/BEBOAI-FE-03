@@ -255,7 +255,7 @@ export interface PaginatedResponse<T> {
 // Leads List Response (specific backend shape)
 export interface LeadsListResponse {
   per_page: number;
-  page_number: number;  // Single page number, not array
+  page_number: number | number[];  // Can be single number or array
   open_leads: {
     leads_count: number;
     open_leads: Lead[];
@@ -274,6 +274,194 @@ export interface LeadsListResponse {
   status: string[];
   tags: string[];
   users: User[];
+}
+
+// Accounts List Response (specific backend shape)
+export interface AccountsListResponse {
+  per_page: number;
+  page_number: number[];
+  active_accounts: {
+    accounts_count?: number;
+    active_accounts?: Account[];
+    offset: number | null;
+  };
+  closed_accounts: {
+    accounts_count?: number;
+    close_accounts: Account[];
+    offset: number | null;
+  };
+  contacts: Contact[];
+  countries: [string, string][];
+  industries: [string, string][];
+  leads: Lead[];
+  status: string[];
+  tags: string[];
+  teams: Team[];
+  users: any[];
+}
+
+// Contacts List Response (specific backend shape)
+export interface ContactsListResponse {
+  per_page: number;
+  page_number: number[];
+  active_contacts?: {
+    contacts_count?: number;
+    active_contacts?: Contact[];
+    contacts?: Contact[];
+    offset: number | null;
+  };
+  closed_contacts?: {
+    contacts_count?: number;
+    close_contacts?: Contact[];
+    closed_contacts?: Contact[];
+    offset: number | null;
+  };
+  // Fallback for simple array response
+  contacts?: Contact[];
+  accounts?: Account[];
+  leads?: Lead[];
+  countries?: [string, string][];
+  status?: string[];
+  tags?: string[];
+  teams?: Team[];
+  users?: any[];
+}
+
+// Opportunities List Response (specific backend shape)
+export interface OpportunitiesListResponse {
+  per_page: number;
+  page_number: number[];
+  active_opportunities?: {
+    opportunities_count?: number;
+    active_opportunities?: Opportunity[];
+    opportunities?: Opportunity[];
+    offset: number | null;
+  };
+  closed_opportunities?: {
+    opportunities_count?: number;
+    close_opportunities?: Opportunity[];
+    closed_opportunities?: Opportunity[];
+    offset: number | null;
+  };
+  // Fallback for simple array response
+  opportunities?: Opportunity[];
+  accounts?: Account[];
+  contacts?: Contact[];
+  stages?: string[];
+  currencies?: string[];
+  status?: string[];
+  tags?: string[];
+  teams?: Team[];
+  users?: any[];
+}
+
+// Tasks List Response (specific backend shape)
+export interface TasksListResponse {
+  per_page: number;
+  page_number: number[];
+  active_tasks?: {
+    tasks_count?: number;
+    active_tasks?: Task[];
+    tasks?: Task[];
+    offset: number | null;
+  };
+  completed_tasks?: {
+    tasks_count?: number;
+    completed_tasks?: Task[];
+    offset: number | null;
+  };
+  // Fallback for simple array response
+  tasks?: Task[];
+  accounts?: Account[];
+  contacts?: Contact[];
+  status?: string[];
+  priority?: string[];
+  tags?: string[];
+  teams?: Team[];
+  users?: any[];
+}
+
+// Events List Response (specific backend shape)
+export interface EventsListResponse {
+  per_page: number;
+  page_number: number[];
+  active_events?: {
+    events_count?: number;
+    active_events?: Event[];
+    events?: Event[];
+    offset: number | null;
+  };
+  completed_events?: {
+    events_count?: number;
+    completed_events?: Event[];
+    offset: number | null;
+  };
+  // Fallback for simple array response
+  events?: Event[];
+  contacts?: Contact[];
+  event_types?: string[];
+  status?: string[];
+  tags?: string[];
+  teams?: Team[];
+  users?: any[];
+}
+
+// Cases List Response (specific backend shape)
+export interface CasesListResponse {
+  per_page: number;
+  page_number: number[];
+  active_cases?: {
+    cases_count?: number;
+    active_cases?: Case[];
+    cases?: Case[];
+    offset: number | null;
+  };
+  closed_cases?: {
+    cases_count?: number;
+    close_cases?: Case[];
+    closed_cases?: Case[];
+    offset: number | null;
+  };
+  // Fallback for simple array response
+  cases?: Case[];
+  accounts?: Account[];
+  contacts?: Contact[];
+  status?: string[];
+  priority?: string[];
+  case_types?: string[];
+  tags?: string[];
+  teams?: Team[];
+  users?: any[];
+}
+
+// Teams List Response (specific backend shape)
+export interface TeamsListResponse {
+  per_page: number;
+  page_number: number[];
+  active_teams?: {
+    teams_count?: number;
+    active_teams?: Team[];
+    teams?: Team[];
+    offset: number | null;
+  };
+  // Fallback for simple array response
+  teams?: Team[];
+  users?: any[];
+}
+
+// Documents List Response (specific backend shape)
+export interface DocumentsListResponse {
+  per_page: number;
+  page_number: number[];
+  active_documents?: {
+    documents_count?: number;
+    active_documents?: Document[];
+    documents?: Document[];
+    offset: number | null;
+  };
+  // Fallback for simple array response
+  documents?: Document[];
+  users?: any[];
 }
 
 export interface ApiError {
