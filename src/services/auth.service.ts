@@ -8,9 +8,9 @@ export const authService = {
       password,
     });
 
-    // Store tokens (new backend uses access_token and refresh_token)
-    localStorage.setItem("access_token", response.data.access_token);
-    localStorage.setItem("refresh_token", response.data.refresh_token);
+    // Store tokens (backend uses access and refresh fields)
+    localStorage.setItem("access_token", response.data.access);
+    localStorage.setItem("refresh_token", response.data.refresh);
 
     // Get org from nested user_details.org (new backend structure)
     const org = response.data.user_details.org || response.data.org;
