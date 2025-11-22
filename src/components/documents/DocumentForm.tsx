@@ -27,6 +27,8 @@ export default function DocumentForm({ document, onSuccess, onCancel }: Document
       if (data.title) formDataToSend.append("title", data.title);
       if (data.file) formDataToSend.append("document_file", data.file);
 
+      // Note: FormData is cast to Partial<Document> for service compatibility
+      // The backend endpoint accepts multipart/form-data but the service expects typed objects
       return documentsService.create(formDataToSend as unknown as Partial<Document>);
     },
     onSuccess,
@@ -41,6 +43,7 @@ export default function DocumentForm({ document, onSuccess, onCancel }: Document
       if (data.title) formDataToSend.append("title", data.title);
       if (data.file) formDataToSend.append("document_file", data.file);
 
+      // Note: FormData is cast to Partial<Document> for service compatibility
       return documentsService.update(document!.id, formDataToSend as unknown as Partial<Document>);
     },
     onSuccess,

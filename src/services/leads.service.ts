@@ -9,7 +9,7 @@ class LeadsService extends CrudService<Lead> {
 
   // Override getAll to handle the custom leads response structure
   async getAll(params?: QueryParams): Promise<PaginatedResponse<Lead>> {
-    const response = await apiClient.get<LeadsListResponse>(this["endpoint"], {
+    const response = await apiClient.get<LeadsListResponse>(this.endpoint, {
       params,
     });
     
