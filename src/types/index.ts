@@ -255,7 +255,7 @@ export interface PaginatedResponse<T> {
 // Leads List Response (specific backend shape)
 export interface LeadsListResponse {
   per_page: number;
-  page_number: number;  // Single page number, not array
+  page_number: number | number[];  // Can be single number or array
   open_leads: {
     leads_count: number;
     open_leads: Lead[];

@@ -15,15 +15,23 @@ class AccountsService extends CrudService<Account> {
     
     const data = response.data;
     
-    // Combine active and closed accounts into a single results array
-    const allAccounts = [
-      ...(data.active_accounts?.active_accounts || []),
-      ...(data.closed_accounts?.close_accounts || []),
-    ];
+    // Try different possible response structures
+    let allAccounts: Account[] = [];
+    
+    // Check for nested structure
+    if (data.active_accounts || data.closed_accounts) {
+      allAccounts = [
+        ...(data.active_accounts?.active_accounts || []),
+        ...(data.closed_accounts?.close_accounts || []),
+      ];
+    } else if (Array.isArray(data)) {
+      // Fallback to simple array response
+      allAccounts = data as unknown as Account[];
+    }
     
     // Transform to standard paginated response format
     return {
-      count: (data.active_accounts?.accounts_count || 0) + (data.closed_accounts?.accounts_count || 0),
+      count: allAccounts.length,
       next: null, // Backend doesn't provide next/previous URLs
       previous: null,
       results: allAccounts,
