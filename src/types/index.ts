@@ -283,6 +283,7 @@ export interface AccountsListResponse {
   active_accounts: {
     accounts_count?: number;
     active_accounts?: Account[];
+    open_accounts?: Account[];  // Backend uses this key
     offset: number | null;
   };
   closed_accounts: {

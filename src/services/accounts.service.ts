@@ -20,8 +20,13 @@ class AccountsService extends CrudService<Account> {
     
     // Check for nested structure
     if (data.active_accounts || data.closed_accounts) {
+      const active = data.active_accounts;
       allAccounts = [
-        ...(data.active_accounts?.active_accounts || []),
+        ...(
+          (active?.open_accounts ||
+           active?.active_accounts ||
+           []) as Account[]
+        ),
         ...(data.closed_accounts?.close_accounts || []),
       ];
     } else if (Array.isArray(data)) {
