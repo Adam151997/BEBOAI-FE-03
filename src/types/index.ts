@@ -31,6 +31,7 @@ export interface LoginResponse {
 // Lead Types
 export interface Lead {
   id: string;
+  organization?: string;
   title?: string;
   first_name: string;
   last_name: string;

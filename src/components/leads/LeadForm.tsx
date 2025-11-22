@@ -68,7 +68,14 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
       Object.entries(formData).filter(([_, value]) => value !== "")
     );
 
+    // Add organization ID from localStorage
+    const orgKey = localStorage.getItem("org_key");
+    if (orgKey) {
+      cleanData.organization = orgKey;
+    }
+
     console.log("Submitting lead data:", cleanData);
+    console.log("Organization ID:", orgKey);
 
     if (lead) {
       updateMutation.mutate(cleanData);
