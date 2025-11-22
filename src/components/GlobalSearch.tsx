@@ -99,29 +99,33 @@ export default function GlobalSearch() {
         <div className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase">
           {title} ({items.length})
         </div>
-        {items.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => handleResultClick(module, item.id)}
-            className={cn(
-              "w-full px-4 py-3 text-left hover:bg-accent transition-colors",
-              "border-b last:border-b-0"
-            )}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex-1 min-w-0">
-                <div className="font-medium truncate">
-                  {getItemTitle(item, module)}
-                </div>
-                {((item as Lead).email || (item as Contact).primary_email) && (
-                  <div className="text-sm text-muted-foreground truncate">
-                    {(item as Lead).email || (item as Contact).primary_email}
+        {items.map((item) => {
+          const email = 'email' in item ? item.email : 'primary_email' in item ? item.primary_email : undefined;
+          
+          return (
+            <button
+              key={item.id}
+              onClick={() => handleResultClick(module, item.id)}
+              className={cn(
+                "w-full px-4 py-3 text-left hover:bg-accent transition-colors",
+                "border-b last:border-b-0"
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium truncate">
+                    {getItemTitle(item, module)}
                   </div>
-                )}
+                  {email && (
+                    <div className="text-sm text-muted-foreground truncate">
+                      {email}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </div>
     );
   };
