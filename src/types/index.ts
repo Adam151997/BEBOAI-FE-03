@@ -28,8 +28,8 @@ export interface Organization {
 
 export interface LoginResponse {
   username?: string;  // New backend includes this
-  access: string;  // JWT access token from backend
-  refresh: string;  // JWT refresh token from backend
+  access: string;  // Primary JWT access token field (backend returns this)
+  refresh: string;  // Primary JWT refresh token field (backend returns this)
   access_token?: string;  // Deprecated - kept for backward compatibility
   refresh_token?: string;  // Deprecated - kept for backward compatibility
   user_details: User;
