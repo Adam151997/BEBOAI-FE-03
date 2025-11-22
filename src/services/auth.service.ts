@@ -8,16 +8,29 @@ export const authService = {
       password,
     });
 
-    // Store tokens and org data
-    localStorage.setItem("access_token", response.data.access);
-    localStorage.setItem("refresh_token", response.data.refresh);
-    localStorage.setItem("org_key", response.data.org.id);
-    localStorage.setItem("org", JSON.stringify(response.data.org));
+    // Store tokens (new backend uses access_token and refresh_token)
+    localStorage.setItem("access_token", response.data.access_token);
+    localStorage.setItem("refresh_token", response.data.refresh_token);
+
+    // Get org from nested user_details.org (new backend structure)
+    const org = response.data.user_details.org || response.data.org;
+    if (org) {
+      localStorage.setItem("org_key", org.id);
+      localStorage.setItem("org", JSON.stringify(org));
+    }
+
+    // Store user details
     localStorage.setItem("user", JSON.stringify(response.data.user_details));
 
-    // Store profile_id for easy access (use user.profile_id or fallback to user.id)
+    // Store profile_id for easy access (critical for assigned_to arrays)
     const profileId = response.data.user_details.profile_id || response.data.user_details.id;
     localStorage.setItem("profile_id", profileId);
+
+    console.log("✅ Login successful - stored:", {
+      profile_id: profileId,
+      org_id: org?.id,
+      role: response.data.user_details.role
+    });
 
     return response.data;
   },

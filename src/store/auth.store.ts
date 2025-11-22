@@ -26,9 +26,11 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   login: async (email: string, password: string) => {
     const data = await authService.login(email, password);
+    // Org is now nested in user_details.org (new backend structure)
+    const org = data.user_details.org || data.org;
     set({
       user: data.user_details,
-      organization: data.org,
+      organization: org || null,
       isAuthenticated: true,
       isInitialized: true,
     });
