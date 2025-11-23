@@ -1,3 +1,136 @@
+// ========================================
+// FastAPI v2 Types - Match Pydantic Schemas
+// ========================================
+
+// Minimal nested model types used across FastAPI v2 responses
+// Matches apiv2/schemas/* minimal models
+
+export interface UserMin {
+  id: string;
+  email: string;
+  first_name?: string;
+  last_name?: string;
+}
+
+export interface ProfileMin {
+  id: string;
+  user?: UserMin;
+}
+
+export interface TeamMin {
+  id: string;
+  name: string;
+}
+
+export interface OrgMin {
+  id: string;
+  name: string;
+}
+
+export interface AddressMin {
+  address_line?: string;
+  street?: string;
+  city?: string;
+  state?: string;
+  postcode?: string;
+  country?: string;
+}
+
+export interface AccountMin {
+  id: string;
+  name: string;
+}
+
+// Comment and Attachment types for FastAPI v2
+// Matches apiv2/schemas/contacts.py::CommentResponse, AttachmentResponse, etc.
+export interface CommentResponse {
+  id: string;
+  comment: string;
+  commented_by?: UserMin;
+  created_at?: string;
+}
+
+export interface AttachmentResponse {
+  id: string;
+  file_name?: string;
+  file_url?: string;
+  uploaded_by?: UserMin;
+  created_at?: string;
+}
+
+// FastAPI v2 List Response Types
+// These match the exact Pydantic *ListResponse schemas in apiv2/schemas/*
+
+// Matches apiv2/schemas/contacts.py::ContactListResponse
+export interface ContactListResponseV2 {
+  contact_obj_list: Contact[];
+  contacts_count: number;
+  per_page: number;
+  page_number: number;
+  offset?: number | null;
+}
+
+// Matches apiv2/schemas/teams.py::TeamListResponse
+export interface TeamListResponseV2 {
+  teams: Team[];
+  teams_count: number;
+  per_page: number;
+  page_number: number;
+  offset?: number | null;
+}
+
+// Matches apiv2/schemas/invoices.py::InvoiceListResponse
+export interface InvoiceListResponseV2 {
+  invoices: Invoice[];
+  invoices_count: number;
+  per_page: number;
+  page_number: number;
+  offset?: number | null;
+}
+
+// Placeholder for Invoice type (to be implemented when invoice module is added)
+export interface Invoice {
+  id: string;
+  // Add invoice fields based on apiv2/schemas/invoices.py when implementing
+}
+
+// Matches pattern for other FastAPI v2 list responses
+export interface LeadListResponseV2 {
+  leads: Lead[];
+  leads_count: number;
+  per_page: number;
+  page_number: number;
+  offset?: number | null;
+}
+
+export interface UserListResponseV2 {
+  users: User[];
+  users_count: number;
+  per_page: number;
+  page_number: number;
+  offset?: number | null;
+}
+
+export interface CaseListResponseV2 {
+  cases: Case[];
+  cases_count: number;
+  per_page: number;
+  page_number: number;
+  offset?: number | null;
+}
+
+export interface TaskListResponseV2 {
+  tasks: Task[];
+  tasks_count: number;
+  per_page: number;
+  page_number: number;
+  offset?: number | null;
+}
+
+// ========================================
+// Legacy Types (DRF-style)
+// ========================================
+
 // User and Auth Types
 export interface User {
   id: string;
@@ -215,7 +348,7 @@ export interface Document {
   updated_at?: string;
 }
 
-// Comment Types
+// Comment Types (Legacy - use CommentResponse for FastAPI v2)
 export interface Comment {
   id: string;
   comment: string;
@@ -223,7 +356,7 @@ export interface Comment {
   created_at?: string;
 }
 
-// Attachment Types
+// Attachment Types (Legacy - use AttachmentResponse for FastAPI v2)
 export interface Attachment {
   id: string;
   file_name?: string;
@@ -244,13 +377,20 @@ export interface DashboardResponse {
   opportunities: Opportunity[];
 }
 
-// API Response Types
+// API Response Types (Legacy DRF-style)
+// Note: Services transform backend responses to this format for backward compatibility
 export interface PaginatedResponse<T> {
   count: number;
   next: string | null;
   previous: string | null;
   results: T[];
 }
+
+// ========================================
+// Legacy List Response Types
+// These represent the current backend response shapes (pre-FastAPI v2 or mixed)
+// Services use these types and transform them to PaginatedResponse<T> for components
+// ========================================
 
 // Leads List Response (specific backend shape)
 export interface LeadsListResponse {
