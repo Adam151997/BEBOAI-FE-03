@@ -1,5 +1,7 @@
 import apiClient from "@/lib/api-client";
 
+// FastAPI v2 profile endpoint: /api/v2/profile/
+// Note: Verify if this exists in apiv2/routers/
 export interface Profile {
   id: string;
   email: string;
