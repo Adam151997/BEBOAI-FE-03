@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { opportunitiesService } from "@/services/opportunities.service";
+import { accountsService } from "@/services/accounts.service";
+import { contactsService } from "@/services/contacts.service";
 import type { Opportunity } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,9 +32,36 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
     close_date: opportunity?.close_date || "",
     lead_source: opportunity?.lead_source || "",
     description: opportunity?.description || "",
+    contacts: "",
+    // Note: leads field is commented out since Opportunity type doesn't include it
+    // If backend supports it, uncomment the line below
+    // leads: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string[]>>({});
+
+  // Fetch accounts for dropdown
+  const { data: accountsData } = useQuery({
+    queryKey: ["accounts", "for-opportunity-form"],
+    queryFn: () => accountsService.getAll({ limit: 100, offset: 0, search: "", ordering: "-created_at" }),
+  });
+
+  // Fetch contacts for multiselect
+  const { data: contactsData } = useQuery({
+    queryKey: ["contacts", "for-opportunity-form"],
+    queryFn: () => contactsService.getAll({ limit: 100, offset: 0, search: "", ordering: "-created_at" }),
+  });
+
+  // Note: Fetch leads if backend adds leads support to opportunities
+  // const { data: leadsData } = useQuery({
+  //   queryKey: ["leads", "for-opportunity-form"],
+  //   queryFn: () => leadsService.getAll({ limit: 100, offset: 0, search: "", ordering: "-created_at" }),
+  // });
+
+  const accountOptions = Array.isArray(accountsData?.results) ? accountsData.results : [];
+  const contactOptions = Array.isArray(contactsData?.results) ? contactsData.results : [];
+  // Note: leadOptions available if backend adds leads support to opportunities
+  // const leadOptions = Array.isArray(leadsData?.results) ? leadsData.results : [];
 
   const createMutation = useMutation({
     mutationFn: (data: Partial<Opportunity>) => opportunitiesService.create(data),
@@ -76,6 +105,12 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
     if (formData.amount) cleanData.amount = parseFloat(formData.amount);
     if (formData.probability) cleanData.probability = parseInt(formData.probability);
     if (formData.account) cleanData.account = parseInt(formData.account);
+    
+    // Handle contacts array (comma-separated IDs)
+    if (formData.contacts) {
+      const contactIds = formData.contacts.split(',').map(id => id.trim()).filter(id => id);
+      if (contactIds.length > 0) cleanData.contacts = contactIds;
+    }
 
     // Add current user's profile_id to assigned_to array for new records
     const profileId = localStorage.getItem("profile_id");
@@ -121,17 +156,22 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
 
       <div className="space-y-2">
         <Label htmlFor="account">
-          Account ID <span className="text-destructive">*</span>
+          Company <span className="text-destructive">*</span>
         </Label>
-        <Input
+        <Select
           id="account"
           name="account"
-          type="number"
           value={formData.account}
           onChange={handleChange}
           required
-          placeholder="Enter Account ID"
-        />
+        >
+          <option value="">Select company</option>
+          {accountOptions.map((acc) => (
+            <option key={acc.id} value={acc.id}>
+              {acc.name}
+            </option>
+          ))}
+        </Select>
         {errors.account && Array.isArray(errors.account) && (
           <p className="text-sm text-destructive">{errors.account.join(", ")}</p>
         )}
@@ -244,6 +284,24 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
         </Select>
         {errors.lead_source && Array.isArray(errors.lead_source) && (
           <p className="text-sm text-destructive">{errors.lead_source.join(", ")}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="contacts">Contacts (Optional)</Label>
+        <Input
+          id="contacts"
+          name="contacts"
+          value={formData.contacts}
+          onChange={handleChange}
+          placeholder="Enter contact IDs (comma-separated)"
+        />
+        <p className="text-xs text-muted-foreground">
+          Available contacts: {contactOptions.map(c => `${c.first_name} ${c.last_name || ''} (${c.id})`).slice(0, 3).join(', ')}
+          {contactOptions.length > 3 && `, +${contactOptions.length - 3} more`}
+        </p>
+        {errors.contacts && Array.isArray(errors.contacts) && (
+          <p className="text-sm text-destructive">{errors.contacts.join(", ")}</p>
         )}
       </div>
 

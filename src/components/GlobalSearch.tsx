@@ -13,6 +13,7 @@ export default function GlobalSearch() {
   const [results, setResults] = useState<GlobalSearchResult | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -31,20 +32,24 @@ export default function GlobalSearch() {
     const delaySearch = setTimeout(async () => {
       if (query.trim().length >= 2) {
         setLoading(true);
+        setError(false);
         try {
           const response = await searchService.search(query);
           setResults(response);
           setIsOpen(true);
+          setError(false);
         } catch (err) {
           console.error("Search error:", err);
           setResults(null);
-          // Don't crash on error, just clear results
+          setError(true);
+          setIsOpen(true);
         } finally {
           setLoading(false);
         }
       } else {
         setResults(null);
         setIsOpen(false);
+        setError(false);
       }
     }, 300);
 
@@ -155,11 +160,22 @@ export default function GlobalSearch() {
         )}
       </div>
 
+      {loading && (
+        <p className="text-xs text-muted-foreground mt-1">Searching…</p>
+      )}
+      {!loading && query.trim().length >= 2 && error && (
+        <p className="text-xs text-destructive mt-1">Search failed. Check console logs or network tab.</p>
+      )}
+
       {isOpen && (
         <div className="absolute top-full mt-2 w-full rounded-md border bg-popover shadow-lg z-50 max-h-[500px] overflow-hidden">
           {loading ? (
             <div className="p-4 text-center text-sm text-muted-foreground">
               Searching...
+            </div>
+          ) : error ? (
+            <div className="p-4 text-center text-sm text-destructive">
+              Search failed. Please try again or check the network tab.
             </div>
           ) : hasResults ? (
             <div className="overflow-y-auto max-h-[500px]">
