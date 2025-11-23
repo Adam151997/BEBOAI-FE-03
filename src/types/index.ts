@@ -111,7 +111,7 @@ export interface Contact {
   linked_in_url?: string;
   facebook_url?: string;
   twitter_username?: string;
-  account?: string;
+  account?: Account | string | null;
   assigned_to?: string[] | User[];
   teams?: string[];
   created_at?: string;

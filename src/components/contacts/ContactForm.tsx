@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { contactsService } from "@/services/contacts.service";
+import { accountsService } from "@/services/accounts.service";
 import type { Contact } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,9 +37,18 @@ export default function ContactForm({ contact, onSuccess, onCancel }: ContactFor
     linked_in_url: contact?.linked_in_url || "",
     facebook_url: contact?.facebook_url || "",
     twitter_username: contact?.twitter_username || "",
+    account: contact?.account ? (typeof contact.account === "string" ? contact.account : contact.account.id) : "",
   });
 
   const [errors, setErrors] = useState<Record<string, string[]>>({});
+
+  // Fetch accounts for dropdown
+  const { data: accountsData } = useQuery({
+    queryKey: ["accounts", "for-contact-form"],
+    queryFn: () => accountsService.getAll({ limit: 100, offset: 0, search: "", ordering: "-created_at" }),
+  });
+
+  const accountOptions = Array.isArray(accountsData?.results) ? accountsData.results : [];
 
   const createMutation = useMutation({
     mutationFn: (data: Partial<Contact>) => contactsService.create(data),
@@ -165,6 +175,26 @@ export default function ContactForm({ contact, onSuccess, onCancel }: ContactFor
             placeholder="e.g., Manager, Director"
           />
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="account">Company (Account)</Label>
+        <Select
+          id="account"
+          name="account"
+          value={formData.account}
+          onChange={handleChange}
+        >
+          <option value="">Select company</option>
+          {accountOptions.map((acc) => (
+            <option key={acc.id} value={acc.id}>
+              {acc.name}
+            </option>
+          ))}
+        </Select>
+        {errors.account && Array.isArray(errors.account) && (
+          <p className="text-sm text-destructive">{errors.account.join(", ")}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
