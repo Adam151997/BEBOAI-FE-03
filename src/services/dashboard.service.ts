@@ -1,4 +1,5 @@
 import axios from "axios";
+import { LEGACY_API_BASE_URL } from "@/lib/api-client";
 import type { DashboardResponse } from "@/types";
 
 class DashboardService {
@@ -9,7 +10,7 @@ class DashboardService {
     const orgId = localStorage.getItem("org_id");
     
     const response = await axios.get<DashboardResponse>(
-      "https://beboai-03-production.up.railway.app/api/dashboard/",
+      `${LEGACY_API_BASE_URL}/dashboard/`,
       {
         headers: {
           "Content-Type": "application/json",

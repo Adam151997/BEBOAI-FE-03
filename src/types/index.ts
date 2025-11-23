@@ -60,6 +60,8 @@ export interface AttachmentResponse {
 
 // FastAPI v2 List Response Types
 // These match the exact Pydantic *ListResponse schemas in apiv2/schemas/*
+// Note: Forward references to types like Contact, Team, etc. are allowed in TypeScript
+// as interfaces are hoisted during compilation. Full type definitions appear below.
 
 // Matches apiv2/schemas/contacts.py::ContactListResponse
 export interface ContactListResponseV2 {

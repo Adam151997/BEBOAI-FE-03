@@ -3,6 +3,9 @@ import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 // FastAPI v2 base URL - all routes now target /api/v2
 const API_BASE_URL = "https://beboai-03-production.up.railway.app/api/v2";
 
+// Legacy API base URL - used for endpoints not yet migrated to FastAPI v2
+const LEGACY_API_BASE_URL = "https://beboai-03-production.up.railway.app/api";
+
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -49,7 +52,7 @@ apiClient.interceptors.response.use(
         if (refreshToken) {
           // Token refresh still uses legacy /api endpoint (not migrated to v2 yet)
           const response = await axios.post(
-            "https://beboai-03-production.up.railway.app/api/auth/refresh-token/",
+            `${LEGACY_API_BASE_URL}/auth/refresh-token/`,
             { refresh: refreshToken }
           );
 
@@ -75,4 +78,4 @@ apiClient.interceptors.response.use(
 );
 
 export default apiClient;
-export { API_BASE_URL };
+export { API_BASE_URL, LEGACY_API_BASE_URL };

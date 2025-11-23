@@ -1,11 +1,11 @@
-import apiClient from "@/lib/api-client";
+import apiClient, { LEGACY_API_BASE_URL } from "@/lib/api-client";
 import type { LoginResponse, User } from "@/types";
 
 export const authService = {
   login: async (email: string, password: string): Promise<LoginResponse> => {
     // Auth endpoints still use legacy /api, not /api/v2
     const response = await apiClient.post<LoginResponse>(
-      "https://beboai-03-production.up.railway.app/api/auth/login/",
+      `${LEGACY_API_BASE_URL}/auth/login/`,
       { email, password }
     );
 
@@ -49,7 +49,7 @@ export const authService = {
   refreshToken: async (refreshToken: string): Promise<{ access: string }> => {
     // Token refresh still uses legacy /api endpoint
     const response = await apiClient.post<{ access: string }>(
-      "https://beboai-03-production.up.railway.app/api/auth/refresh-token/",
+      `${LEGACY_API_BASE_URL}/auth/refresh-token/`,
       { refresh: refreshToken }
     );
     return response.data;
@@ -73,7 +73,7 @@ export const authService = {
   ): Promise<LoginResponse> => {
     // Registration still uses legacy /api endpoint
     const response = await apiClient.post<LoginResponse>(
-      "https://beboai-03-production.up.railway.app/api/auth/register/",
+      `${LEGACY_API_BASE_URL}/auth/register/`,
       { org_name, email, password, first_name, last_name }
     );
 
