@@ -2,6 +2,8 @@ import { CrudService, type QueryParams } from "./crud.service";
 import type { Team, TeamsListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
+// FastAPI v2 teams router: /api/v2/teams/
+// Matches apiv2/routers/teams.py and apiv2/schemas/teams.py
 class TeamsService extends CrudService<Team> {
   constructor() {
     super("/teams/");

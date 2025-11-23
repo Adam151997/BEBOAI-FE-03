@@ -2,6 +2,8 @@ import { CrudService, type QueryParams } from "./crud.service";
 import type { Document, DocumentsListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
+// FastAPI v2 documents router: /api/v2/documents/
+// Note: Check if documents router exists in apiv2/routers/
 class DocumentsService extends CrudService<Document> {
   constructor() {
     super("/documents/");

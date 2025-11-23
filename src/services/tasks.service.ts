@@ -2,6 +2,8 @@ import { CrudService, type QueryParams } from "./crud.service";
 import type { Task, TasksListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
+// FastAPI v2 tasks router: /api/v2/tasks/
+// Matches apiv2/routers/tasks.py
 class TasksService extends CrudService<Task> {
   constructor() {
     super("/tasks/");

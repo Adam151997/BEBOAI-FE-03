@@ -2,6 +2,8 @@ import { CrudService, type QueryParams } from "./crud.service";
 import type { Event, EventsListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
+// FastAPI v2 events router: /api/v2/events/
+// Note: Check if events router exists in apiv2/routers/
 class EventsService extends CrudService<Event> {
   constructor() {
     super("/events/");
