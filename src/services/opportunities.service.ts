@@ -2,6 +2,8 @@ import { CrudService, type QueryParams } from "./crud.service";
 import type { Opportunity, OpportunitiesListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
+// FastAPI v2 opportunities router: /api/v2/opportunities/
+// Note: Check if opportunities router exists in apiv2/routers/
 class OpportunitiesService extends CrudService<Opportunity> {
   constructor() {
     super("/opportunities/");

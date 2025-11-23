@@ -2,6 +2,8 @@ import { CrudService, type QueryParams } from "./crud.service";
 import type { Account, AccountsListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
+// FastAPI v2 accounts router: /api/v2/accounts/
+// Note: Check if accounts router exists in apiv2/routers/
 class AccountsService extends CrudService<Account> {
   constructor() {
     super("/accounts/");

@@ -1,6 +1,10 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 
-const API_BASE_URL = "https://beboai-03-production.up.railway.app/api";
+// FastAPI v2 base URL - all routes now target /api/v2
+const API_BASE_URL = "https://beboai-03-production.up.railway.app/api/v2";
+
+// Legacy API base URL - used for endpoints not yet migrated to FastAPI v2
+const LEGACY_API_BASE_URL = "https://beboai-03-production.up.railway.app/api";
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -13,14 +17,15 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem("access_token");
-    const orgKey = localStorage.getItem("org_key");
+    // FastAPI v2 requires org header to be the organization UUID (org.id), not the API key
+    const orgId = localStorage.getItem("org_id");
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    if (orgKey) {
-      config.headers.org = orgKey;
+    if (orgId) {
+      config.headers.org = orgId;
     }
 
     return config;
@@ -45,9 +50,11 @@ apiClient.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem("refresh_token");
         if (refreshToken) {
-          const response = await axios.post(`${API_BASE_URL}/auth/refresh-token/`, {
-            refresh: refreshToken,
-          });
+          // Token refresh still uses legacy /api endpoint (not migrated to v2 yet)
+          const response = await axios.post(
+            `${LEGACY_API_BASE_URL}/auth/refresh-token/`,
+            { refresh: refreshToken }
+          );
 
           const { access } = response.data;
           localStorage.setItem("access_token", access);
@@ -71,4 +78,4 @@ apiClient.interceptors.response.use(
 );
 
 export default apiClient;
-export { API_BASE_URL };
+export { API_BASE_URL, LEGACY_API_BASE_URL };

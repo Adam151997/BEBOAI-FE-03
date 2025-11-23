@@ -1,12 +1,13 @@
-import apiClient from "@/lib/api-client";
+import apiClient, { LEGACY_API_BASE_URL } from "@/lib/api-client";
 import type { LoginResponse, User } from "@/types";
 
 export const authService = {
   login: async (email: string, password: string): Promise<LoginResponse> => {
-    const response = await apiClient.post<LoginResponse>("/auth/login/", {
-      email,
-      password,
-    });
+    // Auth endpoints still use legacy /api, not /api/v2
+    const response = await apiClient.post<LoginResponse>(
+      `${LEGACY_API_BASE_URL}/auth/login/`,
+      { email, password }
+    );
 
     // Store tokens (backend uses access and refresh fields)
     localStorage.setItem("access_token", response.data.access);
@@ -15,7 +16,12 @@ export const authService = {
     // Get org from nested user_details.org (new backend structure)
     const org = response.data.user_details.org || response.data.org;
     if (org) {
-      localStorage.setItem("org_key", org.id);
+      // FastAPI v2 requires org header to be the organization UUID (org.id), not the API key
+      localStorage.setItem("org_id", org.id);
+      // Keep org_api_key separate if needed for display purposes
+      if (org.api_key) {
+        localStorage.setItem("org_api_key", org.api_key);
+      }
       localStorage.setItem("org", JSON.stringify(org));
     }
 
@@ -41,9 +47,11 @@ export const authService = {
   },
 
   refreshToken: async (refreshToken: string): Promise<{ access: string }> => {
-    const response = await apiClient.post<{ access: string }>("/auth/refresh-token/", {
-      refresh: refreshToken,
-    });
+    // Token refresh still uses legacy /api endpoint
+    const response = await apiClient.post<{ access: string }>(
+      `${LEGACY_API_BASE_URL}/auth/refresh-token/`,
+      { refresh: refreshToken }
+    );
     return response.data;
   },
 
@@ -63,13 +71,11 @@ export const authService = {
     first_name: string,
     last_name: string
   ): Promise<LoginResponse> => {
-    const response = await apiClient.post<LoginResponse>("/auth/register/", {
-      org_name,
-      email,
-      password,
-      first_name,
-      last_name,
-    });
+    // Registration still uses legacy /api endpoint
+    const response = await apiClient.post<LoginResponse>(
+      `${LEGACY_API_BASE_URL}/auth/register/`,
+      { org_name, email, password, first_name, last_name }
+    );
 
     // Store tokens (backend uses access and refresh fields)
     localStorage.setItem("access_token", response.data.access);
@@ -78,7 +84,12 @@ export const authService = {
     // Get org from nested user_details.org (new backend structure)
     const org = response.data.user_details.org || response.data.org;
     if (org) {
-      localStorage.setItem("org_key", org.id);
+      // FastAPI v2 requires org header to be the organization UUID (org.id), not the API key
+      localStorage.setItem("org_id", org.id);
+      // Keep org_api_key separate if needed for display purposes
+      if (org.api_key) {
+        localStorage.setItem("org_api_key", org.api_key);
+      }
       localStorage.setItem("org", JSON.stringify(org));
     }
 

@@ -1,6 +1,8 @@
 import apiClient from "@/lib/api-client";
 import type { User, PaginatedResponse } from "@/types";
 
+// FastAPI v2 users router: /api/v2/users/
+// Matches apiv2/routers/users.py
 export const usersService = {
   getAll: async (params?: any): Promise<PaginatedResponse<User>> => {
     const response = await apiClient.get<PaginatedResponse<User>>("/users/", {

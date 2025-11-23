@@ -2,6 +2,8 @@ import { CrudService, type QueryParams } from "./crud.service";
 import type { Lead, LeadsListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
+// FastAPI v2 leads router: /api/v2/leads/
+// Matches apiv2/routers/leads.py
 class LeadsService extends CrudService<Lead> {
   constructor() {
     super("/leads/");
