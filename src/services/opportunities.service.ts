@@ -3,7 +3,17 @@ import type { Opportunity, OpportunitiesListResponse, PaginatedResponse } from "
 import apiClient from "@/lib/api-client";
 
 // FastAPI v2 opportunities router: /api/v2/opportunities/
-// Note: Check if opportunities router exists in apiv2/routers/
+// Matches apiv2/routers/opportunities.py and apiv2/schemas/opportunities.py
+// 
+// Standard CRUD endpoints:
+// - GET    /opportunities/                  → List opportunities with pagination
+// - POST   /opportunities/                  → Create new opportunity
+// - GET    /opportunities/{id}/             → Get single opportunity
+// - PUT    /opportunities/{id}/             → Update opportunity
+// - PATCH  /opportunities/{id}/             → Partial update
+// - DELETE /opportunities/{id}/             → Delete opportunity
+// - POST   /opportunities/{id}/comments/    → Add comment
+// - POST   /opportunities/{id}/attachments/ → Add attachment
 class OpportunitiesService extends CrudService<Opportunity> {
   constructor() {
     super("/opportunities/");

@@ -1,7 +1,11 @@
 import apiClient from "@/lib/api-client";
 
 // FastAPI v2 profile endpoint: /api/v2/profile/
-// Note: Verify if this exists in apiv2/routers/
+// Note: Verify exact paths - may be under /api/v2/users/profile/ or similar
+// 
+// Endpoints:
+// - GET  /profile/me/ → Get current user profile
+// - PUT  /profile/me/ → Update current user profile
 export interface Profile {
   id: string;
   email: string;

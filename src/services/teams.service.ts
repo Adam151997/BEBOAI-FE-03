@@ -4,6 +4,16 @@ import apiClient from "@/lib/api-client";
 
 // FastAPI v2 teams router: /api/v2/teams/
 // Matches apiv2/routers/teams.py and apiv2/schemas/teams.py
+// 
+// Standard CRUD endpoints:
+// - GET    /teams/                  → List teams with pagination
+// - POST   /teams/                  → Create new team
+// - GET    /teams/{id}/             → Get single team
+// - PUT    /teams/{id}/             → Update team
+// - PATCH  /teams/{id}/             → Partial update
+// - DELETE /teams/{id}/             → Delete team
+// - POST   /teams/{id}/comments/    → Add comment (if supported)
+// - POST   /teams/{id}/attachments/ → Add attachment (if supported)
 class TeamsService extends CrudService<Team> {
   constructor() {
     super("/teams/");

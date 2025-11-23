@@ -3,7 +3,21 @@ import type { Lead, LeadsListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
 // FastAPI v2 leads router: /api/v2/leads/
-// Matches apiv2/routers/leads.py
+// Matches apiv2/routers/leads.py and apiv2/schemas/leads.py
+// 
+// Standard CRUD endpoints:
+// - GET    /leads/                  → List leads with pagination
+// - POST   /leads/                  → Create new lead
+// - GET    /leads/{id}/             → Get single lead
+// - PUT    /leads/{id}/             → Update lead
+// - PATCH  /leads/{id}/             → Partial update
+// - DELETE /leads/{id}/             → Delete lead
+// - POST   /leads/{id}/comments/    → Add comment
+// - POST   /leads/{id}/attachments/ → Add attachment
+//
+// Additional endpoints:
+// - POST   /leads/upload/           → Bulk upload leads
+// - POST   /leads/create-from-site/ → Create lead from website form
 class LeadsService extends CrudService<Lead> {
   constructor() {
     super("/leads/");

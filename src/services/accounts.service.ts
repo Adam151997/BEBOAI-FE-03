@@ -3,7 +3,20 @@ import type { Account, AccountsListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
 // FastAPI v2 accounts router: /api/v2/accounts/
-// Note: Check if accounts router exists in apiv2/routers/
+// Matches apiv2/routers/accounts.py and apiv2/schemas/accounts.py
+// 
+// Standard CRUD endpoints:
+// - GET    /accounts/                  → List accounts with pagination
+// - POST   /accounts/                  → Create new account
+// - GET    /accounts/{id}/             → Get single account
+// - PUT    /accounts/{id}/             → Update account
+// - PATCH  /accounts/{id}/             → Partial update
+// - DELETE /accounts/{id}/             → Delete account
+// - POST   /accounts/{id}/comments/    → Add comment
+// - POST   /accounts/{id}/attachments/ → Add attachment
+//
+// Additional endpoints:
+// - POST   /accounts/{id}/create_mail/ → Send email to account
 class AccountsService extends CrudService<Account> {
   constructor() {
     super("/accounts/");

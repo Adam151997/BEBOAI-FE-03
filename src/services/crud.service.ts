@@ -10,6 +10,20 @@ export interface QueryParams {
   [key: string]: string | number | undefined;
 }
 
+// ========================================
+// Base CRUD Service for FastAPI v2 Endpoints
+// ========================================
+// This service provides standard CRUD operations that follow FastAPI v2 REST conventions:
+// - GET    /{resource}/             → List all items with pagination
+// - POST   /{resource}/             → Create new item
+// - GET    /{resource}/{id}/        → Get single item by ID
+// - PUT    /{resource}/{id}/        → Full update of item
+// - PATCH  /{resource}/{id}/        → Partial update of item
+// - DELETE /{resource}/{id}/        → Delete item
+// - POST   /{resource}/{id}/comments/    → Add comment to item
+// - POST   /{resource}/{id}/attachments/ → Add attachment to item
+//
+// Services can extend this class and override methods for custom behavior
 export class CrudService<T> {
   protected endpoint: string;
 
@@ -48,8 +62,10 @@ export class CrudService<T> {
     await apiClient.delete(`${this.endpoint}${id}/`);
   }
 
+  // FastAPI v2 typically uses /{resource}/{id}/comments/ and /{resource}/{id}/attachments/
+  // These paths may need adjustment based on actual router implementation
   async addComment(id: string, comment: string): Promise<any> {
-    const response = await apiClient.post(`${this.endpoint}comment/${id}/`, {
+    const response = await apiClient.post(`${this.endpoint}${id}/comments/`, {
       comment,
     });
     return response.data;
@@ -60,7 +76,7 @@ export class CrudService<T> {
     formData.append("attachment", file);
 
     const response = await apiClient.post(
-      `${this.endpoint}attachment/${id}/`,
+      `${this.endpoint}${id}/attachments/`,
       formData,
       {
         headers: {

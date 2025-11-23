@@ -4,6 +4,16 @@ import apiClient from "@/lib/api-client";
 
 // FastAPI v2 contacts router: /api/v2/contacts/
 // Matches apiv2/routers/contacts.py and apiv2/schemas/contacts.py
+// 
+// Standard CRUD endpoints:
+// - GET    /contacts/                  → List contacts with pagination
+// - POST   /contacts/                  → Create new contact
+// - GET    /contacts/{id}/             → Get single contact
+// - PUT    /contacts/{id}/             → Update contact
+// - PATCH  /contacts/{id}/             → Partial update
+// - DELETE /contacts/{id}/             → Delete contact
+// - POST   /contacts/{id}/comments/    → Add comment
+// - POST   /contacts/{id}/attachments/ → Add attachment
 class ContactsService extends CrudService<Contact> {
   constructor() {
     super("/contacts/");

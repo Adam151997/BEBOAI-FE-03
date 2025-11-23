@@ -3,7 +3,17 @@ import type { Event, EventsListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
 // FastAPI v2 events router: /api/v2/events/
-// Note: Check if events router exists in apiv2/routers/
+// Matches apiv2/routers/events.py and apiv2/schemas/events.py
+// 
+// Standard CRUD endpoints:
+// - GET    /events/                  → List events with pagination
+// - POST   /events/                  → Create new event
+// - GET    /events/{id}/             → Get single event
+// - PUT    /events/{id}/             → Update event
+// - PATCH  /events/{id}/             → Partial update
+// - DELETE /events/{id}/             → Delete event
+// - POST   /events/{id}/comments/    → Add comment
+// - POST   /events/{id}/attachments/ → Add attachment
 class EventsService extends CrudService<Event> {
   constructor() {
     super("/events/");

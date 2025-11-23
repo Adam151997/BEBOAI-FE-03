@@ -41,6 +41,13 @@ export interface AccountMin {
   name: string;
 }
 
+export interface ContactMin {
+  id: string;
+  first_name: string;
+  last_name?: string;
+  email?: string;
+}
+
 // Comment and Attachment types for FastAPI v2
 // Matches apiv2/schemas/contacts.py::CommentResponse, AttachmentResponse, etc.
 export interface CommentResponse {

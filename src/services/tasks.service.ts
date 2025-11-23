@@ -3,7 +3,17 @@ import type { Task, TasksListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
 // FastAPI v2 tasks router: /api/v2/tasks/
-// Matches apiv2/routers/tasks.py
+// Matches apiv2/routers/tasks.py and apiv2/schemas/tasks.py
+// 
+// Standard CRUD endpoints:
+// - GET    /tasks/                  → List tasks with pagination
+// - POST   /tasks/                  → Create new task
+// - GET    /tasks/{id}/             → Get single task
+// - PUT    /tasks/{id}/             → Update task
+// - PATCH  /tasks/{id}/             → Partial update
+// - DELETE /tasks/{id}/             → Delete task
+// - POST   /tasks/{id}/comments/    → Add comment
+// - POST   /tasks/{id}/attachments/ → Add attachment
 class TasksService extends CrudService<Task> {
   constructor() {
     super("/tasks/");

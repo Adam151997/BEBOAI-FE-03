@@ -2,7 +2,16 @@ import apiClient from "@/lib/api-client";
 import type { User, PaginatedResponse } from "@/types";
 
 // FastAPI v2 users router: /api/v2/users/
-// Matches apiv2/routers/users.py
+// Matches apiv2/routers/users.py and apiv2/schemas/users.py
+// 
+// Standard endpoints:
+// - GET    /users/                     → List users with pagination
+// - POST   /users/                     → Create new user
+// - GET    /users/{id}/                → Get single user
+// - PUT    /users/{id}/                → Update user
+// - POST   /users/{id}/status/         → Update user status
+// - GET    /profile/                   → Get current user profile
+// - GET    /users/get-teams-and-users/ → Get teams and users for dropdowns
 export const usersService = {
   getAll: async (params?: any): Promise<PaginatedResponse<User>> => {
     const response = await apiClient.get<PaginatedResponse<User>>("/users/", {
@@ -12,7 +21,7 @@ export const usersService = {
   },
 
   getOne: async (id: string): Promise<User> => {
-    const response = await apiClient.get<User>(`/user/${id}/`);
+    const response = await apiClient.get<User>(`/users/${id}/`);
     return response.data;
   },
 
@@ -22,12 +31,12 @@ export const usersService = {
   },
 
   update: async (id: string, data: Partial<User>): Promise<User> => {
-    const response = await apiClient.put<User>(`/user/${id}/`, data);
+    const response = await apiClient.put<User>(`/users/${id}/`, data);
     return response.data;
   },
 
   updateStatus: async (id: string, isActive: boolean): Promise<User> => {
-    const response = await apiClient.post<User>(`/user/${id}/status/`, {
+    const response = await apiClient.post<User>(`/users/${id}/status/`, {
       is_active: isActive,
     });
     return response.data;

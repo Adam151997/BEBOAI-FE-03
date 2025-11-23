@@ -18,6 +18,8 @@ import EventsList from '@/pages/events/EventsList'
 import CasesList from '@/pages/cases/CasesList'
 import TeamsList from '@/pages/teams/TeamsList'
 import DocumentsList from '@/pages/documents/DocumentsList'
+import InvoicesList from '@/pages/invoices/InvoicesList'
+import PlannerList from '@/pages/planner/PlannerList'
 
 function App() {
   const initializeAuth = useAuthStore((state) => state.initializeAuth)
@@ -53,6 +55,8 @@ function App() {
           <Route path="cases" element={<CasesList />} />
           <Route path="teams" element={<TeamsList />} />
           <Route path="documents" element={<DocumentsList />} />
+          <Route path="invoices" element={<InvoicesList />} />
+          <Route path="planner" element={<PlannerList />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
