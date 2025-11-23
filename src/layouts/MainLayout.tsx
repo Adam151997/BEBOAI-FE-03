@@ -22,6 +22,8 @@ import {
   LogOut,
   Settings,
   User as UserIcon,
+  Receipt,
+  CalendarDays,
 } from "lucide-react";
 
 export default function MainLayout() {
@@ -44,6 +46,8 @@ export default function MainLayout() {
     { name: "Cases", path: "/cases", icon: Ticket },
     { name: "Teams", path: "/teams", icon: Briefcase },
     { name: "Documents", path: "/documents", icon: FileText },
+    { name: "Invoices", path: "/invoices", icon: Receipt },
+    { name: "Planner", path: "/planner", icon: CalendarDays },
   ];
 
   const handleLogout = () => {
