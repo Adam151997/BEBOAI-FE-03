@@ -12,7 +12,7 @@ export const usersService = {
   },
 
   getOne: async (id: string): Promise<User> => {
-    const response = await apiClient.get<User>(`/user/${id}/`);
+    const response = await apiClient.get<User>(`/users/${id}/`);
     return response.data;
   },
 
@@ -22,12 +22,12 @@ export const usersService = {
   },
 
   update: async (id: string, data: Partial<User>): Promise<User> => {
-    const response = await apiClient.put<User>(`/user/${id}/`, data);
+    const response = await apiClient.put<User>(`/users/${id}/`, data);
     return response.data;
   },
 
   updateStatus: async (id: string, isActive: boolean): Promise<User> => {
-    const response = await apiClient.post<User>(`/user/${id}/status/`, {
+    const response = await apiClient.post<User>(`/users/${id}/status/`, {
       is_active: isActive,
     });
     return response.data;

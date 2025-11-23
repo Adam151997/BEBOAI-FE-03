@@ -48,8 +48,10 @@ export class CrudService<T> {
     await apiClient.delete(`${this.endpoint}${id}/`);
   }
 
+  // FastAPI v2 typically uses /{resource}/{id}/comments/ and /{resource}/{id}/attachments/
+  // These paths may need adjustment based on actual router implementation
   async addComment(id: string, comment: string): Promise<any> {
-    const response = await apiClient.post(`${this.endpoint}comment/${id}/`, {
+    const response = await apiClient.post(`${this.endpoint}${id}/comments/`, {
       comment,
     });
     return response.data;
@@ -60,7 +62,7 @@ export class CrudService<T> {
     formData.append("attachment", file);
 
     const response = await apiClient.post(
-      `${this.endpoint}attachment/${id}/`,
+      `${this.endpoint}${id}/attachments/`,
       formData,
       {
         headers: {
