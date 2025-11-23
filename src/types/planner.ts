@@ -148,7 +148,7 @@ export interface PlannerEventUpdate {
   start_time?: string;
   end_date?: string;
   end_time?: string;
-  all_day?: boolean;
+  all_day?: boolean; // Optional for updates
   
   location?: string;
   

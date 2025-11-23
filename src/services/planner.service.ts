@@ -10,6 +10,7 @@ import type {
   PlannerAttachmentResponse,
   ReminderResponse,
   ReminderCreate,
+  PlannerEventStatus,
 } from "@/types/planner";
 import type { PaginatedResponse, CommentResponse } from "@/types";
 
@@ -145,7 +146,7 @@ class PlannerService {
   }
 
   // Update event status
-  async updateStatus(id: string, status: string): Promise<PlannerEventResponse> {
+  async updateStatus(id: string, status: PlannerEventStatus): Promise<PlannerEventResponse> {
     const response = await apiClient.patch<PlannerEventResponse>(
       `${this.endpoint}${id}/`,
       { status }

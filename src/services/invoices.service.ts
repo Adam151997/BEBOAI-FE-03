@@ -8,6 +8,7 @@ import type {
   InvoiceHistoryResponse,
   InvoiceCommentCreate,
   InvoiceAttachmentResponse,
+  InvoiceStatus,
 } from "@/types/invoices";
 import type { PaginatedResponse, CommentResponse } from "@/types";
 
@@ -120,7 +121,7 @@ class InvoicesService {
   }
 
   // Update invoice status
-  async updateStatus(id: string, status: string): Promise<InvoiceResponse> {
+  async updateStatus(id: string, status: InvoiceStatus): Promise<InvoiceResponse> {
     const response = await apiClient.patch<InvoiceResponse>(
       `${this.endpoint}${id}/`,
       { status }
