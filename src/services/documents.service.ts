@@ -3,7 +3,15 @@ import type { Document, DocumentsListResponse, PaginatedResponse } from "@/types
 import apiClient from "@/lib/api-client";
 
 // FastAPI v2 documents router: /api/v2/documents/
-// Note: Check if documents router exists in apiv2/routers/
+// Note: Verify if documents router exists in apiv2/routers/ or if this uses a different endpoint
+// 
+// Standard CRUD endpoints:
+// - GET    /documents/                  → List documents with pagination
+// - POST   /documents/                  → Upload new document
+// - GET    /documents/{id}/             → Get single document
+// - PUT    /documents/{id}/             → Update document
+// - PATCH  /documents/{id}/             → Partial update
+// - DELETE /documents/{id}/             → Delete document
 class DocumentsService extends CrudService<Document> {
   constructor() {
     super("/documents/");

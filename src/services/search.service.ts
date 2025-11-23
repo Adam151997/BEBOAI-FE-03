@@ -2,7 +2,10 @@ import apiClient from "@/lib/api-client";
 import type { Lead, Account, Contact, Opportunity, Task, Case, Event, Document } from "@/types";
 
 // FastAPI v2 search endpoint: /api/v2/search/
-// Note: Verify if this exists in apiv2/routers/
+// Note: Verify if global search exists in apiv2/routers/ or if search is per-module
+// 
+// Endpoint:
+// - GET /search/?q={query} → Global search across all modules
 export interface GlobalSearchResult {
   query: string;
   leads: Lead[];

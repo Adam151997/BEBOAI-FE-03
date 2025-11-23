@@ -2,7 +2,16 @@ import apiClient from "@/lib/api-client";
 import type { User, PaginatedResponse } from "@/types";
 
 // FastAPI v2 users router: /api/v2/users/
-// Matches apiv2/routers/users.py
+// Matches apiv2/routers/users.py and apiv2/schemas/users.py
+// 
+// Standard endpoints:
+// - GET    /users/                     → List users with pagination
+// - POST   /users/                     → Create new user
+// - GET    /users/{id}/                → Get single user
+// - PUT    /users/{id}/                → Update user
+// - POST   /users/{id}/status/         → Update user status
+// - GET    /profile/                   → Get current user profile
+// - GET    /users/get-teams-and-users/ → Get teams and users for dropdowns
 export const usersService = {
   getAll: async (params?: any): Promise<PaginatedResponse<User>> => {
     const response = await apiClient.get<PaginatedResponse<User>>("/users/", {

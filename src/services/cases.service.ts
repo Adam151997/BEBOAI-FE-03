@@ -3,7 +3,17 @@ import type { Case, CasesListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
 // FastAPI v2 cases router: /api/v2/cases/
-// Matches apiv2/routers/cases.py
+// Matches apiv2/routers/cases.py and apiv2/schemas/cases.py
+// 
+// Standard CRUD endpoints:
+// - GET    /cases/                  → List cases with pagination
+// - POST   /cases/                  → Create new case
+// - GET    /cases/{id}/             → Get single case
+// - PUT    /cases/{id}/             → Update case
+// - PATCH  /cases/{id}/             → Partial update
+// - DELETE /cases/{id}/             → Delete case
+// - POST   /cases/{id}/comments/    → Add comment
+// - POST   /cases/{id}/attachments/ → Add attachment
 class CasesService extends CrudService<Case> {
   constructor() {
     super("/cases/");

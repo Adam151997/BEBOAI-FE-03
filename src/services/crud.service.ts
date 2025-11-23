@@ -10,6 +10,20 @@ export interface QueryParams {
   [key: string]: string | number | undefined;
 }
 
+// ========================================
+// Base CRUD Service for FastAPI v2 Endpoints
+// ========================================
+// This service provides standard CRUD operations that follow FastAPI v2 REST conventions:
+// - GET    /{resource}/             → List all items with pagination
+// - POST   /{resource}/             → Create new item
+// - GET    /{resource}/{id}/        → Get single item by ID
+// - PUT    /{resource}/{id}/        → Full update of item
+// - PATCH  /{resource}/{id}/        → Partial update of item
+// - DELETE /{resource}/{id}/        → Delete item
+// - POST   /{resource}/{id}/comments/    → Add comment to item
+// - POST   /{resource}/{id}/attachments/ → Add attachment to item
+//
+// Services can extend this class and override methods for custom behavior
 export class CrudService<T> {
   protected endpoint: string;
 

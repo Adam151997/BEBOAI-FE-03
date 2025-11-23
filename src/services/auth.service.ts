@@ -1,6 +1,18 @@
 import apiClient, { LEGACY_API_BASE_URL } from "@/lib/api-client";
 import type { LoginResponse, User } from "@/types";
 
+// ========================================
+// LEGACY AUTH ENDPOINTS - NOT MIGRATED TO FastAPI v2 YET
+// ========================================
+// Auth endpoints still use legacy DRF /api routes, not /api/v2
+// These endpoints work correctly and will be migrated to FastAPI v2 in a future update
+// 
+// Current endpoints:
+// - POST /api/auth/login/          → User login (returns access + refresh tokens)
+// - POST /api/auth/register/       → User registration
+// - POST /api/auth/refresh-token/  → Token refresh (also used in api-client.ts interceptor)
+//
+// These services bypass the /api/v2 baseURL by using explicit LEGACY_API_BASE_URL
 export const authService = {
   login: async (email: string, password: string): Promise<LoginResponse> => {
     // Auth endpoints still use legacy /api, not /api/v2
