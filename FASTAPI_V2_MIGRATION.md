@@ -66,6 +66,9 @@ All service files now target `/api/v2` routes by default via the updated `apiCli
 | Documents | `/api/v2/documents/` | ✅ Migrated |
 | Profile | `/api/v2/profile/` | ✅ Migrated |
 | Search | `/api/v2/search/` | ✅ Migrated |
+| Org | `/api/v2/org/` | ✅ Migrated |
+| Invoices | `/api/v2/invoices/` | ✅ Migrated (New) |
+| Planner | `/api/v2/planner/` | ✅ Migrated (New) |
 
 ### 4. Legacy Endpoints
 
@@ -111,6 +114,12 @@ FastAPI v2 uses custom keys for list responses instead of generic `count`/`resul
 - `UserListResponseV2` - Uses `users`, `users_count`, `per_page`, `page_number`, `offset`
 - `CaseListResponseV2` - Uses `cases`, `cases_count`, `per_page`, `page_number`, `offset`
 - `TaskListResponseV2` - Uses `tasks`, `tasks_count`, `per_page`, `page_number`, `offset`
+- `PlannerEventListResponse` - Uses `events`, `events_count`, `per_page`, `page_number`, `offset` (from `apiv2/schemas/planner.py`)
+
+#### Invoice and Planner Types
+Full type definitions added in separate files:
+- `src/types/invoices.ts` - Complete Invoice, InvoiceItem, InvoiceCreate, InvoiceUpdate, InvoiceListResponse types matching `apiv2/schemas/invoices.py`
+- `src/types/planner.ts` - Complete PlannerEvent, ReminderResponse, PlannerEventCreate, PlannerEventUpdate, PlannerEventListResponse types matching `apiv2/schemas/planner.py`
 
 ### Backward Compatibility
 
@@ -247,22 +256,25 @@ npm run lint
 ### ✅ Completed
 - API base URL updated to `/api/v2`
 - Organization header fixed to use UUID
-- All service endpoints updated
+- All service endpoints updated (including new Invoices and Planner modules)
 - TypeScript types aligned with Pydantic schemas
 - Backward compatibility maintained
 - Build and lint verified
+- All services comprehensively documented with endpoint mappings
+- New modules (Invoices, Planner) fully integrated with routes and navigation
 
 ### 📝 Notes
 - Auth endpoints remain on legacy `/api` (not migrated to FastAPI v2 yet)
 - Dashboard endpoint remains on legacy `/api` (not migrated to FastAPI v2 yet)
 - Services transform FastAPI v2 responses to `PaginatedResponse<T>` for component compatibility
 - No component changes required due to service-layer transformation
+- All services now have detailed documentation mapping to backend routers and schemas
 
 ### 🔮 Future Enhancements
 - Migrate auth endpoints to `/api/v2/auth` when available
 - Migrate dashboard endpoint to `/api/v2/dashboard` when available
 - Update components to directly use FastAPI v2 list response types (remove transformation layer)
-- Add invoice and planner service modules when FastAPI routers are ready
+- Consider adding org settings UI page to use new org.service.ts
 
 ## Troubleshooting
 
