@@ -42,10 +42,8 @@ class AccountsService extends CrudService<Account, AccountCreate, AccountUpdate>
     let allAccounts: Account[] = [];
     
     // Check if accounts array exists at top level (primary format from backend)
-    // Type assertion needed as AccountsListResponse doesn't include the 'accounts' property
-    const responseData = data as AccountsListResponse & { accounts?: Account[] };
-    if (responseData.accounts && Array.isArray(responseData.accounts)) {
-      allAccounts = responseData.accounts;
+    if (data.accounts && Array.isArray(data.accounts)) {
+      allAccounts = data.accounts;
       console.log('Accounts loaded from response.data.accounts:', allAccounts.length);
     }
     // Fallback: Check for nested structure (legacy support)
