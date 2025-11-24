@@ -205,6 +205,63 @@ export interface Lead {
   updated_at?: string;
 }
 
+// Lead Create Payload - Matches Backend POST /api/v2/leads/ REQUIRED fields
+export interface LeadCreate {
+  // REQUIRED fields
+  title: string;  // Not empty - "Mr", "Ms", "Dr"
+  email: string;  // Valid email format
+  status: string;  // Must match LEAD_STATUS choices: "open", "closed", "converted"
+  
+  // OPTIONAL fields
+  first_name?: string | null;
+  last_name?: string | null;
+  phone?: string | null;
+  source?: string | null;  // Must match LEAD_SOURCE if provided
+  website?: string | null;
+  description?: string | null;
+  address_line?: string | null;
+  street?: string | null;
+  city?: string | null;
+  state?: string | null;
+  postcode?: string | null;
+  country?: string | null;  // Must match COUNTRIES if provided
+  industry?: string | null;  // Must match INDCHOICES if provided
+  skype_ID?: string | null;
+  probability?: number | null;  // 0-100
+  opportunity_amount?: number | null;
+  assigned_to?: number[];  // Array of Profile IDs (default: [])
+  tags?: number[];  // Array of Tag IDs (default: [])
+  contacts?: number[];  // Array of Contact IDs (default: [])
+  teams?: number[];  // Array of Team IDs (default: [])
+}
+
+// Lead Update Payload - Matches Backend PUT /api/v2/leads/{id}/ - ALL fields optional
+export interface LeadUpdate {
+  title?: string;
+  email?: string;
+  status?: string;
+  first_name?: string | null;
+  last_name?: string | null;
+  phone?: string | null;
+  source?: string | null;
+  website?: string | null;
+  description?: string | null;
+  address_line?: string | null;
+  street?: string | null;
+  city?: string | null;
+  state?: string | null;
+  postcode?: string | null;
+  country?: string | null;
+  industry?: string | null;
+  skype_ID?: string | null;
+  probability?: number | null;
+  opportunity_amount?: number | null;
+  assigned_to?: number[];
+  tags?: number[];
+  contacts?: number[];
+  teams?: number[];
+}
+
 // Account Types
 export interface Account {
   id: string;
@@ -228,6 +285,55 @@ export interface Account {
   tags?: string[];
   created_at?: string;
   updated_at?: string;
+}
+
+// Account Create Payload - Matches Backend POST /api/v2/accounts/ REQUIRED fields
+export interface AccountCreate {
+  // REQUIRED fields
+  name: string;  // 1-64 chars
+  email: string;  // Valid email
+  contact_name: string;  // Not empty
+  
+  // OPTIONAL fields
+  phone?: string | null;
+  industry?: string | null;
+  billing_address_line?: string | null;
+  billing_street?: string | null;
+  billing_city?: string | null;
+  billing_state?: string | null;
+  billing_postcode?: string | null;
+  billing_country?: string | null;
+  website?: string | null;
+  description?: string | null;
+  status?: string;  // Default: "open"
+  lead?: number | null;  // Lead ID
+  contacts?: number[];  // Array of Contact IDs (default: [])
+  tags?: number[];  // Array of Tag IDs (default: [])
+  assigned_to?: number[];  // Array of Profile IDs (default: [])
+  teams?: number[];  // Array of Team IDs (default: [])
+}
+
+// Account Update Payload - Matches Backend PUT /api/v2/accounts/{id}/ - ALL fields optional
+export interface AccountUpdate {
+  name?: string;  // Must be 1-64 chars if provided
+  email?: string;
+  contact_name?: string;
+  phone?: string | null;
+  industry?: string | null;
+  billing_address_line?: string | null;
+  billing_street?: string | null;
+  billing_city?: string | null;
+  billing_state?: string | null;
+  billing_postcode?: string | null;
+  billing_country?: string | null;
+  website?: string | null;
+  description?: string | null;
+  status?: string;
+  lead?: number | null;
+  contacts?: number[];
+  tags?: number[];
+  assigned_to?: number[];
+  teams?: number[];
 }
 
 // Contact Types
@@ -264,6 +370,61 @@ export interface Contact {
   address_line?: string;
 }
 
+// Contact Create Payload - Matches Backend POST /api/v2/contacts/ REQUIRED fields
+export interface ContactCreate {
+  // REQUIRED fields
+  first_name: string;  // 1-255 chars
+  last_name: string;  // 1-255 chars
+  primary_email: string;  // Valid email, unique
+  
+  // OPTIONAL fields
+  salutation?: string;  // Default: "" - "Mr", "Ms", "Dr"
+  date_of_birth?: string | null;  // Format: "YYYY-MM-DD"
+  organization?: string | null;  // Company name
+  title?: string;  // Default: "" - Job title
+  secondary_email?: string;  // Default: ""
+  mobile_number?: string | null;  // Phone format
+  secondary_number?: string | null;
+  department?: string | null;
+  country?: string | null;  // Must match COUNTRIES
+  language?: string | null;
+  do_not_call?: boolean;  // Default: false
+  description?: string | null;
+  linked_in_url?: string | null;  // Valid URL
+  facebook_url?: string | null;  // Valid URL
+  twitter_username?: string | null;
+  account?: number | null;  // Account ID
+  address_id?: number | null;  // Address ID
+  assigned_to?: number[];  // Array of Profile IDs (default: [])
+  teams?: number[];  // Array of Team IDs (default: [])
+}
+
+// Contact Update Payload - Matches Backend PUT /api/v2/contacts/{id}/ - ALL fields optional
+export interface ContactUpdate {
+  first_name?: string;  // Must be 1-255 chars if provided
+  last_name?: string;  // Must be 1-255 chars if provided
+  primary_email?: string;
+  salutation?: string;
+  date_of_birth?: string | null;
+  organization?: string | null;
+  title?: string;
+  secondary_email?: string;
+  mobile_number?: string | null;
+  secondary_number?: string | null;
+  department?: string | null;
+  country?: string | null;
+  language?: string | null;
+  do_not_call?: boolean;
+  description?: string | null;
+  linked_in_url?: string | null;
+  facebook_url?: string | null;
+  twitter_username?: string | null;
+  account?: number | null;
+  address_id?: number | null;
+  assigned_to?: number[];
+  teams?: number[];
+}
+
 // Opportunity Types
 export interface Opportunity {
   id: string;
@@ -284,6 +445,53 @@ export interface Opportunity {
   updated_at?: string;
 }
 
+// Opportunity Create Payload - Matches Backend POST /api/v2/opportunities/ REQUIRED fields
+export interface OpportunityCreate {
+  // REQUIRED fields
+  name: string;  // 1-64 chars
+  stage: string;  // Not empty - "prospecting", "negotiation", "closed_won"
+  
+  // OPTIONAL fields
+  email?: string | null;  // Valid email if provided
+  phone?: string | null;
+  industry?: string | null;
+  currency?: string | null;
+  amount?: number | null;  // Decimal
+  lead_source?: string | null;
+  probability?: number;  // Default: 0 - Range: 0-100
+  closed_on?: string | null;  // Format: "YYYY-MM-DD"
+  description?: string | null;
+  status?: string;  // Default: "open" - "open", "closed"
+  account?: number | null;  // Account ID
+  closed_by?: number | null;  // Profile ID
+  contacts?: number[];  // Array of Contact IDs (default: [])
+  tags?: number[];  // Array of Tag IDs (default: [])
+  assigned_to?: number[];  // Array of Profile IDs (default: [])
+  teams?: number[];  // Array of Team IDs (default: [])
+}
+
+// Opportunity Update Payload - Matches Backend PUT /api/v2/opportunities/{id}/ - ALL fields optional
+export interface OpportunityUpdate {
+  name?: string;  // Must be 1-64 chars if provided
+  stage?: string;
+  email?: string | null;
+  phone?: string | null;
+  industry?: string | null;
+  currency?: string | null;
+  amount?: number | null;
+  lead_source?: string | null;
+  probability?: number;
+  closed_on?: string | null;
+  description?: string | null;
+  status?: string;
+  account?: number | null;
+  closed_by?: number | null;
+  contacts?: number[];
+  tags?: number[];
+  assigned_to?: number[];
+  teams?: number[];
+}
+
 // Task Types
 export interface Task {
   id: string;
@@ -299,6 +507,37 @@ export interface Task {
   contacts?: string[];
   created_at?: string;
   updated_at?: string;
+}
+
+// Task Create Payload - Matches Backend POST /api/v2/tasks/ REQUIRED fields
+export interface TaskCreate {
+  // REQUIRED fields
+  title: string;  // 1-200 chars
+  status: string;  // Not empty - "open", "in_progress", "completed"
+  priority: string;  // Not empty - "low", "medium", "high"
+  
+  // OPTIONAL fields
+  task_type?: string | null;
+  due_date?: string | null;  // Format: "YYYY-MM-DD"
+  description?: string | null;
+  account?: number | null;  // Account ID
+  contacts?: number[];  // Array of Contact IDs (default: [])
+  assigned_to?: number[];  // Array of Profile IDs (default: [])
+  teams?: number[];  // Array of Team IDs (default: [])
+}
+
+// Task Update Payload - Matches Backend PUT /api/v2/tasks/{id}/ - ALL fields optional
+export interface TaskUpdate {
+  title?: string;  // Must be 1-200 chars if provided
+  status?: string;
+  priority?: string;
+  task_type?: string | null;
+  due_date?: string | null;
+  description?: string | null;
+  account?: number | null;
+  contacts?: number[];
+  assigned_to?: number[];
+  teams?: number[];
 }
 
 // Event Types
@@ -321,6 +560,43 @@ export interface Event {
   updated_at?: string;
 }
 
+// Event Create Payload - Matches Backend POST /api/v2/events/ REQUIRED fields
+export interface EventCreate {
+  // REQUIRED fields
+  name: string;  // 1-64 chars
+  event_type: string;  // Not empty - "meeting", "call", "email"
+  start_date: string;  // Required - Format: "YYYY-MM-DD"
+  start_time: string;  // Required - Format: "HH:MM:SS"
+  end_date: string;  // Required - Format: "YYYY-MM-DD"
+  
+  // OPTIONAL fields
+  status?: string | null;
+  end_time?: string | null;  // Format: "HH:MM:SS"
+  description?: string | null;
+  date_of_meeting?: string | null;
+  account?: number | null;  // Account ID
+  contacts?: number[];  // Array of Contact IDs (default: [])
+  assigned_to?: number[];  // Array of Profile IDs (default: [])
+  teams?: number[];  // Array of Team IDs (default: [])
+}
+
+// Event Update Payload - Matches Backend PUT /api/v2/events/{id}/ - ALL fields optional
+export interface EventUpdate {
+  name?: string;  // Must be 1-64 chars if provided
+  event_type?: string;
+  start_date?: string;
+  start_time?: string;
+  end_date?: string;
+  status?: string | null;
+  end_time?: string | null;
+  description?: string | null;
+  date_of_meeting?: string | null;
+  account?: number | null;
+  contacts?: number[];
+  assigned_to?: number[];
+  teams?: number[];
+}
+
 // Case Types
 export interface Case {
   id: string;
@@ -338,6 +614,37 @@ export interface Case {
   updated_at?: string;
 }
 
+// Case Create Payload - Matches Backend POST /api/v2/cases/ REQUIRED fields
+export interface CaseCreate {
+  // REQUIRED fields
+  name: string;  // 1-64 chars
+  status: string;  // Not empty - "open", "in_progress", "closed"
+  priority: string;  // Not empty - "low", "medium", "high"
+  closed_on: string;  // Required - Format: "YYYY-MM-DD"
+  
+  // OPTIONAL fields
+  case_type?: string;  // Default: ""
+  description?: string | null;
+  account?: number | null;  // Account ID
+  contacts?: number[];  // Array of Contact IDs (default: [])
+  assigned_to?: number[];  // Array of Profile IDs (default: [])
+  teams?: number[];  // Array of Team IDs (default: [])
+}
+
+// Case Update Payload - Matches Backend PUT /api/v2/cases/{id}/ - ALL fields optional
+export interface CaseUpdate {
+  name?: string;  // Must be 1-64 chars if provided
+  status?: string;
+  priority?: string;
+  closed_on?: string;
+  case_type?: string;
+  description?: string | null;
+  account?: number | null;
+  contacts?: number[];
+  assigned_to?: number[];
+  teams?: number[];
+}
+
 // Team Types
 export interface Team {
   id: string;
@@ -346,6 +653,23 @@ export interface Team {
   users?: User[];
   created_at?: string;
   updated_at?: string;
+}
+
+// Team Create Payload - Matches Backend POST /api/v2/teams/ REQUIRED fields
+export interface TeamCreate {
+  // REQUIRED fields
+  name: string;  // 1-100 chars
+  
+  // OPTIONAL fields
+  description?: string;  // Default: ""
+  assign_users?: number[];  // Array of Profile IDs (default: [])
+}
+
+// Team Update Payload - Matches Backend PUT /api/v2/teams/{id}/ - ALL fields optional
+export interface TeamUpdate {
+  name?: string;  // Must be 1-100 chars if provided
+  description?: string;
+  assign_users?: number[];
 }
 
 // Document Types

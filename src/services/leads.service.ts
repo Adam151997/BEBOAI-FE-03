@@ -1,5 +1,5 @@
 import { CrudService, type QueryParams } from "./crud.service";
-import type { Lead, LeadsListResponse, PaginatedResponse } from "@/types";
+import type { Lead, LeadCreate, LeadUpdate, LeadsListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
 // FastAPI v2 leads router: /api/v2/leads/
@@ -18,7 +18,7 @@ import apiClient from "@/lib/api-client";
 // Additional endpoints:
 // - POST   /leads/upload/           → Bulk upload leads
 // - POST   /leads/create-from-site/ → Create lead from website form
-class LeadsService extends CrudService<Lead> {
+class LeadsService extends CrudService<Lead, LeadCreate, LeadUpdate> {
   constructor() {
     super("/leads/");
   }
@@ -58,7 +58,7 @@ class LeadsService extends CrudService<Lead> {
     return response.data;
   }
 
-  async createFromSite(data: Partial<Lead>): Promise<Lead> {
+  async createFromSite(data: LeadCreate): Promise<Lead> {
     const response = await apiClient.post<Lead>("/leads/create-from-site/", data);
     return response.data;
   }
