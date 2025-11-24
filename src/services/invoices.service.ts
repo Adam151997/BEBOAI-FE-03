@@ -50,7 +50,6 @@ class InvoicesService {
           hasToken: !!token,
           tokenLength: token?.length || 0,
           hasOrgId: !!orgId,
-          orgId: orgId || 'MISSING',
           hasOrgApiKey: !!orgApiKey,
         });
 
@@ -60,16 +59,23 @@ class InvoicesService {
           try {
             const tokenParts = token.split('.');
             if (tokenParts.length === 3) {
-              const payload = JSON.parse(atob(tokenParts[1]));
+              // Add padding if needed for proper base64 decoding
+              let payload = tokenParts[1];
+              const remainder = payload.length % 4;
+              if (remainder > 0) {
+                payload += '='.repeat(4 - remainder);
+              }
+              
+              const decoded = JSON.parse(atob(payload));
               console.log('[Invoices Service] JWT Token payload structure:', {
-                hasExp: 'exp' in payload,
-                hasUserId: 'user_id' in payload || 'sub' in payload,
-                hasOrgId: 'org_id' in payload,
-                claimKeys: Object.keys(payload),
+                hasExp: 'exp' in decoded,
+                hasUserId: 'user_id' in decoded || 'sub' in decoded,
+                hasOrgId: 'org_id' in decoded,
+                claimKeys: Object.keys(decoded),
               });
               
               // Highlight the org_id issue if missing
-              if (!('org_id' in payload)) {
+              if (!('org_id' in decoded)) {
                 console.error('[Invoices Service] JWT token is missing org_id claim - This is the root cause!');
               }
             }
@@ -100,15 +106,21 @@ class InvoicesService {
     } catch (error) {
       // Enhanced error logging for the 400 "Missing org_id" error
       if (error instanceof AxiosError) {
-        console.error('[Invoices Service] API Error:', {
+        const errorInfo: any = {
           status: error.response?.status,
           statusText: error.response?.statusText,
           url: error.config?.url,
           baseURL: error.config?.baseURL,
           fullUrl: (error.config?.baseURL || '') + (error.config?.url || ''),
           method: error.config?.method?.toUpperCase(),
-          responseData: error.response?.data,
-        });
+        };
+
+        // Only include response data in development mode
+        if (import.meta.env.DEV) {
+          errorInfo.responseData = error.response?.data;
+        }
+
+        console.error('[Invoices Service] API Error:', errorInfo);
 
         // Log header presence without exposing values
         console.error('[Invoices Service] Request headers status:', {
@@ -145,11 +157,17 @@ class InvoicesService {
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.error('[Invoices Service] getOne Error:', {
+        const errorInfo: any = {
           status: error.response?.status,
           invoiceId: id,
-          responseData: error.response?.data,
-        });
+        };
+        
+        // Only include response data in development mode
+        if (import.meta.env.DEV) {
+          errorInfo.responseData = error.response?.data;
+        }
+        
+        console.error('[Invoices Service] getOne Error:', errorInfo);
       }
       throw error;
     }
@@ -169,10 +187,16 @@ class InvoicesService {
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.error('[Invoices Service] create Error:', {
+        const errorInfo: any = {
           status: error.response?.status,
-          responseData: error.response?.data,
-        });
+        };
+        
+        // Only include response data in development mode
+        if (import.meta.env.DEV) {
+          errorInfo.responseData = error.response?.data;
+        }
+        
+        console.error('[Invoices Service] create Error:', errorInfo);
       }
       throw error;
     }

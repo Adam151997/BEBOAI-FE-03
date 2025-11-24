@@ -37,13 +37,12 @@ class DocumentsService extends CrudService<Document> {
         console.log('[Documents Service] Fetching documents from:', fullUrl);
         console.log('[Documents Service] Request params:', params);
         
-        // Log auth status (without exposing full token)
+        // Log auth status (without exposing sensitive data)
         const token = localStorage.getItem('access_token');
         const orgId = localStorage.getItem('org_id');
         console.log('[Documents Service] Auth status:', {
           hasToken: !!token,
           hasOrgId: !!orgId,
-          orgId: orgId || 'none',
         });
       }
 
@@ -87,18 +86,24 @@ class DocumentsService extends CrudService<Document> {
     } catch (error) {
       // Enhanced error logging for 404 and other errors
       if (error instanceof AxiosError) {
-        console.error('[Documents Service] API Error:', {
+        const errorInfo: any = {
           status: error.response?.status,
           statusText: error.response?.statusText,
           url: error.config?.url,
           baseURL: error.config?.baseURL,
           fullUrl: (error.config?.baseURL || '') + (error.config?.url || ''),
           method: error.config?.method?.toUpperCase(),
-          // Only log headers structure in dev, not actual values
+          // Only log headers structure, not actual values
           hasAuthHeader: !!error.config?.headers?.Authorization,
           hasOrgHeader: !!error.config?.headers?.org,
-          responseData: error.response?.data,
-        });
+        };
+
+        // Only include response data in development mode
+        if (import.meta.env.DEV) {
+          errorInfo.responseData = error.response?.data;
+        }
+
+        console.error('[Documents Service] API Error:', errorInfo);
 
         // Provide helpful error messages based on status code
         if (error.response?.status === 404) {
@@ -144,12 +149,18 @@ class DocumentsService extends CrudService<Document> {
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.error('[Documents Service] Upload Error:', {
+        const errorInfo: any = {
           status: error.response?.status,
           statusText: error.response?.statusText,
           url: error.config?.url,
-          responseData: error.response?.data,
-        });
+        };
+
+        // Only include response data in development mode
+        if (import.meta.env.DEV) {
+          errorInfo.responseData = error.response?.data;
+        }
+
+        console.error('[Documents Service] Upload Error:', errorInfo);
       }
       throw error;
     }
