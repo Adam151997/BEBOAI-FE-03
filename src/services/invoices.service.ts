@@ -35,39 +35,47 @@ class InvoicesService {
   // Get all invoices with pagination
   async getAll(params?: QueryParams): Promise<PaginatedResponse<InvoiceResponse>> {
     try {
-      // Enhanced logging for debugging the 400 error
-      const fullUrl = apiClient.defaults.baseURL + this.endpoint;
-      console.log('[Invoices Service] Fetching invoices from:', fullUrl);
-      console.log('[Invoices Service] Request params:', params);
-      
-      // Log token and org context
-      const token = localStorage.getItem('access_token');
-      const orgId = localStorage.getItem('org_id');
-      const orgApiKey = localStorage.getItem('org_api_key');
-      
-      console.log('[Invoices Service] Auth context:', {
-        hasToken: !!token,
-        tokenPrefix: token ? token.substring(0, 20) + '...' : 'none',
-        tokenLength: token?.length || 0,
-        orgId: orgId || 'MISSING',
-        orgApiKey: orgApiKey || 'none',
-      });
+      // Enhanced logging for debugging the 400 error (development only)
+      if (import.meta.env.DEV) {
+        const fullUrl = apiClient.defaults.baseURL + this.endpoint;
+        console.log('[Invoices Service] Fetching invoices from:', fullUrl);
+        console.log('[Invoices Service] Request params:', params);
+        
+        // Log token and org context (without exposing sensitive data)
+        const token = localStorage.getItem('access_token');
+        const orgId = localStorage.getItem('org_id');
+        const orgApiKey = localStorage.getItem('org_api_key');
+        
+        console.log('[Invoices Service] Auth context:', {
+          hasToken: !!token,
+          tokenLength: token?.length || 0,
+          hasOrgId: !!orgId,
+          orgId: orgId || 'MISSING',
+          hasOrgApiKey: !!orgApiKey,
+        });
 
-      // Try to decode JWT token to see its structure (for debugging only)
-      if (token) {
-        try {
-          const tokenParts = token.split('.');
-          if (tokenParts.length === 3) {
-            const payload = JSON.parse(atob(tokenParts[1]));
-            console.log('[Invoices Service] JWT Token payload:', {
-              exp: payload.exp ? new Date(payload.exp * 1000).toISOString() : 'none',
-              user_id: payload.user_id || payload.sub || 'none',
-              org_id: payload.org_id || 'MISSING - This is the problem!',
-              claims: Object.keys(payload),
-            });
+        // Try to decode JWT token to see its structure (development only)
+        // This helps diagnose if the token contains the required org_id claim
+        if (token) {
+          try {
+            const tokenParts = token.split('.');
+            if (tokenParts.length === 3) {
+              const payload = JSON.parse(atob(tokenParts[1]));
+              console.log('[Invoices Service] JWT Token payload structure:', {
+                hasExp: 'exp' in payload,
+                hasUserId: 'user_id' in payload || 'sub' in payload,
+                hasOrgId: 'org_id' in payload,
+                claimKeys: Object.keys(payload),
+              });
+              
+              // Highlight the org_id issue if missing
+              if (!('org_id' in payload)) {
+                console.error('[Invoices Service] JWT token is missing org_id claim - This is the root cause!');
+              }
+            }
+          } catch (decodeError) {
+            console.error('[Invoices Service] Could not decode JWT token - may be malformed');
           }
-        } catch (decodeError) {
-          console.error('[Invoices Service] Could not decode JWT token:', decodeError);
         }
       }
 
@@ -75,8 +83,10 @@ class InvoicesService {
         params,
       });
 
-      console.log('[Invoices Service] Response status:', response.status);
-      console.log('[Invoices Service] Response data structure:', Object.keys(response.data));
+      if (import.meta.env.DEV) {
+        console.log('[Invoices Service] Response status:', response.status);
+        console.log('[Invoices Service] Response data structure:', Object.keys(response.data));
+      }
 
       const data = response.data;
 
@@ -100,11 +110,10 @@ class InvoicesService {
           responseData: error.response?.data,
         });
 
-        // Log the actual headers that were sent
-        console.error('[Invoices Service] Request headers sent:', {
-          Authorization: error.config?.headers?.Authorization ? 'Bearer [TOKEN]' : 'MISSING',
-          org: error.config?.headers?.org || 'MISSING',
-          'Content-Type': error.config?.headers?.['Content-Type'],
+        // Log header presence without exposing values
+        console.error('[Invoices Service] Request headers status:', {
+          hasAuthHeader: !!error.config?.headers?.Authorization,
+          hasOrgHeader: !!error.config?.headers?.org,
         });
 
         // Specific handling for the 400 org_id error
@@ -129,7 +138,9 @@ class InvoicesService {
   // Get a single invoice by ID
   async getOne(id: string): Promise<InvoiceResponse> {
     try {
-      console.log('[Invoices Service] Fetching invoice:', id);
+      if (import.meta.env.DEV) {
+        console.log('[Invoices Service] Fetching invoice:', id);
+      }
       const response = await apiClient.get<InvoiceResponse>(`${this.endpoint}${id}/`);
       return response.data;
     } catch (error) {
@@ -147,11 +158,13 @@ class InvoicesService {
   // Create a new invoice
   async create(data: InvoiceCreate): Promise<InvoiceResponse> {
     try {
-      console.log('[Invoices Service] Creating invoice:', {
-        invoice_title: data.invoice_title,
-        name: data.name,
-        email: data.email,
-      });
+      if (import.meta.env.DEV) {
+        console.log('[Invoices Service] Creating invoice:', {
+          invoice_title: data.invoice_title,
+          name: data.name,
+          email: data.email,
+        });
+      }
       const response = await apiClient.post<InvoiceResponse>(this.endpoint, data);
       return response.data;
     } catch (error) {

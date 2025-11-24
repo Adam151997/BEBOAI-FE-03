@@ -31,26 +31,30 @@ class DocumentsService extends CrudService<Document> {
   // Override getAll to handle the custom documents response structure and add error handling
   async getAll(params?: QueryParams): Promise<PaginatedResponse<Document>> {
     try {
-      // Log the full request URL for debugging
-      const fullUrl = apiClient.defaults.baseURL + this.endpoint;
-      console.log('[Documents Service] Fetching documents from:', fullUrl);
-      console.log('[Documents Service] Request params:', params);
-      
-      // Log auth headers for debugging (without exposing full token)
-      const token = localStorage.getItem('access_token');
-      const orgId = localStorage.getItem('org_id');
-      console.log('[Documents Service] Auth status:', {
-        hasToken: !!token,
-        tokenPrefix: token ? token.substring(0, 20) + '...' : 'none',
-        orgId: orgId || 'none',
-      });
+      // Debug logging (development only) for diagnosing 404 errors
+      if (import.meta.env.DEV) {
+        const fullUrl = apiClient.defaults.baseURL + this.endpoint;
+        console.log('[Documents Service] Fetching documents from:', fullUrl);
+        console.log('[Documents Service] Request params:', params);
+        
+        // Log auth status (without exposing full token)
+        const token = localStorage.getItem('access_token');
+        const orgId = localStorage.getItem('org_id');
+        console.log('[Documents Service] Auth status:', {
+          hasToken: !!token,
+          hasOrgId: !!orgId,
+          orgId: orgId || 'none',
+        });
+      }
 
       const response = await apiClient.get<DocumentsListResponse>(this.endpoint, {
         params,
       });
       
-      console.log('[Documents Service] Response status:', response.status);
-      console.log('[Documents Service] Response data structure:', Object.keys(response.data));
+      if (import.meta.env.DEV) {
+        console.log('[Documents Service] Response status:', response.status);
+        console.log('[Documents Service] Response data structure:', Object.keys(response.data));
+      }
       
       const data = response.data;
       
@@ -60,11 +64,15 @@ class DocumentsService extends CrudService<Document> {
       // Check for nested structure
       if (data.active_documents) {
         allDocuments = data.active_documents?.active_documents || data.active_documents?.documents || [];
-        console.log('[Documents Service] Loaded from active_documents:', allDocuments.length);
+        if (import.meta.env.DEV) {
+          console.log('[Documents Service] Loaded from active_documents:', allDocuments.length);
+        }
       } else if (data.documents) {
         // Fallback to simple array response
         allDocuments = data.documents;
-        console.log('[Documents Service] Loaded from documents:', allDocuments.length);
+        if (import.meta.env.DEV) {
+          console.log('[Documents Service] Loaded from documents:', allDocuments.length);
+        }
       } else {
         console.warn('[Documents Service] No documents found in response. Response structure:', Object.keys(data));
       }
@@ -86,7 +94,9 @@ class DocumentsService extends CrudService<Document> {
           baseURL: error.config?.baseURL,
           fullUrl: (error.config?.baseURL || '') + (error.config?.url || ''),
           method: error.config?.method?.toUpperCase(),
-          headers: error.config?.headers,
+          // Only log headers structure in dev, not actual values
+          hasAuthHeader: !!error.config?.headers?.Authorization,
+          hasOrgHeader: !!error.config?.headers?.org,
           responseData: error.response?.data,
         });
 
@@ -108,11 +118,13 @@ class DocumentsService extends CrudService<Document> {
 
   async upload(file: File, title?: string): Promise<Document> {
     try {
-      console.log('[Documents Service] Uploading document:', {
-        fileName: file.name,
-        fileSize: file.size,
-        title,
-      });
+      if (import.meta.env.DEV) {
+        console.log('[Documents Service] Uploading document:', {
+          fileName: file.name,
+          fileSize: file.size,
+          title,
+        });
+      }
 
       const formData = new FormData();
       formData.append("document_file", file);
@@ -126,7 +138,9 @@ class DocumentsService extends CrudService<Document> {
         },
       });
       
-      console.log('[Documents Service] Upload successful:', response.status);
+      if (import.meta.env.DEV) {
+        console.log('[Documents Service] Upload successful:', response.status);
+      }
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {

@@ -25,18 +25,20 @@ apiClient.interceptors.request.use(
       config.headers.org = orgId;
     }
 
-    // Debug logging to help diagnose auth issues (e.g., invoices 400 error)
-    // This logs the headers being sent with each request
-    const endpoint = config.url || '';
-    if (endpoint.includes('/invoices') || endpoint.includes('/documents')) {
-      console.log('[API Client] Request:', {
-        method: config.method?.toUpperCase(),
-        url: config.url,
-        baseURL: config.baseURL,
-        hasAuthHeader: !!config.headers.Authorization,
-        hasOrgHeader: !!config.headers.org,
-        orgId: orgId || 'MISSING',
-      });
+    // Debug logging to help diagnose auth issues (development only)
+    // This logs key request information for invoices and documents endpoints
+    if (import.meta.env.DEV) {
+      const endpoint = config.url || '';
+      if (endpoint.includes('/invoices') || endpoint.includes('/documents')) {
+        console.log('[API Client] Request:', {
+          method: config.method?.toUpperCase(),
+          url: config.url,
+          baseURL: config.baseURL,
+          hasAuthHeader: !!config.headers.Authorization,
+          hasOrgHeader: !!config.headers.org,
+          orgIdPresent: !!orgId,
+        });
+      }
     }
 
     return config;
