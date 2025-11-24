@@ -753,13 +753,16 @@ export interface LeadsListResponse {
 export interface AccountsListResponse {
   per_page: number;
   page_number: number[];
-  active_accounts: {
+  // Primary response format - accounts array at top level
+  accounts?: Account[];
+  // Legacy nested structure support
+  active_accounts?: {
     accounts_count?: number;
     active_accounts?: Account[];
     open_accounts?: Account[];  // Backend uses this key
     offset: number | null;
   };
-  closed_accounts: {
+  closed_accounts?: {
     accounts_count?: number;
     close_accounts: Account[];
     offset: number | null;

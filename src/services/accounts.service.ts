@@ -36,11 +36,18 @@ class AccountsService extends CrudService<Account, AccountCreate, AccountUpdate>
     
     const data = response.data;
     
-    // Try different possible response structures
+    // FIX: Access accounts array directly from response.data.accounts
+    // The backend returns accounts in an 'accounts' property at the top level
+    // Previously tried to access via nested structures like active_accounts.open_accounts
     let allAccounts: Account[] = [];
     
-    // Check for nested structure
-    if (data.active_accounts || data.closed_accounts) {
+    // Check if accounts array exists at top level (primary format from backend)
+    if (data.accounts && Array.isArray(data.accounts)) {
+      allAccounts = data.accounts;
+      console.log('Accounts loaded from response.data.accounts:', allAccounts.length);
+    }
+    // Fallback: Check for nested structure (legacy support)
+    else if (data.active_accounts || data.closed_accounts) {
       const active = data.active_accounts;
       allAccounts = [
         ...(
@@ -50,9 +57,14 @@ class AccountsService extends CrudService<Account, AccountCreate, AccountUpdate>
         ),
         ...(data.closed_accounts?.close_accounts || []),
       ];
-    } else if (Array.isArray(data)) {
-      // Fallback to simple array response
+      console.log('Accounts loaded from nested structure:', allAccounts.length);
+    } 
+    // Fallback: Simple array response
+    else if (Array.isArray(data)) {
       allAccounts = data as unknown as Account[];
+      console.log('Accounts loaded as direct array:', allAccounts.length);
+    } else {
+      console.warn('No accounts found in response. Response structure:', Object.keys(data));
     }
     
     // Transform to standard paginated response format
