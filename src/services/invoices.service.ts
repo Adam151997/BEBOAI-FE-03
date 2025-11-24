@@ -11,39 +11,158 @@ import type {
   InvoiceStatus,
 } from "@/types/invoices";
 import type { PaginatedResponse, CommentResponse } from "@/types";
+import { AxiosError } from "axios";
 
 // FastAPI v2 invoices router: /api/v2/invoices/
 // Matches apiv2/routers/invoices.py and apiv2/schemas/invoices.py
+// 
+// INVESTIGATION (2025-11-24): Backend returns 400 "Missing org_id in token"
+// This error specifically mentions the JWT token is missing org_id claim.
+// 
+// Debugging steps implemented:
+// 1. Log the actual JWT token structure (decoded)
+// 2. Log all request headers being sent
+// 3. Compare with working modules (accounts, leads) to ensure consistency
+// 4. Verify Authorization header and org header are properly set
+// 
+// The invoices service uses the same apiClient as all other modules, which should
+// automatically add Authorization and org headers via the request interceptor.
+// If this specific module is failing, it suggests the token itself may not contain
+// the org_id claim, or there's a timing issue with token refresh.
 class InvoicesService {
   private endpoint = "/invoices/";
 
   // Get all invoices with pagination
   async getAll(params?: QueryParams): Promise<PaginatedResponse<InvoiceResponse>> {
-    const response = await apiClient.get<InvoiceListResponse>(this.endpoint, {
-      params,
-    });
+    try {
+      // Enhanced logging for debugging the 400 error
+      const fullUrl = apiClient.defaults.baseURL + this.endpoint;
+      console.log('[Invoices Service] Fetching invoices from:', fullUrl);
+      console.log('[Invoices Service] Request params:', params);
+      
+      // Log token and org context
+      const token = localStorage.getItem('access_token');
+      const orgId = localStorage.getItem('org_id');
+      const orgApiKey = localStorage.getItem('org_api_key');
+      
+      console.log('[Invoices Service] Auth context:', {
+        hasToken: !!token,
+        tokenPrefix: token ? token.substring(0, 20) + '...' : 'none',
+        tokenLength: token?.length || 0,
+        orgId: orgId || 'MISSING',
+        orgApiKey: orgApiKey || 'none',
+      });
 
-    const data = response.data;
+      // Try to decode JWT token to see its structure (for debugging only)
+      if (token) {
+        try {
+          const tokenParts = token.split('.');
+          if (tokenParts.length === 3) {
+            const payload = JSON.parse(atob(tokenParts[1]));
+            console.log('[Invoices Service] JWT Token payload:', {
+              exp: payload.exp ? new Date(payload.exp * 1000).toISOString() : 'none',
+              user_id: payload.user_id || payload.sub || 'none',
+              org_id: payload.org_id || 'MISSING - This is the problem!',
+              claims: Object.keys(payload),
+            });
+          }
+        } catch (decodeError) {
+          console.error('[Invoices Service] Could not decode JWT token:', decodeError);
+        }
+      }
 
-    // Transform FastAPI v2 response to standard paginated format for component compatibility
-    return {
-      count: data.invoices_count || 0,
-      next: null,
-      previous: null,
-      results: data.invoices || [],
-    };
+      const response = await apiClient.get<InvoiceListResponse>(this.endpoint, {
+        params,
+      });
+
+      console.log('[Invoices Service] Response status:', response.status);
+      console.log('[Invoices Service] Response data structure:', Object.keys(response.data));
+
+      const data = response.data;
+
+      // Transform FastAPI v2 response to standard paginated format for component compatibility
+      return {
+        count: data.invoices_count || 0,
+        next: null,
+        previous: null,
+        results: data.invoices || [],
+      };
+    } catch (error) {
+      // Enhanced error logging for the 400 "Missing org_id" error
+      if (error instanceof AxiosError) {
+        console.error('[Invoices Service] API Error:', {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          url: error.config?.url,
+          baseURL: error.config?.baseURL,
+          fullUrl: (error.config?.baseURL || '') + (error.config?.url || ''),
+          method: error.config?.method?.toUpperCase(),
+          responseData: error.response?.data,
+        });
+
+        // Log the actual headers that were sent
+        console.error('[Invoices Service] Request headers sent:', {
+          Authorization: error.config?.headers?.Authorization ? 'Bearer [TOKEN]' : 'MISSING',
+          org: error.config?.headers?.org || 'MISSING',
+          'Content-Type': error.config?.headers?.['Content-Type'],
+        });
+
+        // Specific handling for the 400 org_id error
+        if (error.response?.status === 400) {
+          const errorMessage = error.response?.data?.detail || error.response?.data?.message || '';
+          if (errorMessage.includes('org_id')) {
+            console.error('[Invoices Service] 400 Error: Missing org_id in token.');
+            console.error('[Invoices Service] This indicates the JWT token does not contain the org_id claim.');
+            console.error('[Invoices Service] User may need to re-authenticate to get a token with org_id.');
+            console.error('[Invoices Service] Check if other modules (accounts, leads) are working correctly.');
+          }
+        }
+      } else {
+        console.error('[Invoices Service] Unexpected error:', error);
+      }
+      
+      // Re-throw the error so the UI can handle it
+      throw error;
+    }
   }
 
   // Get a single invoice by ID
   async getOne(id: string): Promise<InvoiceResponse> {
-    const response = await apiClient.get<InvoiceResponse>(`${this.endpoint}${id}/`);
-    return response.data;
+    try {
+      console.log('[Invoices Service] Fetching invoice:', id);
+      const response = await apiClient.get<InvoiceResponse>(`${this.endpoint}${id}/`);
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error('[Invoices Service] getOne Error:', {
+          status: error.response?.status,
+          invoiceId: id,
+          responseData: error.response?.data,
+        });
+      }
+      throw error;
+    }
   }
 
   // Create a new invoice
   async create(data: InvoiceCreate): Promise<InvoiceResponse> {
-    const response = await apiClient.post<InvoiceResponse>(this.endpoint, data);
-    return response.data;
+    try {
+      console.log('[Invoices Service] Creating invoice:', {
+        invoice_title: data.invoice_title,
+        name: data.name,
+        email: data.email,
+      });
+      const response = await apiClient.post<InvoiceResponse>(this.endpoint, data);
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error('[Invoices Service] create Error:', {
+          status: error.response?.status,
+          responseData: error.response?.data,
+        });
+      }
+      throw error;
+    }
   }
 
   // Update an existing invoice (full update)

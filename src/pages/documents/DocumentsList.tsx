@@ -62,6 +62,11 @@ export default function DocumentsList() {
       }),
   });
 
+  // Log error details for debugging
+  if (error) {
+    console.error('[DocumentsList] Query error:', error);
+  }
+
   const deleteMutation = useMutation({
     mutationFn: (id: string) => documentsService.delete(id),
     onSuccess: () => {
@@ -127,7 +132,15 @@ export default function DocumentsList() {
           </div>
         ) : error ? (
           <div className="p-8 text-center">
-            <p className="text-destructive">Error loading documents</p>
+            <p className="text-destructive font-semibold mb-2">Error loading documents</p>
+            <p className="text-sm text-muted-foreground mb-4">
+              {/* Investigation Note: Backend returns 404 for /api/v2/documents/ */}
+              The documents endpoint may not be available or may use a different path.
+              Please check the browser console for detailed error information.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Technical details logged to console for debugging.
+            </p>
           </div>
         ) : results.length === 0 ? (
           <div className="p-8 text-center">
