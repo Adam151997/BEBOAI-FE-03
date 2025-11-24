@@ -4,7 +4,8 @@
  * Features: Sidebar navigation, header, main content area, responsive design
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
+import type { FC, ReactNode, ElementType } from 'react';
 import {
   LayoutDashboard,
   Users,
@@ -29,12 +30,12 @@ import {
 interface MenuItem {
   name: string;
   path: string;
-  icon: React.ElementType;
+  icon: ElementType;
   badge?: number;
 }
 
 interface GrokDashboardLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
   user?: {
     name: string;
     email: string;
@@ -45,7 +46,7 @@ interface GrokDashboardLayoutProps {
   onLogout?: () => void;
 }
 
-export const GrokDashboardLayout: React.FC<GrokDashboardLayoutProps> = ({
+export const GrokDashboardLayout: FC<GrokDashboardLayoutProps> = ({
   children,
   user,
   currentPath = '/dashboard',

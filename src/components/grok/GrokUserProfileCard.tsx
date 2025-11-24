@@ -4,7 +4,8 @@
  * Features: Avatar, name, email, status badge, actions
  */
 
-import React from 'react';
+import { useState } from 'react';
+import type { FC } from 'react';
 import { Mail, Phone, MapPin, Calendar, MoreVertical } from 'lucide-react';
 
 interface GrokUserProfileCardProps {
@@ -25,13 +26,13 @@ interface GrokUserProfileCardProps {
   onViewDetails?: () => void;
 }
 
-export const GrokUserProfileCard: React.FC<GrokUserProfileCardProps> = ({
+export const GrokUserProfileCard: FC<GrokUserProfileCardProps> = ({
   user,
   onEdit,
   onDelete,
   onViewDetails,
 }) => {
-  const [showActions, setShowActions] = React.useState(false);
+  const [showActions, setShowActions] = useState(false);
 
   // Get initials for avatar fallback
   const getInitials = () => {

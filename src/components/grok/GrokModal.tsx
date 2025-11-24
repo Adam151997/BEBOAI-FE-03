@@ -4,21 +4,22 @@
  * Features: Backdrop blur, smooth animations, flexible content
  */
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
+import type { FC, ReactNode } from 'react';
 import { X } from 'lucide-react';
 
 interface GrokModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
-  children: React.ReactNode;
-  footer?: React.ReactNode;
+  children: ReactNode;
+  footer?: ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   closeOnBackdropClick?: boolean;
   showCloseButton?: boolean;
 }
 
-export const GrokModal: React.FC<GrokModalProps> = ({
+export const GrokModal: FC<GrokModalProps> = ({
   isOpen,
   onClose,
   title,

@@ -3,7 +3,7 @@
  * Comprehensive demonstration of all Grok theme components and styles
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { GrokUserProfileCard, GrokModal } from '@/components/grok';
 import {
   Users,
