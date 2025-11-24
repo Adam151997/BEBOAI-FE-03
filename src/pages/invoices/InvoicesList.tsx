@@ -35,6 +35,11 @@ export default function InvoicesList() {
       }),
   });
 
+  // Log error details for debugging
+  if (error) {
+    console.error('[InvoicesList] Query error:', error);
+  }
+
   const deleteMutation = useMutation({
     mutationFn: (id: string) => invoicesService.delete(id),
     onSuccess: () => {
@@ -113,7 +118,15 @@ export default function InvoicesList() {
 
         {error && (
           <div className="bg-red-500/10 text-red-500 p-4 rounded-md mb-4">
-            Error loading invoices. Please try again.
+            <p className="font-semibold mb-2">Error loading invoices</p>
+            <p className="text-sm">
+              {/* Investigation Note: Backend returns 400 "Missing org_id in token" */}
+              The server reported an authentication issue. This may indicate the token is missing organization context.
+              Please check the browser console for detailed diagnostic information.
+            </p>
+            <p className="text-xs mt-2 opacity-75">
+              If other modules are working correctly, you may need to log out and log back in to refresh your authentication token.
+            </p>
           </div>
         )}
 
