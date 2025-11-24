@@ -5,20 +5,26 @@ import apiClient from "@/lib/api-client";
 // FastAPI v2 accounts router: /api/v2/accounts/
 // Matches apiv2/routers/accounts.py and apiv2/schemas/accounts.py
 // 
-// Standard CRUD endpoints:
-// - GET    /accounts/                  → List accounts with pagination
-// - POST   /accounts/                  → Create new account
-// - GET    /accounts/{id}/             → Get single account
-// - PUT    /accounts/{id}/             → Update account
-// - PATCH  /accounts/{id}/             → Partial update
-// - DELETE /accounts/{id}/             → Delete account
-// - POST   /accounts/{id}/comments/    → Add comment
-// - POST   /accounts/{id}/attachments/ → Add attachment
+// FIX: Updated to use backend API endpoint /api/v2/accounts/ instead of frontend route /accounts
+// The apiClient baseURL (https://beboai-03-production.up.railway.app/api/v2) is prepended to the relative path
+// This ensures we fetch from the backend API and not the frontend React Router route
+//
+// Standard CRUD endpoints (full paths):
+// - GET    /api/v2/accounts/                  → List accounts with pagination
+// - POST   /api/v2/accounts/                  → Create new account
+// - GET    /api/v2/accounts/{id}/             → Get single account
+// - PUT    /api/v2/accounts/{id}/             → Update account
+// - PATCH  /api/v2/accounts/{id}/             → Partial update
+// - DELETE /api/v2/accounts/{id}/             → Delete account
+// - POST   /api/v2/accounts/{id}/comments/    → Add comment
+// - POST   /api/v2/accounts/{id}/attachments/ → Add attachment
 //
 // Additional endpoints:
-// - POST   /accounts/{id}/create_mail/ → Send email to account
+// - POST   /api/v2/accounts/{id}/create_mail/ → Send email to account
 class AccountsService extends CrudService<Account, AccountCreate, AccountUpdate> {
   constructor() {
+    // Using relative path "/accounts/" which gets prepended with apiClient baseURL ("/api/v2")
+    // to form the complete backend API endpoint: /api/v2/accounts/
     super("/accounts/");
   }
 
@@ -59,6 +65,7 @@ class AccountsService extends CrudService<Account, AccountCreate, AccountUpdate>
   }
 
   async createMail(id: string, mailData: any): Promise<any> {
+    // Uses backend API endpoint: /api/v2/accounts/{id}/create_mail/
     const response = await apiClient.post(`/accounts/${id}/create_mail/`, mailData);
     return response.data;
   }
