@@ -1,23 +1,23 @@
-import apiClient, { LEGACY_API_BASE_URL } from "@/lib/api-client";
+import apiClient from "@/lib/api-client";
 import type { LoginResponse, User } from "@/types";
 
 // ========================================
-// LEGACY AUTH ENDPOINTS - NOT MIGRATED TO FastAPI v2 YET
+// FastAPI v2 AUTH ENDPOINTS
 // ========================================
-// Auth endpoints still use legacy DRF /api routes, not /api/v2
-// These endpoints work correctly and will be migrated to FastAPI v2 in a future update
-// 
-// Current endpoints:
-// - POST /api/auth/login/          → User login (returns access + refresh tokens)
-// - POST /api/auth/register/       → User registration
-// - POST /api/auth/refresh-token/  → Token refresh (also used in api-client.ts interceptor)
+// Auth endpoints now use FastAPI v2 /api/v2/auth routes
+// Matches apiv2/routers/auth.py
 //
-// These services bypass the /api/v2 baseURL by using explicit LEGACY_API_BASE_URL
+// Endpoints:
+// - POST /api/v2/auth/login/       → User login (returns access + refresh tokens)
+// - POST /api/v2/auth/register/    → User registration (if available)
+// - POST /api/v2/auth/refresh-token/ → Token refresh (if available)
+// - POST /api/v2/auth/google       → Google OAuth login
+//
 export const authService = {
   login: async (email: string, password: string): Promise<LoginResponse> => {
-    // Auth endpoints still use legacy /api, not /api/v2
+    // Using FastAPI v2 auth endpoint
     const response = await apiClient.post<LoginResponse>(
-      `${LEGACY_API_BASE_URL}/auth/login/`,
+      "/auth/login/",
       { email, password }
     );
 
@@ -59,9 +59,9 @@ export const authService = {
   },
 
   refreshToken: async (refreshToken: string): Promise<{ access: string }> => {
-    // Token refresh still uses legacy /api endpoint
+    // Using FastAPI v2 auth endpoint
     const response = await apiClient.post<{ access: string }>(
-      `${LEGACY_API_BASE_URL}/auth/refresh-token/`,
+      "/auth/refresh-token/",
       { refresh: refreshToken }
     );
     return response.data;
@@ -83,9 +83,9 @@ export const authService = {
     first_name: string,
     last_name: string
   ): Promise<LoginResponse> => {
-    // Registration still uses legacy /api endpoint
+    // Using FastAPI v2 auth endpoint
     const response = await apiClient.post<LoginResponse>(
-      `${LEGACY_API_BASE_URL}/auth/register/`,
+      "/auth/register/",
       { org_name, email, password, first_name, last_name }
     );
 
