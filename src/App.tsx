@@ -20,7 +20,6 @@ import TeamsList from '@/pages/teams/TeamsList'
 import DocumentsList from '@/pages/documents/DocumentsList'
 import InvoicesList from '@/pages/invoices/InvoicesList'
 import PlannerList from '@/pages/planner/PlannerList'
-import GrokThemeDemo from '@/pages/GrokThemeDemo'
 
 function App() {
   const initializeAuth = useAuthStore((state) => state.initializeAuth)
@@ -58,7 +57,6 @@ function App() {
           <Route path="documents" element={<DocumentsList />} />
           <Route path="invoices" element={<InvoicesList />} />
           <Route path="planner" element={<PlannerList />} />
-          <Route path="grok-demo" element={<GrokThemeDemo />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
