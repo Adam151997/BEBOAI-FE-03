@@ -1,5 +1,5 @@
 import { CrudService, type QueryParams } from "./crud.service";
-import type { Account, AccountsListResponse, PaginatedResponse } from "@/types";
+import type { Account, AccountCreate, AccountUpdate, AccountsListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
 // FastAPI v2 accounts router: /api/v2/accounts/
@@ -17,7 +17,7 @@ import apiClient from "@/lib/api-client";
 //
 // Additional endpoints:
 // - POST   /accounts/{id}/create_mail/ → Send email to account
-class AccountsService extends CrudService<Account> {
+class AccountsService extends CrudService<Account, AccountCreate, AccountUpdate> {
   constructor() {
     super("/accounts/");
   }

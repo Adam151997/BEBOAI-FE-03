@@ -99,74 +99,49 @@ export interface PlannerEventResponse {
   attachments_count?: number;
 }
 
-// Planner event create payload
-// Matches apiv2/schemas/planner.py::PlannerEventCreate
+// Planner event create payload - Matches Backend POST /api/v2/planner/ REQUIRED fields
 export interface PlannerEventCreate {
-  title: string;
-  description?: string;
+  // REQUIRED fields
+  name: string;  // 1-64 chars
+  event_type: string;  // 1-7 chars - "meeting", "call"
+  start_date: string;  // Required - Format: "YYYY-MM-DD"
   
-  event_type: PlannerEventType;
-  status?: PlannerEventStatus;
-  priority?: PlannerEventPriority;
-  
-  start_date: string;
-  start_time?: string;
-  end_date?: string;
-  end_time?: string;
-  all_day?: boolean;
-  
-  location?: string;
-  
-  is_recurring?: boolean;
-  recurrence_pattern?: RecurrencePattern;
-  recurrence_end_date?: string;
-  recurring_days?: string[];
-  
-  account?: string; // Account ID
-  contacts?: string[]; // Contact IDs
-  
-  assigned_to?: string[]; // User IDs
-  teams?: string[]; // Team IDs
-  
-  reminders?: ReminderCreate[];
-  
-  tags?: string[];
-  notes?: string;
+  // OPTIONAL fields
+  status?: string | null;
+  direction?: string | null;
+  close_date?: string | null;
+  duration?: number | null;  // Minutes
+  priority?: string | null;
+  description?: string | null;
+  is_active?: boolean;  // Default: false
+  parent_type?: string | null;  // "account", "lead", "opportunity", "case"
+  parent_id?: number | null;  // ID of parent object
+  reminders?: number[];  // Array of Reminder IDs (default: [])
+  attendees_user?: number[];  // Array of User IDs (default: [])
+  attendees_contacts?: number[];  // Array of Contact IDs (default: [])
+  attendees_leads?: number[];  // Array of Lead IDs (default: [])
+  assigned_to?: number[];  // Array of User IDs (default: [])
 }
 
-// Planner event update payload
-// Matches apiv2/schemas/planner.py::PlannerEventUpdate
+// Planner event update payload - Matches Backend PUT /api/v2/planner/{id}/ - ALL fields optional
 export interface PlannerEventUpdate {
-  title?: string;
-  description?: string;
-  
-  event_type?: PlannerEventType;
-  status?: PlannerEventStatus;
-  priority?: PlannerEventPriority;
-  
+  name?: string;  // Must be 1-64 chars if provided
+  event_type?: string;  // Must be 1-7 chars if provided
   start_date?: string;
-  start_time?: string;
-  end_date?: string;
-  end_time?: string;
-  all_day?: boolean; // Optional for updates
-  
-  location?: string;
-  
-  is_recurring?: boolean;
-  recurrence_pattern?: RecurrencePattern;
-  recurrence_end_date?: string;
-  recurring_days?: string[];
-  
-  account?: string;
-  contacts?: string[];
-  
-  assigned_to?: string[];
-  teams?: string[];
-  
-  reminders?: ReminderCreate[];
-  
-  tags?: string[];
-  notes?: string;
+  status?: string | null;
+  direction?: string | null;
+  close_date?: string | null;
+  duration?: number | null;
+  priority?: string | null;
+  description?: string | null;
+  is_active?: boolean;
+  parent_type?: string | null;
+  parent_id?: number | null;
+  reminders?: number[];
+  attendees_user?: number[];
+  attendees_contacts?: number[];
+  attendees_leads?: number[];
+  assigned_to?: number[];
 }
 
 // Planner event list response

@@ -1,5 +1,5 @@
 import { CrudService, type QueryParams } from "./crud.service";
-import type { Event, EventsListResponse, PaginatedResponse } from "@/types";
+import type { Event, EventCreate, EventUpdate, EventsListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
 // FastAPI v2 events router: /api/v2/events/
@@ -14,7 +14,7 @@ import apiClient from "@/lib/api-client";
 // - DELETE /events/{id}/             → Delete event
 // - POST   /events/{id}/comments/    → Add comment
 // - POST   /events/{id}/attachments/ → Add attachment
-class EventsService extends CrudService<Event> {
+class EventsService extends CrudService<Event, EventCreate, EventUpdate> {
   constructor() {
     super("/events/");
   }

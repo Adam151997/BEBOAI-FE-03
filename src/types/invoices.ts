@@ -75,73 +75,55 @@ export interface InvoiceResponse {
   attachments_count?: number;
 }
 
-// Invoice create payload
-// Matches apiv2/schemas/invoices.py::InvoiceCreate
+// Invoice Create Payload - Matches Backend POST /api/v2/invoices/ REQUIRED fields
 export interface InvoiceCreate {
-  invoice_number?: string; // May be auto-generated
-  invoice_date: string;
-  due_date: string;
-  status?: InvoiceStatus;
+  // REQUIRED fields
+  invoice_title: string;  // 1-50 chars
+  name: string;  // 1-100 chars
+  email: string;  // Valid email
   
-  account?: string; // Account ID
-  account_name?: string;
-  
-  billing_address?: Partial<AddressMin>;
-  
-  items: Omit<InvoiceItem, "id" | "amount" | "tax_amount">[];
-  
-  subtotal?: number; // May be calculated
-  tax_total?: number;
-  discount_total?: number;
-  total_amount?: number;
-  
-  currency?: string;
-  payment_terms?: string;
-  payment_method?: string;
-  
-  notes?: string;
-  terms_and_conditions?: string;
-  reference_number?: string;
-  purchase_order_number?: string;
-  
-  assigned_to?: string[];
-  teams?: string[];
-  tags?: string[];
+  // OPTIONAL fields
+  status?: string;  // Default: "Draft" - "Draft", "Sent", "Paid"
+  phone?: string | null;
+  due_date?: string | null;  // Format: "YYYY-MM-DD"
+  currency?: string | null;
+  quantity?: number;  // Default: 0
+  rate?: number;  // Default: 0.00 (decimal)
+  tax?: number | null;  // Decimal
+  total_amount?: number | null;  // Decimal
+  amount_due?: number | null;  // Decimal
+  amount_paid?: number | null;  // Decimal
+  is_email_sent?: boolean;  // Default: false
+  details?: string | null;
+  from_address?: number | null;  // Address ID
+  to_address?: number | null;  // Address ID
+  assigned_to?: number[];  // Array of User IDs (default: [])
+  teams?: number[];  // Array of Team IDs (default: [])
+  accounts?: number[];  // Array of Account IDs (default: [])
 }
 
-// Invoice update payload
-// Matches apiv2/schemas/invoices.py::InvoiceUpdate
+// Invoice Update Payload - Matches Backend PUT /api/v2/invoices/{id}/ - ALL fields optional
 export interface InvoiceUpdate {
-  invoice_number?: string;
-  invoice_date?: string;
-  due_date?: string;
-  status?: InvoiceStatus;
-  
-  account?: string;
-  account_name?: string;
-  
-  billing_address?: Partial<AddressMin>;
-  
-  items?: Omit<InvoiceItem, "id" | "amount" | "tax_amount">[];
-  
-  subtotal?: number;
-  tax_total?: number;
-  discount_total?: number;
-  total_amount?: number;
-  amount_paid?: number;
-  
-  currency?: string;
-  payment_terms?: string;
-  payment_method?: string;
-  
-  notes?: string;
-  terms_and_conditions?: string;
-  reference_number?: string;
-  purchase_order_number?: string;
-  
-  assigned_to?: string[];
-  teams?: string[];
-  tags?: string[];
+  invoice_title?: string;  // Must be 1-50 chars if provided
+  name?: string;  // Must be 1-100 chars if provided
+  email?: string;
+  status?: string;
+  phone?: string | null;
+  due_date?: string | null;
+  currency?: string | null;
+  quantity?: number;
+  rate?: number;
+  tax?: number | null;
+  total_amount?: number | null;
+  amount_due?: number | null;
+  amount_paid?: number | null;
+  is_email_sent?: boolean;
+  details?: string | null;
+  from_address?: number | null;
+  to_address?: number | null;
+  assigned_to?: number[];
+  teams?: number[];
+  accounts?: number[];
 }
 
 // Invoice list response

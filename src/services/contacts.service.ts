@@ -1,5 +1,5 @@
 import { CrudService, type QueryParams } from "./crud.service";
-import type { Contact, ContactsListResponse, PaginatedResponse } from "@/types";
+import type { Contact, ContactCreate, ContactUpdate, ContactsListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
 // FastAPI v2 contacts router: /api/v2/contacts/
@@ -14,7 +14,7 @@ import apiClient from "@/lib/api-client";
 // - DELETE /contacts/{id}/             → Delete contact
 // - POST   /contacts/{id}/comments/    → Add comment
 // - POST   /contacts/{id}/attachments/ → Add attachment
-class ContactsService extends CrudService<Contact> {
+class ContactsService extends CrudService<Contact, ContactCreate, ContactUpdate> {
   constructor() {
     super("/contacts/");
   }

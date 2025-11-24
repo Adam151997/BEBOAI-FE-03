@@ -24,37 +24,40 @@ export interface QueryParams {
 // - POST   /{resource}/{id}/attachments/ → Add attachment to item
 //
 // Services can extend this class and override methods for custom behavior
-export class CrudService<T> {
+// TModel: The response model type (e.g., Lead, Contact, Account)
+// TCreate: The create payload type (e.g., LeadCreate, ContactCreate)
+// TUpdate: The update payload type (e.g., LeadUpdate, ContactUpdate)
+export class CrudService<TModel, TCreate = Partial<TModel>, TUpdate = Partial<TModel>> {
   protected endpoint: string;
 
   constructor(endpoint: string) {
     this.endpoint = endpoint;
   }
 
-  async getAll(params?: QueryParams): Promise<PaginatedResponse<T>> {
-    const response = await apiClient.get<PaginatedResponse<T>>(this.endpoint, {
+  async getAll(params?: QueryParams): Promise<PaginatedResponse<TModel>> {
+    const response = await apiClient.get<PaginatedResponse<TModel>>(this.endpoint, {
       params,
     });
     return response.data;
   }
 
-  async getOne(id: string): Promise<T> {
-    const response = await apiClient.get<T>(`${this.endpoint}${id}/`);
+  async getOne(id: string): Promise<TModel> {
+    const response = await apiClient.get<TModel>(`${this.endpoint}${id}/`);
     return response.data;
   }
 
-  async create(data: Partial<T>): Promise<T> {
-    const response = await apiClient.post<T>(this.endpoint, data);
+  async create(data: TCreate | Partial<TModel>): Promise<TModel> {
+    const response = await apiClient.post<TModel>(this.endpoint, data);
     return response.data;
   }
 
-  async update(id: string, data: Partial<T>): Promise<T> {
-    const response = await apiClient.put<T>(`${this.endpoint}${id}/`, data);
+  async update(id: string, data: TUpdate | Partial<TModel>): Promise<TModel> {
+    const response = await apiClient.put<TModel>(`${this.endpoint}${id}/`, data);
     return response.data;
   }
 
-  async partialUpdate(id: string, data: Partial<T>): Promise<T> {
-    const response = await apiClient.patch<T>(`${this.endpoint}${id}/`, data);
+  async partialUpdate(id: string, data: Partial<TUpdate> | Partial<TModel>): Promise<TModel> {
+    const response = await apiClient.patch<TModel>(`${this.endpoint}${id}/`, data);
     return response.data;
   }
 

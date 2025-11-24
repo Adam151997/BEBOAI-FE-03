@@ -1,5 +1,5 @@
 import { CrudService, type QueryParams } from "./crud.service";
-import type { Opportunity, OpportunitiesListResponse, PaginatedResponse } from "@/types";
+import type { Opportunity, OpportunityCreate, OpportunityUpdate, OpportunitiesListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
 // FastAPI v2 opportunities router: /api/v2/opportunities/
@@ -14,7 +14,7 @@ import apiClient from "@/lib/api-client";
 // - DELETE /opportunities/{id}/             → Delete opportunity
 // - POST   /opportunities/{id}/comments/    → Add comment
 // - POST   /opportunities/{id}/attachments/ → Add attachment
-class OpportunitiesService extends CrudService<Opportunity> {
+class OpportunitiesService extends CrudService<Opportunity, OpportunityCreate, OpportunityUpdate> {
   constructor() {
     super("/opportunities/");
   }

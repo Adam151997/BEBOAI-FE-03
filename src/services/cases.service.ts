@@ -1,5 +1,5 @@
 import { CrudService, type QueryParams } from "./crud.service";
-import type { Case, CasesListResponse, PaginatedResponse } from "@/types";
+import type { Case, CaseCreate, CaseUpdate, CasesListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
 // FastAPI v2 cases router: /api/v2/cases/
@@ -14,7 +14,7 @@ import apiClient from "@/lib/api-client";
 // - DELETE /cases/{id}/             → Delete case
 // - POST   /cases/{id}/comments/    → Add comment
 // - POST   /cases/{id}/attachments/ → Add attachment
-class CasesService extends CrudService<Case> {
+class CasesService extends CrudService<Case, CaseCreate, CaseUpdate> {
   constructor() {
     super("/cases/");
   }

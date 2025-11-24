@@ -1,5 +1,5 @@
 import { CrudService, type QueryParams } from "./crud.service";
-import type { Team, TeamsListResponse, PaginatedResponse } from "@/types";
+import type { Team, TeamCreate, TeamUpdate, TeamsListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
 // FastAPI v2 teams router: /api/v2/teams/
@@ -14,7 +14,7 @@ import apiClient from "@/lib/api-client";
 // - DELETE /teams/{id}/             → Delete team
 // - POST   /teams/{id}/comments/    → Add comment (if supported)
 // - POST   /teams/{id}/attachments/ → Add attachment (if supported)
-class TeamsService extends CrudService<Team> {
+class TeamsService extends CrudService<Team, TeamCreate, TeamUpdate> {
   constructor() {
     super("/teams/");
   }

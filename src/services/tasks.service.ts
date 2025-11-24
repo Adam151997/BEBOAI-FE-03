@@ -1,5 +1,5 @@
 import { CrudService, type QueryParams } from "./crud.service";
-import type { Task, TasksListResponse, PaginatedResponse } from "@/types";
+import type { Task, TaskCreate, TaskUpdate, TasksListResponse, PaginatedResponse } from "@/types";
 import apiClient from "@/lib/api-client";
 
 // FastAPI v2 tasks router: /api/v2/tasks/
@@ -14,7 +14,7 @@ import apiClient from "@/lib/api-client";
 // - DELETE /tasks/{id}/             → Delete task
 // - POST   /tasks/{id}/comments/    → Add comment
 // - POST   /tasks/{id}/attachments/ → Add attachment
-class TasksService extends CrudService<Task> {
+class TasksService extends CrudService<Task, TaskCreate, TaskUpdate> {
   constructor() {
     super("/tasks/");
   }
