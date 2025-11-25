@@ -61,20 +61,22 @@ export function normalizeIdArray(
   }
 
   return ids
-    .map((item) => {
-      // Handle null/undefined items
+    .map((item): number | null => {
+      // Handle null/undefined items - return null to be filtered out
       if (item == null) {
-        return NaN;
+        return null;
       }
       // Handle objects with id property (e.g., User objects)
       if (typeof item === 'object' && 'id' in item) {
         const id = item.id;
-        return typeof id === 'number' ? id : parseInt(String(id), 10);
+        const parsed = typeof id === 'number' ? id : parseInt(String(id), 10);
+        return isNaN(parsed) ? null : parsed;
       }
       // Handle string or number values directly
-      return typeof item === 'number' ? item : parseInt(String(item), 10);
+      const parsed = typeof item === 'number' ? item : parseInt(String(item), 10);
+      return isNaN(parsed) ? null : parsed;
     })
-    .filter((num): num is number => !isNaN(num));
+    .filter((num): num is number => num !== null);
 }
 
 /**
