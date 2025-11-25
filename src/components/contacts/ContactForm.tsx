@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
+import { normalizeIdArray, normalizeId } from "@/lib/utils";
 
 interface ContactFormProps {
   contact?: Contact;
@@ -84,10 +85,24 @@ export default function ContactForm({ contact, onSuccess, onCancel }: ContactFor
       Object.entries(formData).filter(([, value]) => value !== "")
     ) as Partial<Contact>;
 
+    // IMPORTANT: Backend requires account to be an integer ID, not a string
+    // Normalize the account field to ensure proper type conversion
+    if (cleanData.account) {
+      const normalizedAccount = normalizeId(cleanData.account as string | number);
+      if (normalizedAccount !== null) {
+        (cleanData as Record<string, unknown>).account = normalizedAccount;
+      } else {
+        delete cleanData.account;
+      }
+    }
+
     // Add current user's profile_id to assigned_to array for new records
+    // NOTE: Backend requires assigned_to to be number[] - use normalizeIdArray to ensure proper type
+    // Type assertion is needed because Contact['assigned_to'] accepts User[] for response mapping
+    // but the API create/update endpoints require number[] for submission
     const profileId = localStorage.getItem("profile_id");
     if (profileId && !contact) {
-      cleanData.assigned_to = [profileId];
+      (cleanData as Record<string, unknown>).assigned_to = normalizeIdArray([profileId]);
     }
 
     if (contact) {

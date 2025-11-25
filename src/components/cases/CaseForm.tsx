@@ -12,6 +12,7 @@ import {
   CASE_PRIORITY_CHOICES,
   CASE_TYPE_CHOICES,
 } from "@/lib/constants";
+import { normalizeIdArray } from "@/lib/utils";
 
 interface CaseFormProps {
   case?: Case;
@@ -65,9 +66,12 @@ export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFo
     ) as Partial<Case>;
 
     // Add current user's profile_id to assigned_to array for new records
+    // NOTE: Backend requires assigned_to to be number[] - use normalizeIdArray to ensure proper type
+    // Type assertion is needed because Case['assigned_to'] accepts User[] for response mapping
+    // but the API create/update endpoints require number[] for submission
     const profileId = localStorage.getItem("profile_id");
     if (profileId && !caseItem) {
-      cleanData.assigned_to = [profileId];
+      (cleanData as Record<string, unknown>).assigned_to = normalizeIdArray([profileId]);
     }
 
     if (caseItem) {

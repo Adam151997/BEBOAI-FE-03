@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { TASK_STATUS_CHOICES, TASK_PRIORITY_CHOICES } from "@/lib/constants";
+import { normalizeIdArray } from "@/lib/utils";
 
 interface TaskFormProps {
   task?: Task;
@@ -61,9 +62,12 @@ export default function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
     ) as Partial<Task>;
 
     // Add current user's profile_id to assigned_to array for new records
+    // NOTE: Backend requires assigned_to to be number[] - use normalizeIdArray to ensure proper type
+    // Type assertion is needed because Task['assigned_to'] accepts User[] for response mapping
+    // but the API create/update endpoints require number[] for submission
     const profileId = localStorage.getItem("profile_id");
     if (profileId && !task) {
-      cleanData.assigned_to = [profileId];
+      (cleanData as Record<string, unknown>).assigned_to = normalizeIdArray([profileId]);
     }
 
     if (task) {
