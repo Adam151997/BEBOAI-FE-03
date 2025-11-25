@@ -25,6 +25,7 @@ export default function EventForm({ event, onSuccess, onCancel }: EventFormProps
     start_time: event?.start_time || "",
     end_date: event?.end_date || "",
     end_time: event?.end_time || "",
+    date_of_meeting: event?.date_of_meeting || "",
     description: event?.description || "",
     is_recurring: event?.is_recurring || false,
   });
@@ -224,6 +225,23 @@ export default function EventForm({ event, onSuccess, onCancel }: EventFormProps
             <p className="text-sm text-destructive">{errors.end_time.join(", ")}</p>
           )}
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="date_of_meeting">Date of Meeting</Label>
+        <Input
+          id="date_of_meeting"
+          name="date_of_meeting"
+          type="date"
+          value={formData.date_of_meeting}
+          onChange={handleChange}
+        />
+        <p className="text-xs text-muted-foreground">
+          Optional: Specific date when the meeting occurred or is scheduled
+        </p>
+        {errors.date_of_meeting && Array.isArray(errors.date_of_meeting) && (
+          <p className="text-sm text-destructive">{errors.date_of_meeting.join(", ")}</p>
+        )}
       </div>
 
       <div className="space-y-2">
