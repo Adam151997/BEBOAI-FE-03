@@ -4,13 +4,11 @@
  * as defined in BEBOAI-03 repository swagger_params and models
  */
 
-// Lead Status Choices - from leads/swagger_params1.py
+// Lead Status Choices - from backend API v2 schema
 export const LEAD_STATUS_CHOICES = [
-  { value: "assigned", label: "Assigned" },
-  { value: "in process", label: "In Process" },
-  { value: "converted", label: "Converted" },
-  { value: "recycled", label: "Recycled" },
+  { value: "open", label: "Open" },
   { value: "closed", label: "Closed" },
+  { value: "converted", label: "Converted" },
 ] as const;
 
 // Lead Source Choices - common across CRM modules
@@ -25,17 +23,18 @@ export const LEAD_SOURCE_CHOICES = [
   { value: "other", label: "Other" },
 ] as const;
 
-// Opportunity Stage Choices
+// Opportunity Stage Choices - from backend API v2 schema
 export const OPPORTUNITY_STAGE_CHOICES = [
-  { value: "QUALIFICATION", label: "Qualification" },
-  { value: "NEEDS ANALYSIS", label: "Needs Analysis" },
-  { value: "VALUE PROPOSITION", label: "Value Proposition" },
-  { value: "ID. DECISION MAKERS", label: "ID. Decision Makers" },
-  { value: "PERCEPTION ANALYSIS", label: "Perception Analysis" },
-  { value: "PROPOSAL/PRICE QUOTE", label: "Proposal/Price Quote" },
-  { value: "NEGOTIATION/REVIEW", label: "Negotiation/Review" },
-  { value: "CLOSED WON", label: "Closed Won" },
-  { value: "CLOSED LOST", label: "Closed Lost" },
+  { value: "prospecting", label: "Prospecting" },
+  { value: "qualification", label: "Qualification" },
+  { value: "needs_analysis", label: "Needs Analysis" },
+  { value: "value_proposition", label: "Value Proposition" },
+  { value: "decision_makers", label: "ID. Decision Makers" },
+  { value: "perception_analysis", label: "Perception Analysis" },
+  { value: "proposal", label: "Proposal/Price Quote" },
+  { value: "negotiation", label: "Negotiation/Review" },
+  { value: "closed_won", label: "Closed Won" },
+  { value: "closed_lost", label: "Closed Lost" },
 ] as const;
 
 // Opportunity Lead Source (same as Lead Source but with None option)
@@ -51,34 +50,32 @@ export const OPPORTUNITY_LEAD_SOURCE_CHOICES = [
   { value: "Other", label: "Other" },
 ] as const;
 
-// Task Status Choices
+// Task Status Choices - from backend API v2 schema
 export const TASK_STATUS_CHOICES = [
-  { value: "New", label: "New" },
-  { value: "In Progress", label: "In Progress" },
-  { value: "Completed", label: "Completed" },
+  { value: "open", label: "Open" },
+  { value: "in_progress", label: "In Progress" },
+  { value: "completed", label: "Completed" },
 ] as const;
 
-// Task Priority Choices
+// Task Priority Choices - from backend API v2 schema
 export const TASK_PRIORITY_CHOICES = [
-  { value: "Low", label: "Low" },
-  { value: "Medium", label: "Medium" },
-  { value: "High", label: "High" },
+  { value: "low", label: "Low" },
+  { value: "medium", label: "Medium" },
+  { value: "high", label: "High" },
 ] as const;
 
-// Case Status Choices
+// Case Status Choices - from backend API v2 schema
 export const CASE_STATUS_CHOICES = [
-  { value: "New", label: "New" },
-  { value: "Working", label: "Working" },
-  { value: "Closed", label: "Closed" },
-  { value: "Rejected", label: "Rejected" },
-  { value: "Duplicate", label: "Duplicate" },
+  { value: "open", label: "Open" },
+  { value: "in_progress", label: "In Progress" },
+  { value: "closed", label: "Closed" },
 ] as const;
 
-// Case Priority Choices (same as Task Priority)
+// Case Priority Choices - from backend API v2 schema
 export const CASE_PRIORITY_CHOICES = [
-  { value: "Low", label: "Low" },
-  { value: "Medium", label: "Medium" },
-  { value: "High", label: "High" },
+  { value: "low", label: "Low" },
+  { value: "medium", label: "Medium" },
+  { value: "high", label: "High" },
 ] as const;
 
 // Case Type Choices
@@ -142,12 +139,11 @@ export const CURRENCY_CHOICES = [
   { value: "JPY", label: "JPY" },
 ] as const;
 
-// Event Type Choices
+// Event Type Choices - from backend API v2 schema
 export const EVENT_TYPE_CHOICES = [
-  { value: "Call", label: "Call" },
-  { value: "Meeting", label: "Meeting" },
-  { value: "Task", label: "Task" },
-  { value: "Email", label: "Email" },
+  { value: "meeting", label: "Meeting" },
+  { value: "call", label: "Call" },
+  { value: "email", label: "Email" },
 ] as const;
 
 // Event Status Choices

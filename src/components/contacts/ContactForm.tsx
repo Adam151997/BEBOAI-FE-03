@@ -159,13 +159,19 @@ export default function ContactForm({ contact, onSuccess, onCancel }: ContactFor
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="last_name">Last Name</Label>
+          <Label htmlFor="last_name">
+            Last Name <span className="text-destructive">*</span>
+          </Label>
           <Input
             id="last_name"
             name="last_name"
             value={formData.last_name}
             onChange={handleChange}
+            required
           />
+          {errors.last_name && Array.isArray(errors.last_name) && (
+            <p className="text-sm text-destructive">{errors.last_name.join(", ")}</p>
+          )}
         </div>
       </div>
 
@@ -214,14 +220,20 @@ export default function ContactForm({ contact, onSuccess, onCancel }: ContactFor
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="primary_email">Primary Email</Label>
+          <Label htmlFor="primary_email">
+            Primary Email <span className="text-destructive">*</span>
+          </Label>
           <Input
             id="primary_email"
             name="primary_email"
             type="email"
             value={formData.primary_email}
             onChange={handleChange}
+            required
           />
+          {errors.primary_email && Array.isArray(errors.primary_email) && (
+            <p className="text-sm text-destructive">{errors.primary_email.join(", ")}</p>
+          )}
         </div>
 
         <div className="space-y-2">
