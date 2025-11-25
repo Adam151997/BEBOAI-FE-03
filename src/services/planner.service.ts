@@ -14,10 +14,11 @@ import type {
 } from "@/types/planner";
 import type { PaginatedResponse, CommentResponse } from "@/types";
 
-// FastAPI v2 planner router: /api/v2/planner/
+// FastAPI v2 planner router: /api/v2/planner/events/
 // Matches apiv2/routers/planner.py and apiv2/schemas/planner.py
+// Backend uses /planner/events/ for event operations and /planner/reminders/ for reminders
 class PlannerService {
-  private endpoint = "/planner/";
+  private endpoint = "/planner/events/";
 
   // Get all planner events with pagination
   async getAll(params?: QueryParams): Promise<PaginatedResponse<PlannerEventResponse>> {
