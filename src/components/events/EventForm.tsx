@@ -19,7 +19,7 @@ interface EventFormProps {
 export default function EventForm({ event, onSuccess, onCancel }: EventFormProps) {
   const [formData, setFormData] = useState({
     name: event?.name || "",
-    event_type: event?.event_type || "Call",
+    event_type: event?.event_type || "meeting",
     status: event?.status || "Planned",
     start_date: event?.start_date || "",
     start_time: event?.start_time || "",
@@ -176,13 +176,16 @@ export default function EventForm({ event, onSuccess, onCancel }: EventFormProps
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="start_time">Start Time</Label>
+          <Label htmlFor="start_time">
+            Start Time <span className="text-destructive">*</span>
+          </Label>
           <Input
             id="start_time"
             name="start_time"
             type="time"
             value={formData.start_time}
             onChange={handleChange}
+            required
           />
           {errors.start_time && Array.isArray(errors.start_time) && (
             <p className="text-sm text-destructive">{errors.start_time.join(", ")}</p>
@@ -192,13 +195,16 @@ export default function EventForm({ event, onSuccess, onCancel }: EventFormProps
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="end_date">End Date</Label>
+          <Label htmlFor="end_date">
+            End Date <span className="text-destructive">*</span>
+          </Label>
           <Input
             id="end_date"
             name="end_date"
             type="date"
             value={formData.end_date}
             onChange={handleChange}
+            required
           />
           {errors.end_date && Array.isArray(errors.end_date) && (
             <p className="text-sm text-destructive">{errors.end_date.join(", ")}</p>

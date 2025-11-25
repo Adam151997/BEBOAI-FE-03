@@ -19,8 +19,8 @@ interface TaskFormProps {
 export default function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
   const [formData, setFormData] = useState({
     title: task?.title || "",
-    status: task?.status || "New",
-    priority: task?.priority || "Medium",
+    status: task?.status || "open",
+    priority: task?.priority || "medium",
     due_date: task?.due_date || "",
     description: task?.description || "",
   });
@@ -108,12 +108,15 @@ export default function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="status">Status</Label>
+          <Label htmlFor="status">
+            Status <span className="text-destructive">*</span>
+          </Label>
           <Select
             id="status"
             name="status"
             value={formData.status}
             onChange={handleChange}
+            required
           >
             {TASK_STATUS_CHOICES.map((choice) => (
               <option key={choice.value} value={choice.value}>
@@ -127,12 +130,15 @@ export default function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="priority">Priority</Label>
+          <Label htmlFor="priority">
+            Priority <span className="text-destructive">*</span>
+          </Label>
           <Select
             id="priority"
             name="priority"
             value={formData.priority}
             onChange={handleChange}
+            required
           >
             {TASK_PRIORITY_CHOICES.map((choice) => (
               <option key={choice.value} value={choice.value}>

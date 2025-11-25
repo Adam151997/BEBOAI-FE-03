@@ -23,9 +23,10 @@ interface CaseFormProps {
 export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFormProps) {
   const [formData, setFormData] = useState({
     name: caseItem?.name || "",
-    status: caseItem?.status || "New",
-    priority: caseItem?.priority || "Medium",
+    status: caseItem?.status || "open",
+    priority: caseItem?.priority || "medium",
     case_type: caseItem?.case_type || "",
+    closed_on: caseItem?.closed_on || "",
     description: caseItem?.description || "",
   });
 
@@ -112,6 +113,52 @@ export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFo
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
+          <Label htmlFor="status">
+            Status <span className="text-destructive">*</span>
+          </Label>
+          <Select
+            id="status"
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+            required
+          >
+            {CASE_STATUS_CHOICES.map((choice) => (
+              <option key={choice.value} value={choice.value}>
+                {choice.label}
+              </option>
+            ))}
+          </Select>
+          {errors.status && Array.isArray(errors.status) && (
+            <p className="text-sm text-destructive">{errors.status.join(", ")}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="priority">
+            Priority <span className="text-destructive">*</span>
+          </Label>
+          <Select
+            id="priority"
+            name="priority"
+            value={formData.priority}
+            onChange={handleChange}
+            required
+          >
+            {CASE_PRIORITY_CHOICES.map((choice) => (
+              <option key={choice.value} value={choice.value}>
+                {choice.label}
+              </option>
+            ))}
+          </Select>
+          {errors.priority && Array.isArray(errors.priority) && (
+            <p className="text-sm text-destructive">{errors.priority.join(", ")}</p>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
           <Label htmlFor="case_type">Type</Label>
           <Select
             id="case_type"
@@ -132,42 +179,21 @@ export default function CaseForm({ case: caseItem, onSuccess, onCancel }: CaseFo
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="priority">Priority</Label>
-          <Select
-            id="priority"
-            name="priority"
-            value={formData.priority}
+          <Label htmlFor="closed_on">
+            Closed On <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            id="closed_on"
+            name="closed_on"
+            type="date"
+            value={formData.closed_on}
             onChange={handleChange}
-          >
-            {CASE_PRIORITY_CHOICES.map((choice) => (
-              <option key={choice.value} value={choice.value}>
-                {choice.label}
-              </option>
-            ))}
-          </Select>
-          {errors.priority && Array.isArray(errors.priority) && (
-            <p className="text-sm text-destructive">{errors.priority.join(", ")}</p>
+            required
+          />
+          {errors.closed_on && Array.isArray(errors.closed_on) && (
+            <p className="text-sm text-destructive">{errors.closed_on.join(", ")}</p>
           )}
         </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="status">Status</Label>
-        <Select
-          id="status"
-          name="status"
-          value={formData.status}
-          onChange={handleChange}
-        >
-          {CASE_STATUS_CHOICES.map((choice) => (
-            <option key={choice.value} value={choice.value}>
-              {choice.label}
-            </option>
-          ))}
-        </Select>
-        {errors.status && Array.isArray(errors.status) && (
-          <p className="text-sm text-destructive">{errors.status.join(", ")}</p>
-        )}
       </div>
 
       <div className="space-y-2">

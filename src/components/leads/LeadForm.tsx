@@ -165,15 +165,12 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="first_name">
-            First Name <span className="text-destructive">*</span>
-          </Label>
+          <Label htmlFor="first_name">First Name</Label>
           <Input
             id="first_name"
             name="first_name"
             value={formData.first_name}
             onChange={handleChange}
-            required
           />
           {errors.first_name && Array.isArray(errors.first_name) && (
             <p className="text-sm text-destructive">{errors.first_name.join(", ")}</p>
@@ -181,15 +178,12 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="last_name">
-            Last Name <span className="text-destructive">*</span>
-          </Label>
+          <Label htmlFor="last_name">Last Name</Label>
           <Input
             id="last_name"
             name="last_name"
             value={formData.last_name}
             onChange={handleChange}
-            required
           />
           {errors.last_name && Array.isArray(errors.last_name) && (
             <p className="text-sm text-destructive">{errors.last_name.join(", ")}</p>
@@ -233,12 +227,15 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="status">Status</Label>
+          <Label htmlFor="status">
+            Status <span className="text-destructive">*</span>
+          </Label>
           <Select
             id="status"
             name="status"
             value={formData.status}
             onChange={handleChange}
+            required
           >
             <option value="">Select Status</option>
             {LEAD_STATUS_CHOICES.map((choice) => (
@@ -371,9 +368,7 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="probability">
-          Probability (%) <span className="text-destructive">*</span>
-        </Label>
+        <Label htmlFor="probability">Probability (%)</Label>
         <Input
           id="probability"
           name="probability"
@@ -384,7 +379,6 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
           value={formData.probability}
           onChange={handleChange}
           placeholder="0-100"
-          required
         />
         <p className="text-xs text-muted-foreground">
           Enter a value between 0 and 100 representing the likelihood of conversion

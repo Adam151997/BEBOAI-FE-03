@@ -134,13 +134,16 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">
+            Email <span className="text-destructive">*</span>
+          </Label>
           <Input
             id="email"
             name="email"
             type="email"
             value={formData.email}
             onChange={handleChange}
+            required
           />
           {errors.email && Array.isArray(errors.email) && (
             <p className="text-sm text-destructive">{errors.email.join(", ")}</p>
@@ -218,15 +221,12 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="billing_address_line">
-          Billing Address Line <span className="text-destructive">*</span>
-        </Label>
+        <Label htmlFor="billing_address_line">Billing Address Line</Label>
         <Input
           id="billing_address_line"
           name="billing_address_line"
           value={formData.billing_address_line}
           onChange={handleChange}
-          required
         />
         {errors.billing_address_line && Array.isArray(errors.billing_address_line) && (
           <p className="text-sm text-destructive">{errors.billing_address_line.join(", ")}</p>
@@ -234,15 +234,12 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="billing_street">
-          Billing Street <span className="text-destructive">*</span>
-        </Label>
+        <Label htmlFor="billing_street">Billing Street</Label>
         <Input
           id="billing_street"
           name="billing_street"
           value={formData.billing_street}
           onChange={handleChange}
-          required
         />
         {errors.billing_street && Array.isArray(errors.billing_street) && (
           <p className="text-sm text-destructive">{errors.billing_street.join(", ")}</p>
@@ -251,15 +248,12 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="billing_city">
-            Billing City <span className="text-destructive">*</span>
-          </Label>
+          <Label htmlFor="billing_city">Billing City</Label>
           <Input
             id="billing_city"
             name="billing_city"
             value={formData.billing_city}
             onChange={handleChange}
-            required
           />
           {errors.billing_city && Array.isArray(errors.billing_city) && (
             <p className="text-sm text-destructive">{errors.billing_city.join(", ")}</p>
@@ -267,15 +261,12 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="billing_state">
-            Billing State <span className="text-destructive">*</span>
-          </Label>
+          <Label htmlFor="billing_state">Billing State</Label>
           <Input
             id="billing_state"
             name="billing_state"
             value={formData.billing_state}
             onChange={handleChange}
-            required
           />
           {errors.billing_state && Array.isArray(errors.billing_state) && (
             <p className="text-sm text-destructive">{errors.billing_state.join(", ")}</p>
@@ -285,15 +276,12 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="billing_postcode">
-            Billing Postcode <span className="text-destructive">*</span>
-          </Label>
+          <Label htmlFor="billing_postcode">Billing Postcode</Label>
           <Input
             id="billing_postcode"
             name="billing_postcode"
             value={formData.billing_postcode}
             onChange={handleChange}
-            required
           />
           {errors.billing_postcode && Array.isArray(errors.billing_postcode) && (
             <p className="text-sm text-destructive">{errors.billing_postcode.join(", ")}</p>
@@ -301,15 +289,12 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="billing_country">
-            Billing Country <span className="text-destructive">*</span>
-          </Label>
+          <Label htmlFor="billing_country">Billing Country</Label>
           <Input
             id="billing_country"
             name="billing_country"
             value={formData.billing_country}
             onChange={handleChange}
-            required
           />
           {errors.billing_country && Array.isArray(errors.billing_country) && (
             <p className="text-sm text-destructive">{errors.billing_country.join(", ")}</p>

@@ -172,15 +172,12 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="account">
-          Company <span className="text-destructive">*</span>
-        </Label>
+        <Label htmlFor="account">Company</Label>
         <Select
           id="account"
           name="account"
           value={formData.account}
           onChange={handleChange}
-          required
         >
           <option value="">Select company</option>
           {accountOptions.map((acc) => (
@@ -195,12 +192,15 @@ export default function OpportunityForm({ opportunity, onSuccess, onCancel }: Op
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="stage">Stage</Label>
+        <Label htmlFor="stage">
+          Stage <span className="text-destructive">*</span>
+        </Label>
         <Select
           id="stage"
           name="stage"
           value={formData.stage}
           onChange={handleChange}
+          required
         >
           <option value="">Select Stage</option>
           {OPPORTUNITY_STAGE_CHOICES.map((choice) => (
