@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { LEAD_STATUS_CHOICES, LEAD_SOURCE_CHOICES } from "@/lib/constants";
+import { normalizeIdArray } from "@/lib/utils";
 
 interface LeadFormProps {
   lead?: Lead;
@@ -111,10 +112,13 @@ export default function LeadForm({ lead, onSuccess, onCancel }: LeadFormProps) {
 
     // CRITICAL: Add current user's profile_id to assigned_to array
     // This ensures the user can see the lead they created
+    // NOTE: Backend requires assigned_to to be number[] - use normalizeIdArray to ensure proper type
+    // Type assertion is needed because Lead['assigned_to'] accepts User[] for response mapping
+    // but the API create/update endpoints require number[] for submission
     const profileId = localStorage.getItem("profile_id");
     if (profileId && !lead) {
       // Only add for new leads, not updates
-      cleanData.assigned_to = [profileId];
+      (cleanData as Record<string, unknown>).assigned_to = normalizeIdArray([profileId]);
     }
 
     console.log("Submitting lead data:", cleanData);
